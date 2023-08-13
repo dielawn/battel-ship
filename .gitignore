@@ -8,4 +8,4 @@ node_modules/
 *.log
 
 #live server
-workspace-code-workspace/
+workspace.code-workspace/
