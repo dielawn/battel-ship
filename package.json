@@ -1,0 +1,23 @@
+{
+  "name": "battle-ship",
+  "version": "1.0.0",
+  "description": "battle-ship game in javaScript, HTML, css",
+  "main": "script.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dielawn/battel-ship.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dielawn/battel-ship/issues"
+  },
+  "homepage": "https://github.com/dielawn/battel-ship#readme",
+  "devDependencies": {
+    "jest": "^29.6.2",
+    "jest-environment-jsdom": "^29.6.2"
+  }
+}
