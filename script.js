@@ -1,7 +1,5 @@
 // const containerDiv = document.getElementById('container')
 
-const testFunction = () => 'this works'
-
 //four grids two for each player 10 x 10. a-j 1-10
 class Grid {
     constructor() {
@@ -16,22 +14,24 @@ class Grid {
                 grid.push([this.xAxis[j], this.yAxis[i]])
             }
         }
-        console.log(grid[0])
         return grid
     }
     findIndex(x, y) {
         const board = this.board
-        console.log((board[0][0] === x && board[0][1]) === y )
         for (let i = 0; i < board.length; i++) {
-            if (board[i][0] === x && board[i][1 === y]) return i
-            else return 'Target not found'
+            if (board[i][0] === x && board[i][1] === y) {
+             return board[i]
+            }
         }
+        return 'Target not found'
+    }
+    isValid(x, y) {
+        return this.board.some(element => element[0] === x && element[1] === y)
     }
 } 
 
 const testGrid = new Grid()
 
-console.log(testGrid.board[0][0], testGrid.board[0][1])
 testGrid.findIndex('a', '1')
 //carrier length 5
 //battlship 4
@@ -43,6 +43,5 @@ testGrid.findIndex('a', '1')
 
 
 module.exports = {
-    testFunction,
     Grid,
 }

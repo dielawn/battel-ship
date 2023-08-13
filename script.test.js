@@ -1,10 +1,20 @@
 
-const {testFunction, Grid} = require('./script')
+const { Grid,  } = require('./script')
 
-test('checking return for "this works" string', () => expect(testFunction()).toBe('this works')) 
+describe('10 x 10 grid, where every square has coordinates and a grid index', () => {
+    const testGrid = new Grid()
+    test('checks for a grid length of 100', () => {
+        testGrid.createBoard()
+        expect(testGrid.board.length).toBe(100)
+    })
+    
+    test('returns a grid index from x y coordinates', () => {
+        expect(testGrid.findIndex('a', '1')).toBe(testGrid.board[0])
+        expect(testGrid.findIndex('j', '10')).toBe(testGrid.board[99])
+    })
+    test('check if board coordinates are truthy', () => {
+        expect(testGrid.isValid('a', '1')).toBeTruthy()
+        expect(testGrid.isValid('a', '11')).toBeFalsy()
+    })
 
-test('checks for a 10x10 grid', () => {
-    const gameBoard = new Grid()
-    gameBoard.createBoard()
-    expect(gameBoard.board.length).toBe(100)
 })
