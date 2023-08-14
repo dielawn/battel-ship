@@ -21,7 +21,7 @@ describe('10 x 10 grid, where every square has coordinates and a grid index', ()
 
 describe('Player class has a name, 2 grids, and a fleet of ships', () => {
     const testPlayer = new Player('testPlayer')
-    test('test player name', () => {
+    test(`test player name: ${testPlayer.name}`, () => {
         expect(testPlayer.name).toBe('testPlayer')
     })
     test('player revealed board occupied coordinates', () => {

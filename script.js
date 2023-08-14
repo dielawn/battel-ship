@@ -3,7 +3,57 @@ class Game {
     constructor() {
         this.player1 = new Player('Sid')
         this.player2 = new Player('Nancy')
+        this.currentPlayer = null
+        this.otherPlayer = null
+        this.gameOver = false
+    }
+    setPlayer() {
+        //select starting player and change player turn at end of previous turn
 
+        if (this.currentPlayer === null) {
+            this.currentPlayer = this.player1 
+            this.otherPlayer = this.player2        
+            return
+        } else if (this.currentPlayer === this.player2) {
+            this.currentPlayer = this.player1
+            this.otherPlayer = this.player2
+            return 
+        }
+        this.currentPlayer = this.player2
+        this.otherPlayer = this.player1
+        return
+    }
+    isOccupied(coords) {
+        //if coordinates are in player occupied coordinates array return true
+        if (this.currentPlayer.occupiedCoordinates[i] === coords) {
+            return true
+        }
+    }
+    handleShotFired(coords) {
+        // a hit
+        if (this.isOccupied(coords)) {
+            for (let i = 0; i < this.currentPlayer.ships.length; i++) {
+                for (let j = 0; j < this.currentPlayer.ships[i].shipLocation.length; j++)
+                if (this.currentPlayer.ships[i].shipLocation[j] === coords) {
+                    this.currentPlayer.ships[i].hit()
+                    console.log(this.otherPlayer.ships[i].hitPoints, 'is sunk:', this.currentPlayer.ships[i].isSunk)
+                   
+                }
+            }
+            // a miss
+            this.otherPlayer.choosenCoordinates.push([coords])
+            
+        }
+    }
+    isHit() {
+        //if coords are in occupied and choosed ship isHit 
+    }
+    recievAttack() {
+        // if coordinates isOccupied Ship.hit()
+        // else choosenCoordinates.push(coordinates)
+    }
+    endGame() {
+        this.gameOver = true
     }
 }
 
@@ -36,8 +86,7 @@ class Grid {
     isValid(x, y) {
         return this.grid.some(element => element[0] === x && element[1] === y)
     }
-   
-    //recievAttack() {}
+    
 } 
 
 class Ship {
@@ -66,16 +115,15 @@ class Player {
         this.occupiedCoordinates = []
         this.choosenCoordinates = []        
         this.ships = this.createShips()
-        this.isTurn = false
         
     }
     createShips() {
         const ships = [
-            { name: 'Carrier', length: 5, shipLocation: [0,0,0,0,0] },//ship 0
-            { name: 'Battleship', length: 4, shipLocation: [0,0,0,0] },  //ship 1
-            { name: 'Destroyer', length: 3, shipLocation: [0,0,0] },  //ship 2
-            { name: 'Submarine', length: 3, shipLocation: [0,0,0] },  //ship 3
-            { name: 'Patrol', length: 2, shipLocation: [0,0]}  //ship 4
+            { name: 'Carrier', length: 5, shipLocation: [0,0,0,0,0], isSunk: false, },//ship 0
+            { name: 'Battleship', length: 4, shipLocation: [0,0,0,0], isSunk: false, },  //ship 1
+            { name: 'Destroyer', length: 3, shipLocation: [0,0,0], isSunk: false, },  //ship 2
+            { name: 'Submarine', length: 3, shipLocation: [0,0,0], isSunk: false, },  //ship 3
+            { name: 'Patrol', length: 2, shipLocation: [0,0], isSunk: false, }  //ship 4
         ]
         const playerShips = []
         for(const ship of ships) {
