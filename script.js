@@ -23,41 +23,36 @@ class Game {
         this.otherPlayer = this.player1
         return
     }
-    isOccupied(coords) {
-        //if coordinates are in player occupied coordinates array return true
-        if (this.currentPlayer.occupiedCoordinates[i] === coords) {
-            return true
-        }
-    }
-    handleShotFired(coords) {
-        // a hit
-        if (this.isOccupied(coords)) {
-            for (let i = 0; i < this.currentPlayer.ships.length; i++) {
-                for (let j = 0; j < this.currentPlayer.ships[i].shipLocation.length; j++)
-                if (this.currentPlayer.ships[i].shipLocation[j] === coords) {
-                    this.currentPlayer.ships[i].hit()
-                    console.log(this.otherPlayer.ships[i].hitPoints, 'is sunk:', this.currentPlayer.ships[i].isSunk)
-                   
+    // isHit(coords) {
+    //     //if coords are in occupied and choosen ship isHit 
+    //    let coordinates = this.otherPlayer.occupiedCoordinates
+    //    for (let i = 0; i < coordinates.length; i++ ) {
+    //     for (let j = 0; j < coordinates[i].length; j++) {
+    //         console.log(coordinates[i][j].location, coords)
+    //         if (coords === coordinates[i][j].location) {
+    //             this.otherPlayer.ships[i].hit()
+    //             this.coordinates[i][j].isHit = true
+    //             return true
+    //         }
+    //     }
+        
+    //    }
+    //    return false
+    // }
+    isHit(coords) {
+        let coordinates = this.otherPlayer.occupiedCoordinates
+        for (let i = 0; i < coordinates.length; i++) {
+            for (let j = 0; j < coordinates[i].length; j++) {
+                if (coords === coordinates[i][j].location) {
+                    if (!coordinates[i][j].isHit) {
+                        this.otherPlayer.ships[i].hit()
+                        coordinates[i][j].isHit = true
+                        return true
+                    }
                 }
             }
-            // a miss
-            this.otherPlayer.choosenCoordinates.push([coords])
-            
         }
-    }
-    isHit(coords) {
-        //if coords are in occupied and choosen ship isHit 
-       let coordsLength = this.otherPlayer.occupiedCoordinates.length
-       for (let i = 0; i < coordsLength; i++ ) {
-        for (let j = 0; j < this.otherPlayer.occupiedCoordinates[i].length; j++) {
-            console.log(this.otherPlayer.occupiedCoordinates[i][j])
-            if (coords === this.otherPlayer.occupiedCoordinates[i][j]) {
-                this.otherPlayer.ships[i].hit()
-                return true
-            }
-        }
-        
-       }
+        return false
     }
     recievAttack() {
         // if coordinates isOccupied Ship.hit()
@@ -118,8 +113,6 @@ class Ship {
       }
       return this.hitPoints
     }    
-
-
 }
 
 class Player {
@@ -152,7 +145,12 @@ class Player {
        const shipsCoords = []
        for (let i = 0; i < ship.length; i++) {
         ship.shipLocation[i] = coordinatesArray[i]        
-        shipsCoords.push({name: ship, location: ship.shipLocation[i]})
+        shipsCoords.push( {
+                player: this.name,
+                ship: ship.name, 
+                location: ship.shipLocation[i], 
+                isHit: false
+            })
        }
        this.occupiedCoordinates.push(shipsCoords)
        return shipsCoords
@@ -160,8 +158,7 @@ class Player {
     fire(coords) {
         const selected = []
         selected.push(coords)
-        this.choosenCoordinates.push(selected)
-        
+        this.choosenCoordinates.push(selected)    
     }
 
 }
