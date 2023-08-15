@@ -53,6 +53,7 @@ class Game {
         // else choosenCoordinates.push(coordinates)
     }
     endGame() {
+        //if player1 or player2 .ships[i].isSunk === true
         this.gameOver = true
     }
 }
@@ -96,12 +97,12 @@ class Ship {
         this.isSunk = false
     }
     hit() {
-      this.hitPoints - 1
+      this.hitPoints -= 1
       if (this.hitPoints <= 0) {
         this.isSunk = true
-        return `You sunk my ${this.ship.name}!`
+        console.log(`You sunk my ${this.ship.name}!`)
       }
-      
+      return this.hitPoints
     }    
 
 

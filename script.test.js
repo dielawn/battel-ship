@@ -24,15 +24,17 @@ describe('Player class has a name, 2 grids, and a fleet of ships', () => {
     test(`test player name: ${testPlayer.name}`, () => {
         expect(testPlayer.name).toBe('testPlayer')
     })
-    test('player revealed board occupied coordinates', () => {
+    test('player revealed board occupied coordinates set', () => {
         expect(testPlayer.setShipLocation(0, ['a1', 'a2', 'a3', 'a4', 'a5'])).toBe(testPlayer.occupiedCoordinates[0])
     })
     // test('player hidden board choosen coordinates')
+    
+    
+    describe('Ship class keeps track of hits, sets isSunk', () => {
+        const carrier = testPlayer.ships[0]
+        test('decrease hit count', () => {
+            expect(carrier.hit()).toBe(4)
+        })
+    })
 }) 
 
-// describe('Ship class keeps track of hits, sets isSunk', () => {
-//     const testShips =new Ship()
-//     test('decrease hit count', () => {
-//         expect()
-//     })
-// })
