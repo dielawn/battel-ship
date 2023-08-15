@@ -32,8 +32,14 @@ describe('Player class has a name, 2 grids, and a fleet of ships', () => {
     
     describe('Ship class keeps track of hits, sets isSunk', () => {
         const carrier = testPlayer.ships[0]
-        test('decrease hit count', () => {
+        test('decrease hit count until ship is sunk', () => {
+            expect(carrier.isSunk).toBeFalsy()
             expect(carrier.hit()).toBe(4)
+            expect(carrier.hit()).toBe(3)
+            expect(carrier.hit()).toBe(2)
+            expect(carrier.hit()).toBe(1)
+            expect(carrier.hit()).toBe(0)
+            expect(carrier.isSunk).toBeTruthy()
         })
     })
 }) 

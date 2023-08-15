@@ -45,8 +45,19 @@ class Game {
             
         }
     }
-    isHit() {
-        //if coords are in occupied and choosed ship isHit 
+    isHit(coords) {
+        //if coords are in occupied and choosen ship isHit 
+       let coordsLength = this.otherPlayer.occupiedCoordinates.length
+       for (let i = 0; i < coordsLength; i++ ) {
+        for (let j = 0; j < this.otherPlayer.occupiedCoordinates[i].length; j++) {
+            console.log(this.otherPlayer.occupiedCoordinates[i][j])
+            if (coords === this.otherPlayer.occupiedCoordinates[i][j]) {
+                this.otherPlayer.ships[i].hit()
+                return true
+            }
+        }
+        
+       }
     }
     recievAttack() {
         // if coordinates isOccupied Ship.hit()
@@ -97,8 +108,11 @@ class Ship {
         this.isSunk = false
     }
     hit() {
-      this.hitPoints -= 1
-      if (this.hitPoints <= 0) {
+        if(this.isSunk === true) {
+            return
+        }
+        this.hitPoints -= 1
+        if (this.hitPoints <= 0) {
         this.isSunk = true
         console.log(`You sunk my ${this.ship.name}!`)
       }
@@ -137,8 +151,8 @@ class Player {
        const ship = this.ships[shipsIndex].ship
        const shipsCoords = []
        for (let i = 0; i < ship.length; i++) {
-        ship.shipLocation[i] = coordinatesArray[i]
-        shipsCoords.push(ship.shipLocation[i])
+        ship.shipLocation[i] = coordinatesArray[i]        
+        shipsCoords.push({name: ship, location: ship.shipLocation[i]})
        }
        this.occupiedCoordinates.push(shipsCoords)
        return shipsCoords
@@ -147,13 +161,16 @@ class Player {
         const selected = []
         selected.push(coords)
         this.choosenCoordinates.push(selected)
+        
     }
 
 }
 
+
 const newGame = new Game()
 const carrierCoord = ['a1', 'a2', 'a3', 'a4', 'a5']
 const battleshipCoord = ['b2', 'b3', 'b4', 'b5']
+const hitCoords = 'a2'
 
 newGame.player2.setShipLocation(0, carrierCoord)
 newGame.player2.setShipLocation(1, battleshipCoord)
