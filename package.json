@@ -1,8 +1,7 @@
 {
   "name": "battle-ship",
   "version": "1.0.0",
-  "description": "battle-ship game in javaScript, HTML, css",
-  "main": "script.js",
+  "description": "A Battleship game implemented in JavaScript, HTML, and CSS.",
   "scripts": {
     "test": "jest"
   },
@@ -10,14 +9,17 @@
     "type": "git",
     "url": "git+https://github.com/dielawn/battel-ship.git"
   },
-  "author": "",
+  "author": "Your Name",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/dielawn/battel-ship/issues"
   },
-  "homepage": "https://github.com/dielawn/battel-ship#readme",
+  "homepage": "https://github.com/dielawn/battel-ship",
   "devDependencies": {
     "jest": "^29.6.2",
-    "jest-environment-jsdom": "^29.6.2"
+    "jest-environment-jsdom": "^29.6.2",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1"
   }
 }

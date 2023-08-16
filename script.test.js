@@ -21,10 +21,7 @@ const { Game,} = require('./script')
             })
             test('player revealed board occupied coordinates set', () => {
                 expect(testPlayer.setShipLocation(0, ['a1', 'a2', 'a3', 'a4', 'a5'])).toBe(testPlayer.occupiedCoordinates[0])
-            })
-            // test('player hidden board choosen coordinates')
-            
-            
+            })            
             describe('the Ship class keeps track of hits, sets isSunk', () => {
                 const carrier = testPlayer.ships[0]
                 test('decrease hit count until ship is sunk', () => {
