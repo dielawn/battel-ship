@@ -1,8 +1,8 @@
 // const containerDiv = document.getElementById('container')
 class Game {
     constructor() {
-        this.player1 = new Player('Sid')
-        this.player2 = new Player('Nancy')
+        this.player1 = new Player('player1')
+        this.player2 = new Player('player2')
         this.currentPlayer = null
         this.otherPlayer = null
         this.gameOver = false
@@ -13,32 +13,16 @@ class Game {
         if (this.currentPlayer === null) {
             this.currentPlayer = this.player1 
             this.otherPlayer = this.player2        
-            return
+            return this.player1
         } else if (this.currentPlayer === this.player2) {
             this.currentPlayer = this.player1
             this.otherPlayer = this.player2
-            return 
+            return this.player1 
         }
         this.currentPlayer = this.player2
         this.otherPlayer = this.player1
-        return
+        return this.player2
     }
-    // isHit(coords) {
-    //     //if coords are in occupied and choosen ship isHit 
-    //    let coordinates = this.otherPlayer.occupiedCoordinates
-    //    for (let i = 0; i < coordinates.length; i++ ) {
-    //     for (let j = 0; j < coordinates[i].length; j++) {
-    //         console.log(coordinates[i][j].location, coords)
-    //         if (coords === coordinates[i][j].location) {
-    //             this.otherPlayer.ships[i].hit()
-    //             this.coordinates[i][j].isHit = true
-    //             return true
-    //         }
-    //     }
-        
-    //    }
-    //    return false
-    // }
     isHit(coords) {
         let coordinates = this.otherPlayer.occupiedCoordinates
         for (let i = 0; i < coordinates.length; i++) {
@@ -54,11 +38,7 @@ class Game {
         }
         return false
     }
-    recievAttack() {
-        // if coordinates isOccupied Ship.hit()
-        // else choosenCoordinates.push(coordinates)
-    }
-    endGame() {
+    isGameOver() {
         //if player1 or player2 .ships[i].isSunk === true
         this.gameOver = true
     }
@@ -168,6 +148,9 @@ const newGame = new Game()
 const carrierCoord = ['a1', 'a2', 'a3', 'a4', 'a5']
 const battleshipCoord = ['b2', 'b3', 'b4', 'b5']
 const hitCoords = 'a2'
+
+newGame.player1.setShipLocation(0, carrierCoord)
+newGame.player1.setShipLocation(1, battleshipCoord)
 
 newGame.player2.setShipLocation(0, carrierCoord)
 newGame.player2.setShipLocation(1, battleshipCoord)
