@@ -7,6 +7,18 @@ class Game {
         this.otherPlayer = null
         this.gameOver = false
     }
+    startGame() {
+        // start new game
+        //set all ship locations for both players
+        // set coordinates to occupied
+
+        //setPlayer
+        //player fires shot
+        //check isHit if true log hit
+        //set coordinates to choosen
+       
+        //repeat until game over
+    }
     setPlayer() {
         //select starting player and change player turn at end of previous turn
 
@@ -93,6 +105,7 @@ class Ship {
       }
       return this.hitPoints
     }    
+   
 }
 
 class Player {
