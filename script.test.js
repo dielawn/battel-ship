@@ -1,5 +1,5 @@
 
-const { Game,} = require('./script')
+const { Game,} = require('./src/script')
 
     describe('Game class, creates 2 players, setPlayer toggles players, isHit matches coords to other players occupied coords', () => {
         const testGame = new Game()

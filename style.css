@@ -3,3 +3,23 @@
     padding: 0;
     box-sizing: border-box;
 }
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    height: 100vh;
+}
+
+.revealedGrid,
+.hiddenGrid {
+    display: grid;
+    grid-template-columns: repeat(11, 25px);
+}
+
+.gridSquare {
+    width: 25px;
+    height: 25px;
+    outline: solid black 1px;
+}
