@@ -3,17 +3,17 @@ const containerDiv = document.getElementById('container')
 const revealedGrid = document.getElementById('revealedGrid')
 const hiddenGrid = document.getElementById('hiddenGrid')
 
-function labelGrid() {
+function labelGrid(parentTxt) {
 
     const newGrid = new Grid
     const alphaCoords = newGrid.xAxis
     const numCoords = newGrid.yAxis
     const alphaIds = [0, 11, 22, 33, 44, 55, 66, 77, 88, 99]
-    const numIds = [100, 101, 102, 103, 104, 105, 106, 107, 108, 109]
+    const numIds = [ 111, 112, 113, 114, 115, 116, 117, 118, 119, 120]
 
     for (let i = 0; i < 10; i++ ) {
-        const alphaSquare = document.getElementById(`${alphaIds}`)
-        const numSquare = document.getElementById(`${numIds}`)
+        const alphaSquare = document.getElementById(`${parentTxt}gridSquare${alphaIds[i]}`)
+        const numSquare = document.getElementById(`${parentTxt}gridSquare${numIds[i]}`)
         alphaSquare.innerHTML = alphaCoords[i]
         numSquare.innerHTML = numCoords[i]
     }
@@ -21,14 +21,14 @@ function labelGrid() {
 
 function renderGrid(parent, parentTxt) {
 
-    for (let i = 0; i < 110; i++) {
+    for (let i = 0; i < 121; i++) {
        const gridSquare = document.createElement('div')
        gridSquare.classList.add('gridSquare')
        gridSquare.id = `${parentTxt}gridSquare${i}`
       
        parent.appendChild(gridSquare)
     }
-    labelGrid()
+    labelGrid(parentTxt)
 }
 
 renderGrid(hiddenGrid, 'hidden')

@@ -22,4 +22,7 @@
     width: 25px;
     height: 25px;
     outline: solid black 1px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
