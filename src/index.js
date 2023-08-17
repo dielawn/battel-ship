@@ -8,8 +8,8 @@ function labelGrid(parentTxt) {
     const newGrid = new Grid
     const alphaCoords = newGrid.xAxis
     const numCoords = newGrid.yAxis
-    const alphaIds = [0, 11, 22, 33, 44, 55, 66, 77, 88, 99]
-    const numIds = [ 111, 112, 113, 114, 115, 116, 117, 118, 119, 120]
+    const alphaIds = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
+    const numIds = [ 91, 92, 93, 94, 95, 96, 97, 98, 99, 100]
 
     for (let i = 0; i < 10; i++ ) {
         const alphaSquare = document.getElementById(`${parentTxt}gridSquare${alphaIds[i]}`)
@@ -21,17 +21,30 @@ function labelGrid(parentTxt) {
 
 function renderGrid(parent, parentTxt) {
 
-    for (let i = 0; i < 121; i++) {
+    for (let i = 0; i < 100; i++) {
        const gridSquare = document.createElement('div')
        gridSquare.classList.add('gridSquare')
        gridSquare.id = `${parentTxt}gridSquare${i}`
       
        parent.appendChild(gridSquare)
     }
-    labelGrid(parentTxt)
+    // labelGrid(parentTxt)
 }
 
 renderGrid(hiddenGrid, 'hidden')
 renderGrid(revealedGrid, 'revealed')
 
 
+//add event listener to each square
+function getSquares() {
+
+    const gridSquares = document.querySelectorAll('.gridSquare')
+    gridSquares.forEach(square => {
+        square.addEventListener('click', ()  => {
+            const id = square.id;
+            const number = id.match(/\d+/)[0];
+            console.log(number)
+        })
+    })
+}
+getSquares()
