@@ -97,3 +97,12 @@
 .rotate {
     transform: rotate(90deg);
 }
+.rotate-button {
+    position: relative;    
+    display: none;
+}
+
+.ship-container:hover .rotate-button {
+    cursor: pointer;
+    display: block;
+}

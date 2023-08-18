@@ -114,15 +114,25 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     
     }
-    carrierIcon.classList.add('rotate')
+    
+   
     dragElement(carrierIcon)
     dragElement(battleshipIcon)
     dragElement(destroyerIcon)
     dragElement(submarineIcon)
     dragElement(patrolIcon)
     
+    const shipIcons = document.querySelectorAll('.ship-icon');
 
+    shipIcons.forEach(shipIcon => {
+        const rotateButton = shipIcon.nextElementSibling
+        rotateButton.addEventListener('click', () => {            
+            shipIcon.classList.toggle('rotate')
+        })
+    })
 })
+
+
 
 function startGame() {
     return new Game()
