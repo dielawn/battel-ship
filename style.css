@@ -35,4 +35,33 @@
 .ship-icon {
     width: 100px;
 }
+.alphaDiv {
+    position: absolute;
+    height: 250px;
+    width: 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    left: 165px;
 
+}
+.numDiv {
+    display: flex;
+    width: 250px;
+    height: 25px;
+    justify-content: space-evenly;
+}
+.alphaSquare {
+    width: 25px;
+    height: 25px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+}
+.numSquare {
+    width: 25px;
+    height: 25px;
+    text-align: center;
+}

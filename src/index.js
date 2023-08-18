@@ -3,32 +3,46 @@ const containerDiv = document.getElementById('container')
 const revealedGrid = document.getElementById('revealedGrid')
 const hiddenGrid = document.getElementById('hiddenGrid')
 
-function labelGrid(parentTxt) {
+function labelGrid(alphaParent, numParent, parentTxt) {
 
     const newGrid = new Grid
     const alphaCoords = newGrid.xAxis
     const numCoords = newGrid.yAxis
-    const alphaIds = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
-    const numIds = [ 91, 92, 93, 94, 95, 96, 97, 98, 99, 100]
 
     for (let i = 0; i < 10; i++ ) {
-        const alphaSquare = document.getElementById(`${parentTxt}gridSquare${alphaIds[i]}`)
-        const numSquare = document.getElementById(`${parentTxt}gridSquare${numIds[i]}`)
+        const alphaSquare = document.createElement('div')
+        alphaSquare.id = `${parentTxt}gridSquare${i}`
+        alphaSquare.classList.add('alphaSquare')
         alphaSquare.innerHTML = alphaCoords[i]
-        numSquare.innerHTML = numCoords[i]
+        alphaParent.appendChild(alphaSquare)
     }
+    for (let i = 0; i < 10; i++ ) {
+        const numSquare = document.createElement('div')
+        numSquare.id = `${parentTxt}gridSquare${i}`
+        numSquare.classList.add('numSquare')
+        numSquare.innerHTML = numCoords[i]
+        numParent.appendChild(numSquare)
+    }
+
 }
 
 function renderGrid(parent, parentTxt) {
+    const alphaDiv = document.createElement('div')
+    const numDiv = document.createElement('div')
+    alphaDiv.classList.add('alphaDiv')
+    numDiv.classList.add('numDiv')
+   
 
     for (let i = 0; i < 100; i++) {
        const gridSquare = document.createElement('div')
        gridSquare.classList.add('gridSquare')
-       gridSquare.id = `${parentTxt}gridSquare${i}`
-      
+       gridSquare.id = `${parentTxt}gridSquare${i}`      
        parent.appendChild(gridSquare)
     }
-    // labelGrid(parentTxt)
+
+    parent.appendChild(alphaDiv)
+    parent.appendChild(numDiv)
+    labelGrid(alphaDiv, numDiv, parentTxt)
 }
 
 renderGrid(hiddenGrid, 'hidden')
@@ -48,3 +62,10 @@ function getSquares() {
     })
 }
 getSquares()
+
+
+// function startGame() {
+//     return new Game()
+// }
+// const newGame = startGame()
+// console.log(newGame.player1)
