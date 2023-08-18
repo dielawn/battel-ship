@@ -75,8 +75,8 @@ class Game {
 
 class Grid {
     constructor() {
-        this.yAxis = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
-        this.xAxis = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
+        this.yAxis = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
+        this.xAxis = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
         this.grid = this.createGrid()
     }
     createGrid() {
@@ -84,10 +84,17 @@ class Grid {
 
         for (let i = 0; i < this.yAxis.length; i++) {
             for (let j = 0; j < this.xAxis.length; j++) {
-                grid.push([this.xAxis[j] + this.yAxis[i]])
+                grid.push([this.yAxis[i] + this.xAxis[j]])
             }
         }
         return grid
+    }
+    findCoords(index) {
+        const grid = this.grid
+       if (index >= 0 && index < grid.length) {        
+        return grid[index][0]
+       }
+       return 'Invalid index'
     }
     findIndex(x, y) {
         const grid = this.grid

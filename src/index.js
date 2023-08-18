@@ -6,8 +6,8 @@ const hiddenGrid = document.getElementById('hiddenGrid')
 function labelGrid(alphaParent, numParent, parentTxt) {
 
     const newGrid = new Grid
-    const alphaCoords = newGrid.xAxis
-    const numCoords = newGrid.yAxis
+    const alphaCoords = newGrid.yAxis
+    const numCoords = newGrid.xAxis
 
     for (let i = 0; i < 10; i++ ) {
         const alphaSquare = document.createElement('div')
@@ -57,15 +57,23 @@ function getSquares() {
         square.addEventListener('click', ()  => {
             const id = square.id;
             const number = id.match(/\d+/)[0];
+            const coords = getCoords(number)
             console.log(number)
+            console.log(coords)
         })
     })
 }
 getSquares()
 
+function getCoords(index) {
+    const newGrid = new Grid()
+    const coords = newGrid.findCoords(index)
+    return coords
+}
 
-// function startGame() {
-//     return new Game()
-// }
-// const newGame = startGame()
-// console.log(newGame.player1)
+
+function startGame() {
+    return new Game()
+}
+const newGame = startGame()
+console.log(newGame.player1)
