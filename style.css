@@ -15,12 +15,12 @@
 .revealedGrid,
 .hiddenGrid {
     display: grid;
-    grid-template-columns: repeat(10, 25px);
+    grid-template-columns: repeat(10, 50px);
 }
 
 .gridSquare {
-    width: 25px;
-    height: 25px;
+    width: 50px;
+    height: 50px;
     outline: solid black 1px;
     display: flex;
     justify-content: center;
@@ -34,26 +34,28 @@
 
 .ship-icon {
     width: 100px;
+    z-index: 9;
 }
 .alphaDiv {
     position: absolute;
-    height: 250px;
-    width: 25px;
+    height: 500px;
+    width: 50px;
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
-    left: 165px;
+    left: 660px;
 
 }
 .numDiv {
     display: flex;
-    width: 250px;
-    height: 25px;
+    width: 500px;
+    height: 50px;
     justify-content: space-evenly;
+    padding: 10px;
 }
 .alphaSquare {
-    width: 25px;
-    height: 25px;
+    width: 50px;
+    height: 50px;
     text-align: center;
     display: flex;
     align-items: center;
@@ -61,7 +63,37 @@
     justify-content: center;
 }
 .numSquare {
-    width: 25px;
-    height: 25px;
+    width: 50px;
+    height: 50px;
     text-align: center;
+}
+
+
+#carrierIcon {
+    position: absolute;
+    left: 550px;
+    top: 700px;
+}
+#battleshipIcon {
+    position: absolute;
+    left: 550px;
+    top: 750px;
+}
+#destroyerIcon {
+    position: absolute;
+    left: 550px;
+    top: 800px;
+}
+#submarineIcon {
+    position: absolute;
+    left: 550px;
+    top: 850px;
+}
+#patrolIcon {
+    position: absolute;
+    left: 550px;
+    top: 900px;
+}
+.rotate {
+    transform: rotate(90deg);
 }
