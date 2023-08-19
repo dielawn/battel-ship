@@ -2,9 +2,11 @@
 class Game {
     constructor() {
         this.player1 = new Player('player1')
-        this.player2 = new Player('player2')
+        this.player2 = new Player('player2')        
         this.currentPlayer = null
         this.otherPlayer = null
+        this.revealedBoard = new Grid()        
+        this.hiddenBoard = new Grid()
         this.gameOver = false
     }
    startGame() {
@@ -26,7 +28,7 @@ class Game {
 
         //prompt for coords
         this.currentPlayer.fire(hitCoords)
-        this.otherPlayer.isHit(hitCoords)
+        this.isHit(hitCoords)
         this.setPlayer()
     }
     setPlayer() {
@@ -133,9 +135,7 @@ class Ship {
 
 class Player {
     constructor(name, ) {
-        this.name = name
-        this.revealedBoard = new Grid()        
-        this.hiddenBoard = new Grid()
+        this.name = name        
         this.occupiedCoordinates = []
         this.choosenCoordinates = []        
         this.ships = this.createShips()

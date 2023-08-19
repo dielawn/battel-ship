@@ -1,13 +1,20 @@
 import { Game, Grid} from './script'
+
+function createtGame() {
+    return new Game()
+}
+const newGame = createtGame()
+newGame.startGame()
+
 const containerDiv = document.getElementById('container')
 const revealedGrid = document.getElementById('revealedGrid')
 const hiddenGrid = document.getElementById('hiddenGrid')
 
 function labelGrid(alphaParent, numParent, parentTxt) {
 
-    const newGrid = new Grid
-    const alphaCoords = newGrid.yAxis
-    const numCoords = newGrid.xAxis
+    const playerGrid = newGame.revealedBoard
+    const alphaCoords = playerGrid.yAxis
+    const numCoords = playerGrid.xAxis
 
     for (let i = 0; i < 10; i++ ) {
         const alphaSquare = document.createElement('div')
@@ -45,39 +52,81 @@ function renderGrid(parent, parentTxt) {
     labelGrid(alphaDiv, numDiv, parentTxt)
 }
 
-renderGrid(hiddenGrid, 'hidden')
-renderGrid(revealedGrid, 'revealed')
-
-
 //add event listener to each square
 function getSquares() {
 
     const gridSquares = document.querySelectorAll('.gridSquare')
+
     gridSquares.forEach(square => {
+        const id = square.id;
+        const number = id.match(/\d+/)[0];
+        const coords = getCoords(number)
         square.addEventListener('click', ()  => {
-            const id = square.id;
-            const number = id.match(/\d+/)[0];
-            const coords = getCoords(number)
+            
             console.log(number)
             console.log(coords)
         })
+        square.addEventListener('dragover', (e) => {
+            e.preventDefault()
+        })
+        square.addEventListener('drop', (e) => {
+            e.preventDefault()
+            const draggedData = JSON.parse(e.dataTrasfer.getData('text/plain'))
+            console.log(draggedData.coords)
+            if (newGame.grid.isValid(draggedData.coords)) {
+                
+                newGame.currentPlayer.occupiedCoordinates.push(draggedData.coords)
+                    
+                console.log(newGame.currentPlayer.occupiedCoordinates)
+            }
+        })
     })
 }
-getSquares()
+
 
 function getCoords(index) {
-    const newGrid = new Grid()
-    const coords = newGrid.findCoords(index)
+    
+    const coords = newGame.hiddenBoard.findCoords(index)
     return coords
 }
 
 //moveable ships
+const handleDomShips = () => {
+    const shipContainer = document.querySelectorAll('.ship-container')
+    const shipIcons = document.querySelectorAll('.ship-icon')
+    let isDragging = false
+    let draggedShip = null
+    const shipDropLoc = []
+    const grid = new Grid()
 
+    shipIcons.forEach(shipIcon => {      
+        shipIcon.addEventListener('dblclick', () => {            
+            shipIcon.classList.toggle('rotate')
+        })
+        shipIcon.addEventListener('mousedown', (e) => {
+            console.log('down')
+            isDragging = true
+            draggedShip = shipIcon
+        })
+        shipIcon.addEventListener('dragstart', (e) => {
+            e.drataTransfer.setData('text/plain', JSON.stringify({ coords: getCoords(number)}))
+        })
+        shipIcon.addEventListener('mouseup', (e) => {
+            console.log('up')
+            console.log(isDragging, draggedShip, shipIcon)
+            if (isDragging && draggedShip === shipIcon) {
+                isDragging = false
+                draggedShip = null
 
+                const shipContainer = shipIcon.parentElement
+                console.log(shipContainer)
 
+            }
+        })
+    })
+}  
 
-document.addEventListener("DOMContentLoaded", function () {
-
+const makeShipsDraggable = () => {
     const carrierIcon = document.getElementById('carrierIcon')
     const battleshipIcon = document.getElementById('battleshipIcon')
     const destroyerIcon = document.getElementById('destroyerIcon')
@@ -114,59 +163,22 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     
     }
-    
-   
     dragElement(carrierIcon)
     dragElement(battleshipIcon)
     dragElement(destroyerIcon)
     dragElement(submarineIcon)
     dragElement(patrolIcon)
+}
 
-    const handleDomShips = () => {
-        const shipIcons = document.querySelectorAll('.ship-icon')
-        let isDragging = false
-        let draggedShip = null
-        const shipDropLoc = []
-        shipIcons.forEach(shipIcon => {      
-            shipIcon.addEventListener('dblclick', () => {            
-                shipIcon.classList.toggle('rotate')
-            })
-            shipIcon.addEventListener('mousedown', (e) => {
-                console.log('down')
-                isDragging = true
-                draggedShip = shipIcon
-            })
-            shipIcon.addEventListener('mouseup', (e) => {
-                console.log('up')
-                if (isDragging && draggedShip === shipIcon) {
-                    isDragging = false
-                    draggedShip = null
+document.addEventListener("DOMContentLoaded", function () {
 
-                    const gridCellSize = 50
-                    const shipBounds = shipIcon.getBoundingClientRect()
-                    const gridCellXStart = Math.floor(shipBounds.left / gridCellSize)
-                    const gridCellXEnd = Math.floor(shipBounds.right /gridCellSize)
-                    const gridCellYStart = Math.floor(shipBounds.top / gridCellSize)
-                    const gridCellYEnd = Math.floor(shipBounds.bottom / gridCellSize)
+    renderGrid(hiddenGrid, 'hidden')
+    renderGrid(revealedGrid, 'revealed')
+    getSquares()
+    makeShipsDraggable()  
+    console.log(handleDomShips())
 
-                    for (let x = gridCellXStart; x <= gridCellXEnd; x++) {
-                        for (let y = gridCellYStart; y <= gridCellYEnd; y++) {
-                            shipDropLoc.push([x, y])
-                        }
-                    }
-                    return shipDropLoc
-                }
-                
-            })
-        })
-    }    
-console.log(handleDomShips())
  })
 
 
 
-function startGame() {
-    return new Game()
-}
-const newGame = startGame()
-console.log(newGame.player1)

@@ -26,6 +26,9 @@
     justify-content: center;
     align-items: center;
 }
+.gridSquare:hover {
+    background-color: black;
+}
 
 .shipDiv {
     display: flex;
