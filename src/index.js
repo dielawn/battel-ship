@@ -177,7 +177,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     makeShipsDraggable()  
     console.log(handleDomShips())
-console.log(newGame.revealedBoard.gridIndexTree())
+console.log(newGame.revealedBoard.coordTree)
  })
 
 

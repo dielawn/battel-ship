@@ -80,7 +80,8 @@ class Grid {
         this.yAxis = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
         this.xAxis = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
         this.grid = this.createGrid()
-        this.gridLinks = this.gridIndexTree()
+        this.indexTree = this.gridIndexTree()
+        this.coordTree = this.gridCoordinatesTree()
     }
     createGrid() {
         const grid = []
@@ -104,17 +105,37 @@ class Grid {
             this.grid[i].up = row > 0 ? i - numCols : null
             this.grid[i].right = col < numCols - 1 ? i + 1 : null
             this.grid[i].down = row < numRows - 1 ? i + numCols : null
-            linkedGrid.push({
-
-                neighbors: {                    
+            linkedGrid.push({                    
                     left: this.grid[i].left,
                     up: this.grid[i].up,
                     right: this.grid[i].right,
                     down: this.grid[i].down
-                }
-            })
+                })
         }
         return linkedGrid
+    }
+    gridCoordinatesTree() {
+        const coordsTree = []
+        
+        for (const index in this.indexTree) {
+
+            const node = this.indexTree[index]
+            const leftIndex = node.left
+            const upIndex = node.up
+            const rightIndex = node.right
+            const downIndex = node.down
+
+            const coords = {
+                left: leftIndex !== null ? this.findCoords(leftIndex) : null,
+                up: upIndex !== null ? this.findCoords(upIndex) : null,
+                right: rightIndex !== null ? this.findCoords(rightIndex) : null,
+                down: downIndex !== null ? this.findCoords(downIndex) : null
+            }
+
+            coordsTree.push(coords)
+            
+        }
+        return coordsTree       
     }
     findCoords(index) {
         const grid = this.grid
