@@ -71,11 +71,10 @@ function getSquares() {
         })
         square.addEventListener('drop', (e) => {
             e.preventDefault()
-            const draggedData = JSON.parse(e.dataTrasfer.getData('text/plain'))
-            console.log(draggedData.coords)
+            console.log(coords)
             if (newGame.grid.isValid(draggedData.coords)) {
                 
-                newGame.currentPlayer.occupiedCoordinates.push(draggedData.coords)
+                newGame.currentPlayer.occupiedCoordinates.push(coords)
                     
                 console.log(newGame.currentPlayer.occupiedCoordinates)
             }
@@ -97,7 +96,7 @@ const handleDomShips = () => {
     let isDragging = false
     let draggedShip = null
     const shipDropLoc = []
-    const grid = new Grid()
+    // const grid = new Grid()
 
     shipIcons.forEach(shipIcon => {      
         shipIcon.addEventListener('dblclick', () => {            
@@ -175,9 +174,10 @@ document.addEventListener("DOMContentLoaded", function () {
     renderGrid(hiddenGrid, 'hidden')
     renderGrid(revealedGrid, 'revealed')
     getSquares()
+
     makeShipsDraggable()  
     console.log(handleDomShips())
-
+console.log(newGame.revealedBoard.gridIndexTree())
  })
 
 

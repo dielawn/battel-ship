@@ -80,6 +80,7 @@ class Grid {
         this.yAxis = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
         this.xAxis = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
         this.grid = this.createGrid()
+        this.gridLinks = this.gridIndexTree()
     }
     createGrid() {
         const grid = []
@@ -89,7 +90,31 @@ class Grid {
                 grid.push([this.yAxis[i] + this.xAxis[j]])
             }
         }
+        
         return grid
+    }
+    gridIndexTree() {
+        const linkedGrid = []
+        const numRows = 10
+        const numCols = 10
+        for (let i = 0; i < 100; i++) {
+            const row = Math.floor(i / numCols)
+            const col = i % numCols
+            this.grid[i].left = col > 0 ? i - 1 : null
+            this.grid[i].up = row > 0 ? i - numCols : null
+            this.grid[i].right = col < numCols - 1 ? i + 1 : null
+            this.grid[i].down = row < numRows - 1 ? i + numCols : null
+            linkedGrid.push({
+
+                neighbors: {                    
+                    left: this.grid[i].left,
+                    up: this.grid[i].up,
+                    right: this.grid[i].right,
+                    down: this.grid[i].down
+                }
+            })
+        }
+        return linkedGrid
     }
     findCoords(index) {
         const grid = this.grid
