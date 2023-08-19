@@ -33,7 +33,7 @@
 }
 
 .ship-icon {
-    width: 100px;
+    width: 200px;
     z-index: 9;
 }
 .alphaDiv {
@@ -97,11 +97,6 @@
 .rotate {
     transform: rotate(90deg);
 }
-.rotate-button {
-    position: relative;    
-    display: none;
-}
-
 .ship-container:hover .rotate-button {
     cursor: pointer;
     display: block;

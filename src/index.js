@@ -121,16 +121,47 @@ document.addEventListener("DOMContentLoaded", function () {
     dragElement(destroyerIcon)
     dragElement(submarineIcon)
     dragElement(patrolIcon)
-    
-    const shipIcons = document.querySelectorAll('.ship-icon');
 
-    shipIcons.forEach(shipIcon => {
-        const rotateButton = shipIcon.nextElementSibling
-        rotateButton.addEventListener('click', () => {            
-            shipIcon.classList.toggle('rotate')
+    const handleDomShips = () => {
+        const shipIcons = document.querySelectorAll('.ship-icon')
+        let isDragging = false
+        let draggedShip = null
+        const shipDropLoc = []
+        shipIcons.forEach(shipIcon => {      
+            shipIcon.addEventListener('dblclick', () => {            
+                shipIcon.classList.toggle('rotate')
+            })
+            shipIcon.addEventListener('mousedown', (e) => {
+                console.log('down')
+                isDragging = true
+                draggedShip = shipIcon
+            })
+            shipIcon.addEventListener('mouseup', (e) => {
+                console.log('up')
+                if (isDragging && draggedShip === shipIcon) {
+                    isDragging = false
+                    draggedShip = null
+
+                    const gridCellSize = 50
+                    const shipBounds = shipIcon.getBoundingClientRect()
+                    const gridCellXStart = Math.floor(shipBounds.left / gridCellSize)
+                    const gridCellXEnd = Math.floor(shipBounds.right /gridCellSize)
+                    const gridCellYStart = Math.floor(shipBounds.top / gridCellSize)
+                    const gridCellYEnd = Math.floor(shipBounds.bottom / gridCellSize)
+
+                    for (let x = gridCellXStart; x <= gridCellXEnd; x++) {
+                        for (let y = gridCellYStart; y <= gridCellYEnd; y++) {
+                            shipDropLoc.push([x, y])
+                        }
+                    }
+                    return shipDropLoc
+                }
+                
+            })
         })
-    })
-})
+    }    
+console.log(handleDomShips())
+ })
 
 
 
