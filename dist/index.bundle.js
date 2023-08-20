@@ -472,32 +472,26 @@ function handleSquares() {
 }
 
 const placeHorizontalShip = (ship, dropCoord) => {
-    console.log(ship.name, dropCoord)
-    const  length = ship.length
-    console.log(length)
-    const index = getIndexFromName(ship.name)
-    console.log(index)
-    const firstHalf = Math.floor(length / 2)
+   
+    const  length = ship.length   
     const midIndex = Math.ceil(length / 2) - 1
-    console.log(midIndex)
-    console.log(ship.shipLocation)
     ship.shipLocation[midIndex] = dropCoord
 
-console.log(ship.shipLocation)
-//loop first half setting location in relation to the middle 
-// if middle is 'a3' index 0 = 'a1', index 1 = 'a2'
-console.log(firstHalf)
-for (let i = 0; i < firstHalf; i++) {
-    console.log(i)
+    for (let i = 0; i < length; i++) {
     let rowLetter = dropCoord[0]
-    console.log(rowLetter)
-    let colNum = parseInt(dropCoord[1]) - firstHalf + i
-   console.log(colNum)
+    let colNum = parseInt(dropCoord[1])  + i
     let prevCoords = rowLetter + colNum
-    console.log(prevCoords)
-    ship.shipLocation[i] = prevCoords
-    console.log(ship.shipLocation)
+    if (newGame.revealedBoard.isValid(prevCoords)) {
+        ship.shipLocation[i] = prevCoords
+    } else {
+        console.log(`invalid: ${prevCoords}`)
+        let adjustedColNum = colNum - length        
+        placeHorizontalShip(ship, rowLetter + adjustedColNum)
+        console.log(ship.shipLocation) 
+        // return `invalid: ${prevCoords}`
+    }
 }
+return 
 
 }
 
@@ -590,8 +584,11 @@ const renderShips = () => {
     
 }
 
-const testShip = newGame.player1.ships[3].ship
+const testShip1 = newGame.player1.ships[3].ship
 const testShip2 = newGame.player1.ships[0].ship
+const testShip3 = newGame.player1.ships[4].ship
+const testShip4 = newGame.player1.ships[2].ship
+const testShip5 = newGame.player1.ships[1].ship
 
 document.addEventListener("DOMContentLoaded", function () {
     
@@ -602,7 +599,11 @@ document.addEventListener("DOMContentLoaded", function () {
 renderShips()
 getIndexFromName('Carrier')
 
-placeHorizontalShip(testShip2, 'a3')    
+placeHorizontalShip(testShip1, 'a7')    
+placeHorizontalShip(testShip2, 'a9')
+placeHorizontalShip(testShip3, 'a7')
+placeHorizontalShip(testShip4, 'a7')
+placeHorizontalShip(testShip5, 'a7')
  })
 
 
