@@ -1,5 +1,6 @@
 import { isValid } from 'date-fns'
 import { Game, Grid} from './script'
+import { fi } from 'date-fns/locale'
 
 function createtGame() {
     return new Game()
@@ -87,12 +88,47 @@ function handleSquares() {
     })
 }
 
+const placeHorizontalShip = (ship, dropCoord) => {
+    console.log(ship.name, dropCoord)
+    const  length = ship.length
+    console.log(length)
+    const index = getIndexFromName(ship.name)
+    console.log(index)
+    const firstHalf = Math.floor(length / 2)
+    const midIndex = Math.ceil(length / 2) - 1
+    console.log(midIndex)
+    console.log(ship.shipLocation)
+    ship.shipLocation[midIndex] = dropCoord
+
+console.log(ship.shipLocation)
+//loop first half setting location in relation to the middle 
+// if middle is 'a3' index 0 = 'a1', index 1 = 'a2'
+console.log(firstHalf)
+for (let i = 0; i < firstHalf; i++) {
+    console.log(i)
+    let rowLetter = dropCoord[0]
+    console.log(rowLetter)
+    let colNum = parseInt(dropCoord[1]) - firstHalf + i
+   console.log(colNum)
+    let prevCoords = rowLetter + colNum
+    console.log(prevCoords)
+    ship.shipLocation[i] = prevCoords
+    console.log(ship.shipLocation)
+}
+
+}
+
+const placeVerticleShip = (ship) => {
+
+}
+
 const capFirstLetter = (inputString) => {
     const [firstLetter, ...rest] = inputString
     return `${firstLetter.toUpperCase()}${rest.join('')}`
 }
 
 function getIndexFromName(shipName) {
+    console.log(shipName)
     let upperCaseName = capFirstLetter(shipName)
     const ships = newGame.player1.ships
     for (let i = 0; i < ships.length; i++) {
@@ -171,7 +207,8 @@ const renderShips = () => {
     
 }
 
-
+const testShip = newGame.player1.ships[3].ship
+const testShip2 = newGame.player1.ships[0].ship
 
 document.addEventListener("DOMContentLoaded", function () {
     
@@ -182,7 +219,7 @@ document.addEventListener("DOMContentLoaded", function () {
 renderShips()
 getIndexFromName('Carrier')
 
-    
+placeHorizontalShip(testShip2, 'a3')    
  })
 
 
