@@ -114,6 +114,28 @@ class Grid {
         }
         return linkedGrid
     }
+    getCellTree(index) {
+        const linkedGrid = []
+        const numRows = 10
+        const numCols = 10
+
+        const row = Math.floor(index / numCols)
+        const col = index % numCols
+        
+        this.grid[index].left = col > 0 ? index - 1 : null
+        this.grid[index].up = row > 0 ? index - numCols : null
+        this.grid[index].right = col < numCols - 1 ? index + 1 : null
+        this.grid[index].down = row < numRows - 1 ? index + numCols : null
+        linkedGrid.push({                    
+            left: this.grid[index].left,
+            up: this.grid[index].up,
+            right: this.grid[index].right,
+            down: this.grid[index].down
+            })
+        
+        return linkedGrid
+
+    }
     gridCoordinatesTree() {
         const coordsTree = []
         
@@ -211,11 +233,10 @@ class Player {
         return playerShips
     }
     setShipLocation(shipsIndex, coordinatesArray) {
-        console.log(shipsIndex, coordinatesArray)
-       console.log(this.ships[shipsIndex].ship.shipLocation)
+       
       
        const ship = this.ships[shipsIndex].ship
-       console.log(ship.length)
+       
        const shipsCoords = []
        for (let i = 0; i < ship.length; i++) {
         ship.shipLocation[i] = coordinatesArray[i]        

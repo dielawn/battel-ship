@@ -1,3 +1,4 @@
+import { isValid } from 'date-fns'
 import { Game, Grid} from './script'
 
 function createtGame() {
@@ -54,6 +55,7 @@ function renderGrid(parent, parentTxt) {
 
 //add event listener to each square
 const shipDropLoc = []
+const resetDropLoc = () => shipDropLoc.length = 0
 
 function handleSquares() {
 
@@ -62,57 +64,38 @@ function handleSquares() {
     gridSquares.forEach(square => {
         const id = square.id;
         const number = id.match(/\d+/)[0];
-        const coords = getCoords(number)
+        const startCoords = getCoords(number)
+        const coords = startCoords
+        
         square.addEventListener('click', ()  => {
-            shipDropLoc.length = 0
+            resetDropLoc()
+            console.log(id)
             console.log(number)
             console.log(coords)
         })
         square.addEventListener('dragover', (e) => {
             e.preventDefault()
+           
         })
         square.addEventListener('drop', (e) => {
             e.preventDefault()
             console.log(coords)
             console.log(newGame.revealedBoard.isValid(coords))
-            if (newGame.revealedBoard.isValid(coords)) {
-                shipDropLoc.push(coords)
-                console.log(shipDropLoc)
-                // is ship horizontal or verticle
-               
-                if (shipDropLoc.length === 2 ) {
-                    
-                    //locate the rest of the ship from bow
-                    console.log(shipDropLoc[1])
-                    const coordsTree = newGame.revealedBoard.gridCoordinatesTree()
-                    console.log(coordsTree)
-                    const shipsCoords = []
-                    shipsCoords.push(shipDropLoc[1])
-
-                    //access ship location
-                    const shipIndex = getIndexFromName(shipDropLoc[0])
-                    newGame.player1.setShipLocation(shipIndex, coords)
-                    console.log(newGame.player1.ships)
-                }
-            }
+           
    
         })
     })
 }
 
 const capFirstLetter = (inputString) => {
-    console.log(inputString)
     const [firstLetter, ...rest] = inputString
     return `${firstLetter.toUpperCase()}${rest.join('')}`
 }
 
 function getIndexFromName(shipName) {
-    console.log(shipName)
     let upperCaseName = capFirstLetter(shipName)
     const ships = newGame.player1.ships
-    console.log(ships.length)
     for (let i = 0; i < ships.length; i++) {
-        console.log(ships[i].ship.name, upperCaseName)
        if (ships[i].ship.name === upperCaseName) {
         return i
        }
@@ -126,44 +109,12 @@ function getCoords(index) {
     return coords
 }
 
-//moveable ships
-const handleDomShips = () => {
 
-    const shipIcons = document.querySelectorAll('.ship-icon')
-    let isDragging = false
-    let draggedShip = null
-    
-    // const grid = new Grid()
-
-    shipIcons.forEach(shipIcon => {      
-        shipIcon.addEventListener('dblclick', () => {            
-            shipIcon.classList.toggle('rotate')
-            draggedShip = shipIcon
-           console.log(getIndexFromName(draggedShip.id))
-            console.log(draggedShip.id)
-        })
-        shipIcon.addEventListener('mousedown', (e) => {
-            console.log('down')
-            isDragging = true
-            draggedShip = shipIcon
-            shipDropLoc.push(draggedShip.id)
-            console.log(shipDropLoc)
-        })
-        shipIcon.addEventListener('mouseup', (e) => {
-            console.log('up')
-            console.log(isDragging, draggedShip, shipIcon)
-            if (isDragging && draggedShip === shipIcon) {
-                isDragging = false
-                console.log(draggedShip.id)
-                draggedShip = null
-            
-            }
-        })
-    })
-}  
-
-const placeShips = () => {
-    //for each player set each ships location
+function getSquareIndexFromEvent(e) {
+    const target = e.target
+    const id = target.id
+    const number = id.match(/\d+/)[0]
+    return parseInt(number)
 }
 
 const toggleHideElement = (element) => {
@@ -209,7 +160,7 @@ const renderShips = () => {
 ]
 
     for (let i = 0; i < shipImages.length; i++) {
-        console.log(p1Ships[i].ship.name)
+        
         const shipImage = document.createElement('img')
         shipImage.classList.add('ship-icon')
         shipImage.id = shipImages[i].id
@@ -228,13 +179,8 @@ document.addEventListener("DOMContentLoaded", function () {
     renderGrid(revealedGrid, 'revealed')
     handleSquares()
 
-
-
-
-console.log(newGame.revealedBoard.coordTree)
 renderShips()
-   handleDomShips()
-    getIndexFromName('Carrier')
+getIndexFromName('Carrier')
 
     
  })

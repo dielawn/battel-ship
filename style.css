@@ -36,7 +36,7 @@
 }
 
 .ship-icon {
-    
+    background-color: transparent;
     z-index: 9;
 }
 .alphaDiv {
@@ -81,6 +81,7 @@
     position: absolute;
     left: 400px;
     top: 700px;
+    background-color: none;
 }
 #carrier {
     width: 240px;
@@ -116,4 +117,7 @@
 }
 .hide {
     display: none;
+}
+.highlight {
+    background-color: rgba(000, 000, 000, .5);
 }
