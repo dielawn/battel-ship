@@ -163,6 +163,7 @@ class Ship {
     constructor(shipType) {
         this.ship = shipType
         this.hitPoints = this.ship.length
+        this.isHorizontal = true
         this.isSunk = false
     }
     hit() {
@@ -176,6 +177,14 @@ class Ship {
       }
       return this.hitPoints
     }    
+    switchOrientation() {
+        if (this.isHorizontal) {
+            this.isHorizontal = false
+            return 'verticle'
+        }
+        this.isHorizontal = true
+        return 'horizontal'
+    }
    
 }
 
@@ -189,11 +198,11 @@ class Player {
     }
     createShips() {
         const ships = [
-            { name: 'Carrier', length: 5, shipLocation: [0,0,0,0,0], isSunk: false, },//ship 0
-            { name: 'Battleship', length: 4, shipLocation: [0,0,0,0], isSunk: false, },  //ship 1
-            { name: 'Destroyer', length: 3, shipLocation: [0,0,0], isSunk: false, },  //ship 2
-            { name: 'Submarine', length: 3, shipLocation: [0,0,0], isSunk: false, },  //ship 3
-            { name: 'Patrol', length: 2, shipLocation: [0,0], isSunk: false, }  //ship 4
+            { name: 'Carrier', length: 5, shipLocation: [0,0,0,0,0], },     //ship 0
+            { name: 'Battleship', length: 4, shipLocation: [0,0,0,0], },    //ship 1
+            { name: 'Destroyer', length: 3, shipLocation: [0,0,0], },       //ship 2
+            { name: 'Submarine', length: 3, shipLocation: [0,0,0], },       //ship 3
+            { name: 'Patrol', length: 2, shipLocation: [0,0], }             //ship 4
         ]
         const playerShips = []
         for(const ship of ships) {
@@ -202,8 +211,11 @@ class Player {
         return playerShips
     }
     setShipLocation(shipsIndex, coordinatesArray) {
-       
+        console.log(shipsIndex, coordinatesArray)
+       console.log(this.ships[shipsIndex].ship.shipLocation)
+      
        const ship = this.ships[shipsIndex].ship
+       console.log(ship.length)
        const shipsCoords = []
        for (let i = 0; i < ship.length; i++) {
         ship.shipLocation[i] = coordinatesArray[i]        

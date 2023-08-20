@@ -1,24 +1,5 @@
-/*
- * ATTENTION: The "eval" devtool has been used (maybe by default in mode: "development").
- * This devtool is neither made for production nor for readable output files.
- * It uses "eval()" calls to create a separate source file in the browser devtools.
- * If you are trying to read the output file, select a different devtool (https://webpack.js.org/configuration/devtool/)
- * or disable the default devtool with "devtool: false".
- * If you are looking for production-ready output files, see mode: "production" (https://webpack.js.org/configuration/mode/).
- */
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
-
-/***/ "./src/index.js":
-/*!**********************!*\
-  !*** ./src/index.js ***!
-  \**********************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _script__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./script */ \"./src/script.js\");\n/* harmony import */ var _script__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_script__WEBPACK_IMPORTED_MODULE_0__);\n\n\nfunction createtGame() {\n    return new _script__WEBPACK_IMPORTED_MODULE_0__.Game()\n}\nconst newGame = createtGame()\nnewGame.startGame()\n\nconst containerDiv = document.getElementById('container')\nconst revealedGrid = document.getElementById('revealedGrid')\nconst hiddenGrid = document.getElementById('hiddenGrid')\n\nfunction labelGrid(alphaParent, numParent, parentTxt) {\n\n    const playerGrid = newGame.revealedBoard\n    const alphaCoords = playerGrid.yAxis\n    const numCoords = playerGrid.xAxis\n\n    for (let i = 0; i < 10; i++ ) {\n        const alphaSquare = document.createElement('div')\n        alphaSquare.id = `${parentTxt}gridSquare${i}`\n        alphaSquare.classList.add('alphaSquare')\n        alphaSquare.innerHTML = alphaCoords[i]\n        alphaParent.appendChild(alphaSquare)\n    }\n    for (let i = 0; i < 10; i++ ) {\n        const numSquare = document.createElement('div')\n        numSquare.id = `${parentTxt}gridSquare${i}`\n        numSquare.classList.add('numSquare')\n        numSquare.innerHTML = numCoords[i]\n        numParent.appendChild(numSquare)\n    }\n\n}\n\nfunction renderGrid(parent, parentTxt) {\n    const alphaDiv = document.createElement('div')\n    const numDiv = document.createElement('div')\n    alphaDiv.classList.add('alphaDiv')\n    numDiv.classList.add('numDiv')\n   \n\n    for (let i = 0; i < 100; i++) {\n       const gridSquare = document.createElement('div')\n       gridSquare.classList.add('gridSquare')\n       gridSquare.id = `${parentTxt}gridSquare${i}`      \n       parent.appendChild(gridSquare)\n    }\n\n    parent.appendChild(alphaDiv)\n    parent.appendChild(numDiv)\n    labelGrid(alphaDiv, numDiv, parentTxt)\n}\n\n//add event listener to each square\nfunction getSquares() {\n\n    const gridSquares = document.querySelectorAll('.gridSquare')\n\n    gridSquares.forEach(square => {\n        const id = square.id;\n        const number = id.match(/\\d+/)[0];\n        const coords = getCoords(number)\n        square.addEventListener('click', ()  => {\n            \n            console.log(number)\n            console.log(coords)\n        })\n        square.addEventListener('dragover', (e) => {\n            e.preventDefault()\n        })\n        square.addEventListener('drop', (e) => {\n            e.preventDefault()\n            console.log(coords)\n            if (newGame.grid.isValid(draggedData.coords)) {\n                \n                newGame.currentPlayer.occupiedCoordinates.push(coords)\n                    \n                console.log(newGame.currentPlayer.occupiedCoordinates)\n            }\n        })\n    })\n}\n\n\nfunction getCoords(index) {\n    \n    const coords = newGame.hiddenBoard.findCoords(index)\n    return coords\n}\n\n//moveable ships\nconst handleDomShips = () => {\n    const shipContainer = document.querySelectorAll('.ship-container')\n    const shipIcons = document.querySelectorAll('.ship-icon')\n    let isDragging = false\n    let draggedShip = null\n    const shipDropLoc = []\n    // const grid = new Grid()\n\n    shipIcons.forEach(shipIcon => {      \n        shipIcon.addEventListener('dblclick', () => {            \n            shipIcon.classList.toggle('rotate')\n        })\n        shipIcon.addEventListener('mousedown', (e) => {\n            console.log('down')\n            isDragging = true\n            draggedShip = shipIcon\n        })\n        shipIcon.addEventListener('dragstart', (e) => {\n            e.drataTransfer.setData('text/plain', JSON.stringify({ coords: getCoords(number)}))\n        })\n        shipIcon.addEventListener('mouseup', (e) => {\n            console.log('up')\n            console.log(isDragging, draggedShip, shipIcon)\n            if (isDragging && draggedShip === shipIcon) {\n                isDragging = false\n                draggedShip = null\n\n                const shipContainer = shipIcon.parentElement\n                console.log(shipContainer)\n\n            }\n        })\n    })\n}  \n\nconst makeShipsDraggable = () => {\n    const carrierIcon = document.getElementById('carrierIcon')\n    const battleshipIcon = document.getElementById('battleshipIcon')\n    const destroyerIcon = document.getElementById('destroyerIcon')\n    const submarineIcon = document.getElementById('submarineIcon')\n    const patrolIcon = document.getElementById('patrolIcon')\n    \n    function dragElement(element) {\n    let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;\n    element.onmousedown = dragMouseDown\n    \n    function dragMouseDown(e) {\n    e = e || window.event\n    e.preventDefault()\n    pos3 = e.clientX\n    pos4 = e.clientY\n    document.onmouseup = closeDragElement\n    document.onmousemove = elementDrag\n    }\n    \n    function elementDrag(e) {\n    e = e || window.event\n    e.preventDefault()\n    pos1 = pos3 - e.clientX\n    pos2 = pos4 - e.clientY\n    pos3 = e.clientX\n    pos4 = e.clientY\n    element.style.top = (element.offsetTop - pos2) + 'px'\n    element.style.left = (element.offsetLeft - pos1) + 'px'\n    }\n    \n    function closeDragElement() {\n    document.onmouseup = null\n    document.onmousemove = null\n    }\n    \n    }\n    dragElement(carrierIcon)\n    dragElement(battleshipIcon)\n    dragElement(destroyerIcon)\n    dragElement(submarineIcon)\n    dragElement(patrolIcon)\n}\n\ndocument.addEventListener(\"DOMContentLoaded\", function () {\n\n    renderGrid(hiddenGrid, 'hidden')\n    renderGrid(revealedGrid, 'revealed')\n    getSquares()\n\n    makeShipsDraggable()  \n    console.log(handleDomShips())\nconsole.log(newGame.revealedBoard.coordTree)\n })\n\n\n\n\n\n//# sourceURL=webpack://battle-ship/./src/index.js?");
-
-/***/ }),
 
 /***/ "./src/script.js":
 /*!***********************!*\
@@ -26,7 +7,278 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _scr
   \***********************/
 /***/ ((module) => {
 
-eval("\nclass Game {\n    constructor() {\n        this.player1 = new Player('player1')\n        this.player2 = new Player('player2')        \n        this.currentPlayer = null\n        this.otherPlayer = null\n        this.revealedBoard = new Grid()        \n        this.hiddenBoard = new Grid()\n        this.gameOver = false\n    }\n   startGame() {\n        // start new game\n        this.setPlayer()\n        //if ships locations are not set, set them\n        // for (let i = 0; i < 5; i ++) {\n        //     this.currentPlayer.setShipLocation(i, promptPlayer())\n        //     this.otherPlayer.setShipLocation(i, promptPlayer())\n        // }\n        if (!this.gameOver) {\n           this.playRound()            \n        }\n    } \n    // promptPlayer() {\n\n    // }\n    playRound() {\n\n        //prompt for coords\n        this.currentPlayer.fire(hitCoords)\n        this.isHit(hitCoords)\n        this.setPlayer()\n    }\n    setPlayer() {\n        //select starting player and change player turn at end of previous turn\n\n        if (this.currentPlayer === null) {\n            this.currentPlayer = this.player1 \n            this.otherPlayer = this.player2        \n            return this.player1\n        } else if (this.currentPlayer === this.player2) {\n            this.currentPlayer = this.player1\n            this.otherPlayer = this.player2\n            return this.player1 \n        }\n        this.currentPlayer = this.player2\n        this.otherPlayer = this.player1\n        return this.player2\n    }\n    isHit(coords) {\n        let coordinates = this.otherPlayer.occupiedCoordinates\n        for (let i = 0; i < coordinates.length; i++) {\n            for (let j = 0; j < coordinates[i].length; j++) {\n                if (coords === coordinates[i][j].location) {\n                    if (!coordinates[i][j].isHit) {\n                        this.otherPlayer.ships[i].hit()\n                        coordinates[i][j].isHit = true\n                        return true\n                    }\n                }\n            }\n        }\n        return false\n    }\n    isGameOver() {\n        //if otherplayer .ships[i].isSunk game is over\n        for (let i = 0; i < this.otherPlayer.ships.length; i++) {\n            if (this.otherPlayer.ships[i].isSunk === true) {\n              return  this.gameOver = true\n\n            }\n        }\n      return  this.gameOver = false\n    }\n}\n\n\nclass Grid {\n    constructor() {\n        this.yAxis = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']\n        this.xAxis = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']\n        this.grid = this.createGrid()\n        this.indexTree = this.gridIndexTree()\n        this.coordTree = this.gridCoordinatesTree()\n    }\n    createGrid() {\n        const grid = []\n\n        for (let i = 0; i < this.yAxis.length; i++) {\n            for (let j = 0; j < this.xAxis.length; j++) {\n                grid.push([this.yAxis[i] + this.xAxis[j]])\n            }\n        }\n        \n        return grid\n    }\n    gridIndexTree() {\n        const linkedGrid = []\n        const numRows = 10\n        const numCols = 10\n        for (let i = 0; i < 100; i++) {\n            const row = Math.floor(i / numCols)\n            const col = i % numCols\n            this.grid[i].left = col > 0 ? i - 1 : null\n            this.grid[i].up = row > 0 ? i - numCols : null\n            this.grid[i].right = col < numCols - 1 ? i + 1 : null\n            this.grid[i].down = row < numRows - 1 ? i + numCols : null\n            linkedGrid.push({                    \n                    left: this.grid[i].left,\n                    up: this.grid[i].up,\n                    right: this.grid[i].right,\n                    down: this.grid[i].down\n                })\n        }\n        return linkedGrid\n    }\n    gridCoordinatesTree() {\n        const coordsTree = []\n        \n        for (const index in this.indexTree) {\n\n            const node = this.indexTree[index]\n            const leftIndex = node.left\n            const upIndex = node.up\n            const rightIndex = node.right\n            const downIndex = node.down\n\n            const coords = {\n                left: leftIndex !== null ? this.findCoords(leftIndex) : null,\n                up: upIndex !== null ? this.findCoords(upIndex) : null,\n                right: rightIndex !== null ? this.findCoords(rightIndex) : null,\n                down: downIndex !== null ? this.findCoords(downIndex) : null\n            }\n\n            coordsTree.push(coords)\n            \n        }\n        return coordsTree       \n    }\n    findCoords(index) {\n        const grid = this.grid\n       if (index >= 0 && index < grid.length) {        \n        return grid[index][0]\n       }\n       return 'Invalid index'\n    }\n    findIndex(x, y) {\n        const grid = this.grid\n        for (let i = 0; i < grid.length; i++) {\n            if (grid[i][0] === x && grid[i][1] === y) {\n             return grid[i]\n            }\n        }\n        return 'Target not found'\n    }\n    isValid(x, y) {\n        return this.grid.some(element => element[0] === x && element[1] === y)\n    }\n    \n} \n\nclass Ship {\n    constructor(shipType) {\n        this.ship = shipType\n        this.hitPoints = this.ship.length\n        this.isSunk = false\n    }\n    hit() {\n        if(this.isSunk === true) {\n            return\n        }\n        this.hitPoints -= 1\n        if (this.hitPoints <= 0) {\n        this.isSunk = true\n        console.log(`You sunk my ${this.ship.name}!`)\n      }\n      return this.hitPoints\n    }    \n   \n}\n\nclass Player {\n    constructor(name, ) {\n        this.name = name        \n        this.occupiedCoordinates = []\n        this.choosenCoordinates = []        \n        this.ships = this.createShips()\n        \n    }\n    createShips() {\n        const ships = [\n            { name: 'Carrier', length: 5, shipLocation: [0,0,0,0,0], isSunk: false, },//ship 0\n            { name: 'Battleship', length: 4, shipLocation: [0,0,0,0], isSunk: false, },  //ship 1\n            { name: 'Destroyer', length: 3, shipLocation: [0,0,0], isSunk: false, },  //ship 2\n            { name: 'Submarine', length: 3, shipLocation: [0,0,0], isSunk: false, },  //ship 3\n            { name: 'Patrol', length: 2, shipLocation: [0,0], isSunk: false, }  //ship 4\n        ]\n        const playerShips = []\n        for(const ship of ships) {\n            playerShips.push(new Ship(ship))\n        }\n        return playerShips\n    }\n    setShipLocation(shipsIndex, coordinatesArray) {\n       \n       const ship = this.ships[shipsIndex].ship\n       const shipsCoords = []\n       for (let i = 0; i < ship.length; i++) {\n        ship.shipLocation[i] = coordinatesArray[i]        \n        shipsCoords.push( {\n                player: this.name,\n                ship: ship.name, \n                location: ship.shipLocation[i], \n                isHit: false\n            })\n       }\n       this.occupiedCoordinates.push(shipsCoords)\n       return shipsCoords\n    }\n    fire(coords) {\n        for (let i = 0; i < this.choosenCoordinates.length; i++) {\n            if( coords === this.choosenCoordinates[i]) \n            return 'coordinates already been fired at'\n        } \n        const selected = []\n        selected.push(coords)\n        this.choosenCoordinates.push(selected)    \n        return 'shot fired'\n        } \n       \n    }\n\n\n\n\nconst newGame = new Game()\nconst carrierCoord = ['a1', 'a2', 'a3', 'a4', 'a5']\nconst battleshipCoord = ['b2', 'b3', 'b4', 'b5']\nconst destroyerCoord = ['c3', 'c4', 'c5']\nconst submarineCoord = ['d3', 'e3', 'f3']\nconst patrolCoord = ['f5', 'h5']\nconst hitCoords = 'a2'\n\nnewGame.player1.setShipLocation(0, carrierCoord)\nnewGame.player1.setShipLocation(1, battleshipCoord)\nnewGame.player1.setShipLocation(2, destroyerCoord)\nnewGame.player1.setShipLocation(3, submarineCoord)\nnewGame.player1.setShipLocation(4, patrolCoord)\n\nnewGame.player2.setShipLocation(0, carrierCoord)\nnewGame.player2.setShipLocation(1, battleshipCoord)\nnewGame.player2.setShipLocation(2, destroyerCoord)\nnewGame.player2.setShipLocation(3, submarineCoord)\nnewGame.player2.setShipLocation(4, patrolCoord)\nmodule.exports = {\n    Grid,\n    Player,\n    Ship,\n    Game,\n}\n\n//# sourceURL=webpack://battle-ship/./src/script.js?");
+
+class Game {
+    constructor() {
+        this.player1 = new Player('player1')
+        this.player2 = new Player('player2')        
+        this.currentPlayer = null
+        this.otherPlayer = null
+        this.revealedBoard = new Grid()        
+        this.hiddenBoard = new Grid()
+        this.gameOver = false
+    }
+   startGame() {
+        // start new game
+        this.setPlayer()
+        //if ships locations are not set, set them
+        // for (let i = 0; i < 5; i ++) {
+        //     this.currentPlayer.setShipLocation(i, promptPlayer())
+        //     this.otherPlayer.setShipLocation(i, promptPlayer())
+        // }
+        if (!this.gameOver) {
+           this.playRound()            
+        }
+    } 
+    // promptPlayer() {
+
+    // }
+    playRound() {
+
+        //prompt for coords
+        this.currentPlayer.fire(hitCoords)
+        this.isHit(hitCoords)
+        this.setPlayer()
+    }
+    setPlayer() {
+        //select starting player and change player turn at end of previous turn
+
+        if (this.currentPlayer === null) {
+            this.currentPlayer = this.player1 
+            this.otherPlayer = this.player2        
+            return this.player1
+        } else if (this.currentPlayer === this.player2) {
+            this.currentPlayer = this.player1
+            this.otherPlayer = this.player2
+            return this.player1 
+        }
+        this.currentPlayer = this.player2
+        this.otherPlayer = this.player1
+        return this.player2
+    }
+    isHit(coords) {
+        let coordinates = this.otherPlayer.occupiedCoordinates
+        for (let i = 0; i < coordinates.length; i++) {
+            for (let j = 0; j < coordinates[i].length; j++) {
+                if (coords === coordinates[i][j].location) {
+                    if (!coordinates[i][j].isHit) {
+                        this.otherPlayer.ships[i].hit()
+                        coordinates[i][j].isHit = true
+                        return true
+                    }
+                }
+            }
+        }
+        return false
+    }
+    isGameOver() {
+        //if otherplayer .ships[i].isSunk game is over
+        for (let i = 0; i < this.otherPlayer.ships.length; i++) {
+            if (this.otherPlayer.ships[i].isSunk === true) {
+              return  this.gameOver = true
+
+            }
+        }
+      return  this.gameOver = false
+    }
+}
+
+
+class Grid {
+    constructor() {
+        this.yAxis = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
+        this.xAxis = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
+        this.grid = this.createGrid()
+        this.indexTree = this.gridIndexTree()
+        this.coordTree = this.gridCoordinatesTree()
+    }
+    createGrid() {
+        const grid = []
+
+        for (let i = 0; i < this.yAxis.length; i++) {
+            for (let j = 0; j < this.xAxis.length; j++) {
+                grid.push([this.yAxis[i] + this.xAxis[j]])
+            }
+        }
+        
+        return grid
+    }
+    gridIndexTree() {
+        const linkedGrid = []
+        const numRows = 10
+        const numCols = 10
+        for (let i = 0; i < 100; i++) {
+            const row = Math.floor(i / numCols)
+            const col = i % numCols
+            this.grid[i].left = col > 0 ? i - 1 : null
+            this.grid[i].up = row > 0 ? i - numCols : null
+            this.grid[i].right = col < numCols - 1 ? i + 1 : null
+            this.grid[i].down = row < numRows - 1 ? i + numCols : null
+            linkedGrid.push({                    
+                    left: this.grid[i].left,
+                    up: this.grid[i].up,
+                    right: this.grid[i].right,
+                    down: this.grid[i].down
+                })
+        }
+        return linkedGrid
+    }
+    gridCoordinatesTree() {
+        const coordsTree = []
+        
+        for (const index in this.indexTree) {
+
+            const node = this.indexTree[index]
+            const leftIndex = node.left
+            const upIndex = node.up
+            const rightIndex = node.right
+            const downIndex = node.down
+
+            const coords = {
+                left: leftIndex !== null ? this.findCoords(leftIndex) : null,
+                up: upIndex !== null ? this.findCoords(upIndex) : null,
+                right: rightIndex !== null ? this.findCoords(rightIndex) : null,
+                down: downIndex !== null ? this.findCoords(downIndex) : null
+            }
+
+            coordsTree.push(coords)
+            
+        }
+        return coordsTree       
+    }
+    findCoords(index) {
+        const grid = this.grid
+       if (index >= 0 && index < grid.length) {        
+        return grid[index][0]
+       }
+       return 'Invalid index'
+    }
+    findIndex(x, y) {
+        const grid = this.grid
+        for (let i = 0; i < grid.length; i++) {
+            if (grid[i][0] === x && grid[i][1] === y) {
+             return grid[i]
+            }
+        }
+        return 'Target not found'
+    }
+    isValid(x, y) {
+        return this.grid.some(element => element[0] === x && element[1] === y)
+    }
+    
+} 
+
+class Ship {
+    constructor(shipType) {
+        this.ship = shipType
+        this.hitPoints = this.ship.length
+        this.isHorizontal = true
+        this.isSunk = false
+    }
+    hit() {
+        if(this.isSunk === true) {
+            return
+        }
+        this.hitPoints -= 1
+        if (this.hitPoints <= 0) {
+        this.isSunk = true
+        console.log(`You sunk my ${this.ship.name}!`)
+      }
+      return this.hitPoints
+    }    
+    switchOrientation() {
+        if (this.isHorizontal) {
+            this.isHorizontal = false
+            return 'verticle'
+        }
+        this.isHorizontal = true
+        return 'horizontal'
+    }
+   
+}
+
+class Player {
+    constructor(name, ) {
+        this.name = name        
+        this.occupiedCoordinates = []
+        this.choosenCoordinates = []        
+        this.ships = this.createShips()
+        
+    }
+    createShips() {
+        const ships = [
+            { name: 'Carrier', length: 5, shipLocation: [0,0,0,0,0], },     //ship 0
+            { name: 'Battleship', length: 4, shipLocation: [0,0,0,0], },    //ship 1
+            { name: 'Destroyer', length: 3, shipLocation: [0,0,0], },       //ship 2
+            { name: 'Submarine', length: 3, shipLocation: [0,0,0], },       //ship 3
+            { name: 'Patrol', length: 2, shipLocation: [0,0], }             //ship 4
+        ]
+        const playerShips = []
+        for(const ship of ships) {
+            playerShips.push(new Ship(ship))
+        }
+        return playerShips
+    }
+    setShipLocation(shipsIndex, coordinatesArray) {
+        console.log(shipsIndex, coordinatesArray)
+       console.log(this.ships[shipsIndex].ship.shipLocation)
+      
+       const ship = this.ships[shipsIndex].ship
+       console.log(ship.length)
+       const shipsCoords = []
+       for (let i = 0; i < ship.length; i++) {
+        ship.shipLocation[i] = coordinatesArray[i]        
+        shipsCoords.push( {
+                player: this.name,
+                ship: ship.name, 
+                location: ship.shipLocation[i], 
+                isHit: false
+            })
+       }
+       this.occupiedCoordinates.push(shipsCoords)
+       return shipsCoords
+    }
+    fire(coords) {
+        for (let i = 0; i < this.choosenCoordinates.length; i++) {
+            if( coords === this.choosenCoordinates[i]) 
+            return 'coordinates already been fired at'
+        } 
+        const selected = []
+        selected.push(coords)
+        this.choosenCoordinates.push(selected)    
+        return 'shot fired'
+        } 
+       
+    }
+
+
+
+
+const newGame = new Game()
+const carrierCoord = ['a1', 'a2', 'a3', 'a4', 'a5']
+const battleshipCoord = ['b2', 'b3', 'b4', 'b5']
+const destroyerCoord = ['c3', 'c4', 'c5']
+const submarineCoord = ['d3', 'e3', 'f3']
+const patrolCoord = ['f5', 'h5']
+const hitCoords = 'a2'
+
+newGame.player1.setShipLocation(0, carrierCoord)
+newGame.player1.setShipLocation(1, battleshipCoord)
+newGame.player1.setShipLocation(2, destroyerCoord)
+newGame.player1.setShipLocation(3, submarineCoord)
+newGame.player1.setShipLocation(4, patrolCoord)
+
+newGame.player2.setShipLocation(0, carrierCoord)
+newGame.player2.setShipLocation(1, battleshipCoord)
+newGame.player2.setShipLocation(2, destroyerCoord)
+newGame.player2.setShipLocation(3, submarineCoord)
+newGame.player2.setShipLocation(4, patrolCoord)
+module.exports = {
+    Grid,
+    Player,
+    Ship,
+    Game,
+}
 
 /***/ })
 
@@ -98,11 +350,261 @@ eval("\nclass Game {\n    constructor() {\n        this.player1 = new Player('pl
 /******/ 	})();
 /******/ 	
 /************************************************************************/
-/******/ 	
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	// This entry module can't be inlined because the eval devtool is used.
-/******/ 	var __webpack_exports__ = __webpack_require__("./src/index.js");
-/******/ 	
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+(() => {
+"use strict";
+/*!**********************!*\
+  !*** ./src/index.js ***!
+  \**********************/
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _script__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./script */ "./src/script.js");
+/* harmony import */ var _script__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_script__WEBPACK_IMPORTED_MODULE_0__);
+
+
+function createtGame() {
+    return new _script__WEBPACK_IMPORTED_MODULE_0__.Game()
+}
+const newGame = createtGame()
+newGame.startGame()
+
+const containerDiv = document.getElementById('container')
+const revealedGrid = document.getElementById('revealedGrid')
+const hiddenGrid = document.getElementById('hiddenGrid')
+
+function labelGrid(alphaParent, numParent, parentTxt) {
+
+    const playerGrid = newGame.revealedBoard
+    const alphaCoords = playerGrid.yAxis
+    const numCoords = playerGrid.xAxis
+
+    for (let i = 0; i < 10; i++ ) {
+        const alphaSquare = document.createElement('div')
+        alphaSquare.id = `${parentTxt}gridSquare${i}`
+        alphaSquare.classList.add('alphaSquare')
+        alphaSquare.innerHTML = alphaCoords[i]
+        alphaParent.appendChild(alphaSquare)
+    }
+    for (let i = 0; i < 10; i++ ) {
+        const numSquare = document.createElement('div')
+        numSquare.id = `${parentTxt}gridSquare${i}`
+        numSquare.classList.add('numSquare')
+        numSquare.innerHTML = numCoords[i]
+        numParent.appendChild(numSquare)
+    }
+
+}
+
+function renderGrid(parent, parentTxt) {
+    const alphaDiv = document.createElement('div')
+    const numDiv = document.createElement('div')
+    alphaDiv.classList.add('alphaDiv')
+    numDiv.classList.add('numDiv')
+   
+
+    for (let i = 0; i < 100; i++) {
+       const gridSquare = document.createElement('div')
+       gridSquare.classList.add('gridSquare')
+       gridSquare.id = `${parentTxt}gridSquare${i}`      
+       parent.appendChild(gridSquare)
+    }
+
+    parent.appendChild(alphaDiv)
+    parent.appendChild(numDiv)
+    labelGrid(alphaDiv, numDiv, parentTxt)
+}
+
+//add event listener to each square
+const shipDropLoc = []
+
+function handleSquares() {
+
+    const gridSquares = document.querySelectorAll('.gridSquare')
+
+    gridSquares.forEach(square => {
+        const id = square.id;
+        const number = id.match(/\d+/)[0];
+        const coords = getCoords(number)
+        square.addEventListener('click', ()  => {
+            
+            console.log(number)
+            console.log(coords)
+        })
+        square.addEventListener('dragover', (e) => {
+            e.preventDefault()
+        })
+        square.addEventListener('drop', (e) => {
+            e.preventDefault()
+            console.log(coords)
+            console.log(newGame.revealedBoard.isValid(coords))
+            if (newGame.revealedBoard.isValid(coords)) {
+                shipDropLoc.push(coords)
+                console.log(shipDropLoc)
+                // is ship horizontal or verticle
+               
+                if (shipDropLoc.length === 2 ) {
+                    
+                    //locate the rest of the ship from bow
+                    console.log(shipDropLoc[1])
+                    const coordsTree = newGame.revealedBoard.gridCoordinatesTree()
+                    console.log(coordsTree)
+                    const shipsCoords = []
+                    shipsCoords.push(shipDropLoc[1])
+
+                    //access ship location
+                    const shipIndex = getIndexFromName(shipDropLoc[0])
+                    newGame.player1.setShipLocation(shipIndex, coords)
+                    console.log(newGame.player1.ships)
+                }
+            }
+   
+        })
+    })
+}
+
+const capFirstLetter = (inputString) => {
+    const [firstLetter, ...rest] = inputString
+    return `${firstLetter.toUpperCase()}${rest.join('')}`
+}
+
+function getIndexFromName(shipName) {
+    console.log(shipName)
+    let upperCaseName = capFirstLetter(shipName)
+    const ships = newGame.player1.ships
+    console.log(ships.length)
+    for (let i = 0; i < ships.length; i++) {
+        console.log(ships[i].ship.name, upperCaseName)
+       if (ships[i].ship.name === upperCaseName) {
+        return i
+       }
+    }
+   
+}
+
+function getCoords(index) {
+    
+    const coords = newGame.hiddenBoard.findCoords(index)
+    return coords
+}
+
+//moveable ships
+const handleDomShips = () => {
+
+    const shipIcons = document.querySelectorAll('.ship-icon')
+    let isDragging = false
+    let draggedShip = null
+    
+    // const grid = new Grid()
+
+    shipIcons.forEach(shipIcon => {      
+        shipIcon.addEventListener('dblclick', () => {            
+            shipIcon.classList.toggle('rotate')
+            
+           console.log(getIndexFromName(draggedShip.id))
+            console.log(draggedShip.id)
+        })
+        shipIcon.addEventListener('mousedown', (e) => {
+            console.log('down')
+            isDragging = true
+            draggedShip = shipIcon
+            shipDropLoc.push(draggedShip.id)
+            console.log(shipDropLoc)
+        })
+        shipIcon.addEventListener('mouseup', (e) => {
+            console.log('up')
+            console.log(isDragging, draggedShip, shipIcon)
+            if (isDragging && draggedShip === shipIcon) {
+                isDragging = false
+                console.log(draggedShip.id)
+                draggedShip = null
+            
+            }
+        })
+    })
+}  
+
+const placeShips = () => {
+    //for each player set each ships location
+}
+
+const toggleHideElement = (element) => {
+    element.classList.toggle('hide')
+}
+const hideAllShips = () => {
+   const shipContainers = document.querySelectorAll('.ship-container')
+   for (const container of shipContainers) {
+    container.classList.add('hide')
+   }
+}
+
+const renderShips = () => {
+    const p1Ships = newGame.player1.ships
+    const p2Ships = newGame.player2.ships
+
+    const shipImages = [
+        {
+            id: 'carrier', 
+            src: "images/carrier.png",
+            alt: "carrier-icon"
+        },
+        {
+            id: 'battleShip', 
+            src: "images/battleship.png",
+            alt: "battleship-icon"
+        },
+        {
+            id: 'destroyer', 
+            src: "images/destroyer.png",
+            alt: "destroyer-icon"
+        },
+        {
+            id: 'submarine', 
+            src: "images/carrier.png",
+            alt: "submarine-icon"
+        },
+        {
+            id: 'patrol', 
+            src: "images/submarine.png",
+            alt: "patrol-icon"
+        }
+]
+
+    for (let i = 0; i < shipImages.length; i++) {
+        console.log(p1Ships[i].ship.name)
+        const shipImage = document.createElement('img')
+        shipImage.classList.add('ship-icon')
+        shipImage.id = shipImages[i].id
+        shipImage.src = shipImages[i].src
+        shipImages.alt = shipImages[i].alt
+        revealedGrid.appendChild(shipImage)
+    }
+    
+}
+
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    
+    renderGrid(hiddenGrid, 'hidden')
+    renderGrid(revealedGrid, 'revealed')
+    handleSquares()
+
+
+
+
+console.log(newGame.revealedBoard.coordTree)
+renderShips()
+   handleDomShips()
+    getIndexFromName('Carrier')
+
+    
+ })
+
+
+
+
+})();
+
 /******/ })()
 ;
+//# sourceMappingURL=index.bundle.js.map

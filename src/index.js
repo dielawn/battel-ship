@@ -53,7 +53,9 @@ function renderGrid(parent, parentTxt) {
 }
 
 //add event listener to each square
-function getSquares() {
+const shipDropLoc = []
+
+function handleSquares() {
 
     const gridSquares = document.querySelectorAll('.gridSquare')
 
@@ -72,16 +74,50 @@ function getSquares() {
         square.addEventListener('drop', (e) => {
             e.preventDefault()
             console.log(coords)
-            if (newGame.grid.isValid(draggedData.coords)) {
-                
-                newGame.currentPlayer.occupiedCoordinates.push(coords)
+            console.log(newGame.revealedBoard.isValid(coords))
+            if (newGame.revealedBoard.isValid(coords)) {
+                shipDropLoc.push(coords)
+                console.log(shipDropLoc)
+                // is ship horizontal or verticle
+               
+                if (shipDropLoc.length === 2 ) {
                     
-                console.log(newGame.currentPlayer.occupiedCoordinates)
+                    //locate the rest of the ship from bow
+                    console.log(shipDropLoc[1])
+                    const coordsTree = newGame.revealedBoard.gridCoordinatesTree()
+                    console.log(coordsTree)
+                    const shipsCoords = []
+                    shipsCoords.push(shipDropLoc[1])
+
+                    //access ship location
+                    const shipIndex = getIndexFromName(shipDropLoc[0])
+                    newGame.player1.setShipLocation(shipIndex, coords)
+                    console.log(newGame.player1.ships)
+                }
             }
+   
         })
     })
 }
 
+const capFirstLetter = (inputString) => {
+    const [firstLetter, ...rest] = inputString
+    return `${firstLetter.toUpperCase()}${rest.join('')}`
+}
+
+function getIndexFromName(shipName) {
+    console.log(shipName)
+    let upperCaseName = capFirstLetter(shipName)
+    const ships = newGame.player1.ships
+    console.log(ships.length)
+    for (let i = 0; i < ships.length; i++) {
+        console.log(ships[i].ship.name, upperCaseName)
+       if (ships[i].ship.name === upperCaseName) {
+        return i
+       }
+    }
+   
+}
 
 function getCoords(index) {
     
@@ -91,93 +127,115 @@ function getCoords(index) {
 
 //moveable ships
 const handleDomShips = () => {
-    const shipContainer = document.querySelectorAll('.ship-container')
+
     const shipIcons = document.querySelectorAll('.ship-icon')
     let isDragging = false
     let draggedShip = null
-    const shipDropLoc = []
+    
     // const grid = new Grid()
 
     shipIcons.forEach(shipIcon => {      
         shipIcon.addEventListener('dblclick', () => {            
             shipIcon.classList.toggle('rotate')
+            
+           console.log(getIndexFromName(draggedShip.id))
+            console.log(draggedShip.id)
         })
         shipIcon.addEventListener('mousedown', (e) => {
             console.log('down')
             isDragging = true
             draggedShip = shipIcon
-        })
-        shipIcon.addEventListener('dragstart', (e) => {
-            e.drataTransfer.setData('text/plain', JSON.stringify({ coords: getCoords(number)}))
+            shipDropLoc.push(draggedShip.id)
+            console.log(shipDropLoc)
         })
         shipIcon.addEventListener('mouseup', (e) => {
             console.log('up')
             console.log(isDragging, draggedShip, shipIcon)
             if (isDragging && draggedShip === shipIcon) {
                 isDragging = false
+                console.log(draggedShip.id)
                 draggedShip = null
-
-                const shipContainer = shipIcon.parentElement
-                console.log(shipContainer)
-
+            
             }
         })
     })
 }  
 
-const makeShipsDraggable = () => {
-    const carrierIcon = document.getElementById('carrierIcon')
-    const battleshipIcon = document.getElementById('battleshipIcon')
-    const destroyerIcon = document.getElementById('destroyerIcon')
-    const submarineIcon = document.getElementById('submarineIcon')
-    const patrolIcon = document.getElementById('patrolIcon')
-    
-    function dragElement(element) {
-    let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-    element.onmousedown = dragMouseDown
-    
-    function dragMouseDown(e) {
-    e = e || window.event
-    e.preventDefault()
-    pos3 = e.clientX
-    pos4 = e.clientY
-    document.onmouseup = closeDragElement
-    document.onmousemove = elementDrag
-    }
-    
-    function elementDrag(e) {
-    e = e || window.event
-    e.preventDefault()
-    pos1 = pos3 - e.clientX
-    pos2 = pos4 - e.clientY
-    pos3 = e.clientX
-    pos4 = e.clientY
-    element.style.top = (element.offsetTop - pos2) + 'px'
-    element.style.left = (element.offsetLeft - pos1) + 'px'
-    }
-    
-    function closeDragElement() {
-    document.onmouseup = null
-    document.onmousemove = null
-    }
-    
-    }
-    dragElement(carrierIcon)
-    dragElement(battleshipIcon)
-    dragElement(destroyerIcon)
-    dragElement(submarineIcon)
-    dragElement(patrolIcon)
+const placeShips = () => {
+    //for each player set each ships location
 }
 
-document.addEventListener("DOMContentLoaded", function () {
+const toggleHideElement = (element) => {
+    element.classList.toggle('hide')
+}
+const hideAllShips = () => {
+   const shipContainers = document.querySelectorAll('.ship-container')
+   for (const container of shipContainers) {
+    container.classList.add('hide')
+   }
+}
 
+const renderShips = () => {
+    const p1Ships = newGame.player1.ships
+    const p2Ships = newGame.player2.ships
+
+    const shipImages = [
+        {
+            id: 'carrier', 
+            src: "images/carrier.png",
+            alt: "carrier-icon"
+        },
+        {
+            id: 'battleShip', 
+            src: "images/battleship.png",
+            alt: "battleship-icon"
+        },
+        {
+            id: 'destroyer', 
+            src: "images/destroyer.png",
+            alt: "destroyer-icon"
+        },
+        {
+            id: 'submarine', 
+            src: "images/carrier.png",
+            alt: "submarine-icon"
+        },
+        {
+            id: 'patrol', 
+            src: "images/submarine.png",
+            alt: "patrol-icon"
+        }
+]
+
+    for (let i = 0; i < shipImages.length; i++) {
+        console.log(p1Ships[i].ship.name)
+        const shipImage = document.createElement('img')
+        shipImage.classList.add('ship-icon')
+        shipImage.id = shipImages[i].id
+        shipImage.src = shipImages[i].src
+        shipImages.alt = shipImages[i].alt
+        revealedGrid.appendChild(shipImage)
+    }
+    
+}
+
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    
     renderGrid(hiddenGrid, 'hidden')
     renderGrid(revealedGrid, 'revealed')
-    getSquares()
+    handleSquares()
 
-    makeShipsDraggable()  
-    console.log(handleDomShips())
+
+
+
 console.log(newGame.revealedBoard.coordTree)
+renderShips()
+   handleDomShips()
+    getIndexFromName('Carrier')
+
+    
  })
 
 
