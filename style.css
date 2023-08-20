@@ -36,7 +36,7 @@
 }
 
 .ship-icon {
-    width: 200px;
+    
     z-index: 9;
 }
 .alphaDiv {
@@ -76,26 +76,37 @@
     grid-row: 1 / 1;
     grid-column: 1 / 4;
 }
-#battleshipIcon {
+#battleship {
+    width: 240px;
     position: absolute;
-    left: 550px;
+    left: 400px;
+    top: 700px;
+}
+#carrier {
+    width: 240px;
+    position: absolute;
+    left: 400px;
     top: 750px;
 }
-#destroyerIcon {
+#destroyer {
+    width: 140px;
     position: absolute;
-    left: 550px;
+    left: 400px;
     top: 800px;
 }
-#submarineIcon {
+#submarine {
+    width: 140px;
     position: absolute;
-    left: 550px;
+    left: 400px;
     top: 850px;
 }
-#patrolIcon {
+#patrol {
+    width: 90px;
     position: absolute;
-    left: 550px;
+    left: 400px;
     top: 900px;
 }
+
 .rotate {
     transform: rotate(90deg);
 }

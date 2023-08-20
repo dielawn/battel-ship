@@ -64,7 +64,7 @@ function handleSquares() {
         const number = id.match(/\d+/)[0];
         const coords = getCoords(number)
         square.addEventListener('click', ()  => {
-            
+            shipDropLoc.length = 0
             console.log(number)
             console.log(coords)
         })
@@ -101,6 +101,7 @@ function handleSquares() {
 }
 
 const capFirstLetter = (inputString) => {
+    console.log(inputString)
     const [firstLetter, ...rest] = inputString
     return `${firstLetter.toUpperCase()}${rest.join('')}`
 }
@@ -137,7 +138,7 @@ const handleDomShips = () => {
     shipIcons.forEach(shipIcon => {      
         shipIcon.addEventListener('dblclick', () => {            
             shipIcon.classList.toggle('rotate')
-            
+            draggedShip = shipIcon
            console.log(getIndexFromName(draggedShip.id))
             console.log(draggedShip.id)
         })
@@ -186,7 +187,7 @@ const renderShips = () => {
             alt: "carrier-icon"
         },
         {
-            id: 'battleShip', 
+            id: 'battleship', 
             src: "images/battleship.png",
             alt: "battleship-icon"
         },
@@ -197,12 +198,12 @@ const renderShips = () => {
         },
         {
             id: 'submarine', 
-            src: "images/carrier.png",
+            src: "images/submarine.png",
             alt: "submarine-icon"
         },
         {
             id: 'patrol', 
-            src: "images/submarine.png",
+            src: "images/patrol.png",
             alt: "patrol-icon"
         }
 ]
