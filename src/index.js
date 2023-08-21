@@ -1,6 +1,6 @@
 import { isValid } from 'date-fns'
 import { Game, Grid} from './script'
-import { fi } from 'date-fns/locale'
+import { fi, pl } from 'date-fns/locale'
 
 function createtGame() {
     return new Game()
@@ -90,32 +90,78 @@ function handleSquares() {
 
 const placeHorizontalShip = (ship, dropCoord) => {
    
+    const player = newGame.currentPlayer
     const  length = ship.length   
     const midIndex = Math.ceil(length / 2) - 1
     ship.shipLocation[midIndex] = dropCoord
 
     for (let i = 0; i < length; i++) {
-    let rowLetter = dropCoord[0]
-    let colNum = parseInt(dropCoord[1])  + i
+        const matches = dropCoord.match(/([a-zA-Z]+)(\d+)/)
+    let rowLetter = matches[1]
+    let colNum = parseInt(matches[2])  + i
     let prevCoords = rowLetter + colNum
     if (newGame.revealedBoard.isValid(prevCoords)) {
         ship.shipLocation[i] = prevCoords
+        player.occupiedCoordinates.push({
+            name: ship.name,
+            location: ship.shipLocation[i]
+        })
     } else {
         console.log(`invalid: ${prevCoords}`)
         let adjustedColNum = colNum - length        
         placeHorizontalShip(ship, rowLetter + adjustedColNum)
-        console.log(ship.shipLocation) 
-        // return `invalid: ${prevCoords}`
+        console.log(`${ship.name}: ${ship.shipLocation}`) 
     }
 }
 return 
 
 }
 
-const placeVerticleShip = (ship) => {
+const placeVerticalShip = (ship, dropCoord) => {
+    
+    const player = newGame.currentPlayer
+    const  length = ship.length   
+    const midIndex = Math.ceil(length / 2) - 1
+    ship.shipLocation[midIndex] = dropCoord
 
+    for (let i = 0; i < length; i++) {
+        const matches = dropCoord.match(/([a-zA-Z]+)(\d+)/)
+        console.log(matches[1])
+        let rowLetter = shiftLetter(matches[1], + i)
+        console.log(rowLetter)
+        let colNum = parseInt(matches[2])  
+        let prevCoords = rowLetter + colNum
+        console.log(`${ship.name}: ${ship.shipLocation}`) 
+
+        if (newGame.revealedBoard.isValid(prevCoords)) {
+            ship.shipLocation[i] = prevCoords
+            player.occupiedCoordinates.push({
+            name: ship.name,
+            location: ship.shipLocation[i]
+        })
+        } else {
+            console.log(`invalid: ${prevCoords}`)
+            let adjustedRowLetter = shiftLetter(rowLetter, - 1)       
+            placeVerticalShip(ship, adjustedRowLetter + colNum)
+            console.log(`${ship.name}: ${ship.shipLocation}`) 
+        }
+        
+}
+console.log(`${ship.name}: ${ship.shipLocation}`) 
+
+return 
 }
 
+function shiftLetter(letter, shift) {
+    const charCode = letter.charCodeAt(0)
+    const shiftedCharCode = charCode + shift
+    if (shiftedCharCode < 'a'.charCodeAt(0)) {
+        const wrapedCharCode = 'j'.charCodeAt(0) - ('a'.charCodeAt(0) - shiftedCharCode - 1)
+        return String.fromCharCode((wrapedCharCode))
+    }
+    const shiftedLetter = String.fromCharCode(shiftedCharCode)
+    return shiftedLetter
+}
 const capFirstLetter = (inputString) => {
     const [firstLetter, ...rest] = inputString
     return `${firstLetter.toUpperCase()}${rest.join('')}`
@@ -201,11 +247,11 @@ const renderShips = () => {
     
 }
 
-const testShip1 = newGame.player1.ships[3].ship
-const testShip2 = newGame.player1.ships[0].ship
-const testShip3 = newGame.player1.ships[4].ship
-const testShip4 = newGame.player1.ships[2].ship
-const testShip5 = newGame.player1.ships[1].ship
+const testShip1 = newGame.player1.ships[0].ship
+const testShip2 = newGame.player1.ships[1].ship
+const testShip3 = newGame.player1.ships[2].ship
+const testShip4 = newGame.player1.ships[3].ship
+const testShip5 = newGame.player1.ships[4].ship
 
 document.addEventListener("DOMContentLoaded", function () {
     
@@ -216,11 +262,12 @@ document.addEventListener("DOMContentLoaded", function () {
 renderShips()
 getIndexFromName('Carrier')
 
-placeHorizontalShip(testShip1, 'a7')    
-placeHorizontalShip(testShip2, 'a9')
-placeHorizontalShip(testShip3, 'a7')
-placeHorizontalShip(testShip4, 'a7')
-placeHorizontalShip(testShip5, 'a7')
+// placeHorizontalShip(testShip1, 'a10')    
+// placeHorizontalShip(testShip2, 'a10')
+// placeHorizontalShip(testShip3, 'a10')
+// placeHorizontalShip(testShip4, 'a10')
+// placeHorizontalShip(testShip5, 'a10')
+placeVerticalShip(testShip1, 'a5')
  })
 
 
