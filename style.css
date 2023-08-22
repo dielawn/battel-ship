@@ -72,10 +72,7 @@
 }
 
 
-.revealedGrid #carrierContainer {
-    grid-row: 1 / 1;
-    grid-column: 1 / 4;
-}
+
 #battleship {
     width: 240px;
     position: absolute;
@@ -120,4 +117,8 @@
 }
 .highlight {
     background-color: rgba(000, 000, 000, .5);
+}
+#b2 {
+   
+    width: 235px;
 }

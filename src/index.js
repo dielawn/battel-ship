@@ -46,7 +46,21 @@ function renderGrid(parent, parentTxt) {
         const coords = newGame.revealedBoard.findCoords(i)
        const gridSquare = document.createElement('div')
        gridSquare.classList.add('gridSquare')
-           
+       gridSquare.id = `${coords}-${parentTxt}`     
+       const matches = gridSquare.id.match(/([a-zA-Z]+)(\d+)-(.+)/)
+        const rowLetter = matches[1]
+        const columnNum = parseInt(matches[2])
+
+        const rowStart = rowLetter.charCodeAt(0) - 'a'.charCodeAt(0) + 1
+
+        const columnStart = columnNum
+        const columnEnd = columnNum + 1
+
+        const rowEnd = rowStart + 1
+
+        const gridElement = gridSquare    
+       
+        gridElement.style.gridArea = `${rowStart} / ${columnStart} / ${rowEnd} / ${columnEnd}` 
        parent.appendChild(gridSquare)
     }
 
@@ -54,6 +68,28 @@ function renderGrid(parent, parentTxt) {
     parent.appendChild(numDiv)
     labelGrid(alphaDiv, numDiv, parentTxt)
 }
+
+function assignSquares() {
+    const gridSquares = document.querySelectorAll('.gridSquare')
+    for (let i = 0; i < 100; i++) {
+        const matches = gridSquares[i].id.match(/([a-zA-Z]+)(\d+)-(.+)/)
+        const rowLetter = matches[1]
+        const columnNum = parseInt(matches[2])
+
+        const rowStart = rowLetter.charCodeAt(0) - 'a'.charCodeAt(0) + 1
+
+        const columnStart = columnNum
+        const columnEnd = columnNum + 1
+
+        const rowEnd = rowStart + 1
+
+        const gridElement = gridSquares[i]     
+       
+        gridElement.style.gridArea = `${rowStart} / ${columnStart} / ${rowEnd} / ${columnEnd}`
+      
+    }
+}
+
 
 //add event listener to each square
 const shipDropLoc = []
@@ -89,25 +125,15 @@ function handleSquares() {
     })
 }
 
-function assignSquares() {
-    const gridSquares = document.querySelectorAll('.gridSquare')
-    for (let i = 0; i < 100; i++) {
-        const matches = gridSquares[i].id.match(/([a-zA-Z]+)(\d+)-(.+)/)
-        const rowLetter = matches[i]
-        const columnNum = parseInt(matches[2])
 
-        const rowStart = rowLetter.charCodeAt(0) - 'a'.charCodeAt(0) + 1
 
-        const columnStart = columnNum
-        const columnEnd = columnNum + 1
-
-        const rowEnd = rowStart + 1
-
-        const gridElement = gridSquares[i]     
-       
-        gridElement.style.gridArea = `${rowStart} / ${columnStart} / ${rowEnd} / ${columnEnd}`
-      
-    }
+const renderShipOnGrid = () => {
+  const battleship2 = document.createElement('img')
+  battleship2.id = 'b2'
+  battleship2.src = 'images/battleship.png'
+  battleship2.style.gridArea = '1/2/6/2'
+  battleship2.style.zIndex = '2'
+  revealedGrid.appendChild(battleship2)
 }
 
 const placeHorizontalShip = (ship, dropCoord) => {
@@ -279,7 +305,7 @@ document.addEventListener("DOMContentLoaded", function () {
     
     renderGrid(hiddenGrid, 'hidden')
     renderGrid(revealedGrid, 'revealed')
-    handleSquares()
+    
 
 renderShips()
 getIndexFromName('Carrier')
@@ -290,7 +316,10 @@ getIndexFromName('Carrier')
 // placeHorizontalShip(testShip4, 'a10')
 // placeHorizontalShip(testShip5, 'a10')
 placeVerticalShip(testShip1, 'a5')
-assignSquares()
+
+handleSquares()
+// assignSquares()
+renderShipOnGrid()
  })
 
 
