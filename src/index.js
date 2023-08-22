@@ -69,26 +69,7 @@ function renderGrid(parent, parentTxt) {
     labelGrid(alphaDiv, numDiv, parentTxt)
 }
 
-function assignSquares() {
-    const gridSquares = document.querySelectorAll('.gridSquare')
-    for (let i = 0; i < 100; i++) {
-        const matches = gridSquares[i].id.match(/([a-zA-Z]+)(\d+)-(.+)/)
-        const rowLetter = matches[1]
-        const columnNum = parseInt(matches[2])
 
-        const rowStart = rowLetter.charCodeAt(0) - 'a'.charCodeAt(0) + 1
-
-        const columnStart = columnNum
-        const columnEnd = columnNum + 1
-
-        const rowEnd = rowStart + 1
-
-        const gridElement = gridSquares[i]     
-       
-        gridElement.style.gridArea = `${rowStart} / ${columnStart} / ${rowEnd} / ${columnEnd}`
-      
-    }
-}
 
 
 //add event listener to each square
@@ -125,7 +106,66 @@ function handleSquares() {
     })
 }
 
+const renderGridShip = () => {
+    const shipImages = [
+        {
+            id: 'carrier', 
+            src: "images/carrier.png",
+            alt: "carrier-icon"
+        },
+        {
+            id: 'battleship', 
+            src: "images/battleship.png",
+            alt: "battleship-icon"
+        },
+        {
+            id: 'destroyer', 
+            src: "images/destroyer.png",
+            alt: "destroyer-icon"
+        },
+        {
+            id: 'submarine', 
+            src: "images/submarine.png",
+            alt: "submarine-icon"
+        },
+        {
+            id: 'patrol', 
+            src: "images/patrol.png",
+            alt: "patrol-icon"
+        }
+]
+    const currentPlayerShips = newGame.currentPlayer.ships
+    for (let i = 0; i < currentPlayerShips.length; i++) {
+        const shipsCoords = currentPlayerShips[i].ship.shipLocation
+        console.log(shipsCoords)
 
+        if (shipsCoords[0] === 0) {
+            console.log('No coordinates set for ship')
+            continue
+        }
+        const gridAreaValue = convertCoordinatesToGrid(shipsCoords)
+        const gridShip = document.createElement('img')
+        gridShip.src = shipImages[i].src
+        gridShip.alt = shipImages[i].alt
+        gridShip.className = 'gridShip'
+        gridShip.style.width = (currentPlayerShips[i].ship.length * 25) + 'px'
+        gridShip.style.gridArea = gridAreaValue
+        revealedGrid.appendChild(gridShip)
+    }
+
+}
+
+const convertCoordinatesToGrid = (coordinate) => {
+    const rowLetter = coordinate[0][0]
+    const columnNum = parseInt(coordinate[0].substring(1))
+
+    const rowStart = rowLetter.charCodeAt(0) - 'a'.charCodeAt(0) + 1
+    const rowEnd = rowStart + coordinate.length
+    const columnStart = columnNum
+    const columnEnd = columnStart + 1
+
+    return `${rowStart} / ${columnStart} / ${rowEnd} / ${columnEnd}`
+}
 
 const renderShipOnGrid = () => {
   const battleship2 = document.createElement('img')
@@ -310,16 +350,17 @@ document.addEventListener("DOMContentLoaded", function () {
 renderShips()
 getIndexFromName('Carrier')
 
-// placeHorizontalShip(testShip1, 'a10')    
+placeHorizontalShip(testShip1, 'a10')    
 // placeHorizontalShip(testShip2, 'a10')
 // placeHorizontalShip(testShip3, 'a10')
 // placeHorizontalShip(testShip4, 'a10')
 // placeHorizontalShip(testShip5, 'a10')
-placeVerticalShip(testShip1, 'a5')
+// placeVerticalShip(testShip1, 'a5')
 
 handleSquares()
-// assignSquares()
 renderShipOnGrid()
+newGame.setPlayer()
+renderGridShip()
  })
 
 
