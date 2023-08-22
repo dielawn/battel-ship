@@ -43,9 +43,10 @@ function renderGrid(parent, parentTxt) {
    
 
     for (let i = 0; i < 100; i++) {
+        const coords = newGame.revealedBoard.findCoords(i)
        const gridSquare = document.createElement('div')
        gridSquare.classList.add('gridSquare')
-       gridSquare.id = `${parentTxt}gridSquare${i}`      
+           
        parent.appendChild(gridSquare)
     }
 
@@ -86,6 +87,27 @@ function handleSquares() {
    
         })
     })
+}
+
+function assignSquares() {
+    const gridSquares = document.querySelectorAll('.gridSquare')
+    for (let i = 0; i < 100; i++) {
+        const matches = gridSquares[i].id.match(/([a-zA-Z]+)(\d+)-(.+)/)
+        const rowLetter = matches[i]
+        const columnNum = parseInt(matches[2])
+
+        const rowStart = rowLetter.charCodeAt(0) - 'a'.charCodeAt(0) + 1
+
+        const columnStart = columnNum
+        const columnEnd = columnNum + 1
+
+        const rowEnd = rowStart + 1
+
+        const gridElement = gridSquares[i]     
+       
+        gridElement.style.gridArea = `${rowStart} / ${columnStart} / ${rowEnd} / ${columnEnd}`
+      
+    }
 }
 
 const placeHorizontalShip = (ship, dropCoord) => {
@@ -268,6 +290,7 @@ getIndexFromName('Carrier')
 // placeHorizontalShip(testShip4, 'a10')
 // placeHorizontalShip(testShip5, 'a10')
 placeVerticalShip(testShip1, 'a5')
+assignSquares()
  })
 
 
