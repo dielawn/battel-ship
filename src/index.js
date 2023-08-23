@@ -83,14 +83,18 @@ function handleSquares() {
     gridSquares.forEach(square => {
         const id = square.id;
         const number = id.match(/\d+/)[0];
-        const startCoords = getCoords(number)
+        const rowLetter = id[0]
+      
+        console.log(number)
+        const startCoords = rowLetter + number
+        console.log(startCoords)
         const coords = startCoords
         
         square.addEventListener('click', ()  => {
             resetDropLoc()
             console.log(id)
             console.log(number)
-            console.log(coords)
+            console.log(startCoords)
         })
         square.addEventListener('dragover', (e) => {
             e.preventDefault()
@@ -100,7 +104,9 @@ function handleSquares() {
             e.preventDefault()
             console.log(coords)
             console.log(newGame.revealedBoard.isValid(coords))
-           
+            //get ship
+            placeHorizontalShip(newGame.currentPlayer.ships[0].ship, coords)
+            renderGridShip()
    
         })
     })
@@ -148,7 +154,8 @@ const renderGridShip = () => {
         gridShip.src = shipImages[i].src
         gridShip.alt = shipImages[i].alt
         gridShip.className = 'gridShip'
-        gridShip.style.width = (currentPlayerShips[i].ship.length * 25) + 'px'
+        gridShip.id = shipImages[i].id
+        gridShip.style.width = (currentPlayerShips[i].ship.length * 45) + 'px'
         gridShip.style.gridArea = gridAreaValue
         revealedGrid.appendChild(gridShip)
     }
@@ -167,14 +174,14 @@ const convertCoordinatesToGrid = (coordinate) => {
     return `${rowStart} / ${columnStart} / ${rowEnd} / ${columnEnd}`
 }
 
-const renderShipOnGrid = () => {
-  const battleship2 = document.createElement('img')
-  battleship2.id = 'b2'
-  battleship2.src = 'images/battleship.png'
-  battleship2.style.gridArea = '1/2/6/2'
-  battleship2.style.zIndex = '2'
-  revealedGrid.appendChild(battleship2)
-}
+// const renderShipOnGrid = () => {
+//   const battleship2 = document.createElement('img')
+//   battleship2.id = 'b2'
+//   battleship2.src = 'images/battleship.png'
+//   battleship2.style.gridArea = '1/2/6/2'
+//   battleship2.style.zIndex = '2'
+//   revealedGrid.appendChild(battleship2)
+// }
 
 const placeHorizontalShip = (ship, dropCoord) => {
    
@@ -269,7 +276,7 @@ function getIndexFromName(shipName) {
 
 function getCoords(index) {
     
-    const coords = newGame.hiddenBoard.findCoords(index)
+    const coords = newGame.revealedBoard.findCoords(index)
     return coords
 }
 
@@ -337,6 +344,7 @@ const renderShips = () => {
 
 const testShip1 = newGame.player1.ships[0].ship
 const testShip2 = newGame.player1.ships[1].ship
+
 const testShip3 = newGame.player1.ships[2].ship
 const testShip4 = newGame.player1.ships[3].ship
 const testShip5 = newGame.player1.ships[4].ship
@@ -350,17 +358,17 @@ document.addEventListener("DOMContentLoaded", function () {
 renderShips()
 getIndexFromName('Carrier')
 
-placeHorizontalShip(testShip1, 'a10')    
-// placeHorizontalShip(testShip2, 'a10')
-// placeHorizontalShip(testShip3, 'a10')
-// placeHorizontalShip(testShip4, 'a10')
-// placeHorizontalShip(testShip5, 'a10')
-// placeVerticalShip(testShip1, 'a5')
+// placeHorizontalShip(testShip1, 'a10')    
+// placeVerticalShip(testShip2, 'a1')
+// placeVerticalShip(testShip3, 'c5')
+// placeHorizontalShip(testShip4, 'j10')
+// placeVerticalShip(testShip5, 'h2')
+// placeVerticalShip(testShip1, 'e7')
 
 handleSquares()
-renderShipOnGrid()
+// renderShipOnGrid()
 newGame.setPlayer()
-renderGridShip()
+
  })
 
 

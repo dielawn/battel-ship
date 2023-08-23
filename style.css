@@ -16,6 +16,8 @@
 .hiddenGrid {
     display: grid;
     grid-template-columns: repeat(10, 50px);
+    justify-content: center;
+    align-content: center;
 }
 
 .gridSquare {
@@ -71,42 +73,34 @@
     text-align: center;
 }
 
-
-
-#battleship {
-    width: 240px;
-    position: absolute;
-    left: 400px;
-    top: 700px;
-    background-color: none;
+/* #battleship .rotate{
+    transform: rotate(90deg);
 }
 #carrier {
-    width: 240px;
-    position: absolute;
-    left: 400px;
-    top: 750px;
+    transform: rotate(90deg);
+    margin-left: 15px;
 }
 #destroyer {
-    width: 140px;
-    position: absolute;
-    left: 400px;
-    top: 800px;
+    transform: rotate(90deg);
+    margin-left: 15px;
 }
-#submarine {
+/* #submarine {
     width: 140px;
     position: absolute;
     left: 400px;
     top: 850px;
-}
-#patrol {
-    width: 90px;
-    position: absolute;
-    left: 400px;
-    top: 900px;
+} */
+/* #patrol {
+    transform: rotate(90deg);
+} */ */
+
+.ship-icon {
+    max-width: 200px;
 }
 
 .rotate {
     transform: rotate(90deg);
+    margin-left: 10px;
 }
 .ship-container:hover .rotate-button {
     cursor: pointer;
