@@ -40,6 +40,7 @@
 .ship-icon {
     background-color: transparent;
     z-index: 9;
+    max-width: 200px;
 }
 .alphaDiv {
     position: absolute;
@@ -94,9 +95,7 @@
     transform: rotate(90deg);
 } */ */
 
-.ship-icon {
-    max-width: 200px;
-}
+
 
 .rotate {
     transform: rotate(90deg);

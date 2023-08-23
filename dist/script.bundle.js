@@ -14,8 +14,8 @@ class Game {
         this.player2 = new Player('player2')        
         this.currentPlayer = null
         this.otherPlayer = null
-        this.revealedBoard = new Grid()        
-        this.hiddenBoard = new Grid()
+        this.p1Board = new Grid()        
+        this.p2Board = new Grid()
         this.gameOver = false
     }
    startGame() {
@@ -89,8 +89,6 @@ class Grid {
         this.yAxis = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
         this.xAxis = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
         this.grid = this.createGrid()
-        this.indexTree = this.gridIndexTree()
-        this.coordTree = this.gridCoordinatesTree()
     }
     createGrid() {
         const grid = []
@@ -102,71 +100,6 @@ class Grid {
         }
         
         return grid
-    }
-    gridIndexTree() {
-        const linkedGrid = []
-        const numRows = 10
-        const numCols = 10
-        for (let i = 0; i < 100; i++) {
-            const row = Math.floor(i / numCols)
-            const col = i % numCols
-            this.grid[i].left = col > 0 ? i - 1 : null
-            this.grid[i].up = row > 0 ? i - numCols : null
-            this.grid[i].right = col < numCols - 1 ? i + 1 : null
-            this.grid[i].down = row < numRows - 1 ? i + numCols : null
-            linkedGrid.push({                    
-                    left: this.grid[i].left,
-                    up: this.grid[i].up,
-                    right: this.grid[i].right,
-                    down: this.grid[i].down
-                })
-        }
-        return linkedGrid
-    }
-    getCellTree(index) {
-        const linkedGrid = []
-        const numRows = 10
-        const numCols = 10
-
-        const row = Math.floor(index / numCols)
-        const col = index % numCols
-        
-        this.grid[index].left = col > 0 ? index - 1 : null
-        this.grid[index].up = row > 0 ? index - numCols : null
-        this.grid[index].right = col < numCols - 1 ? index + 1 : null
-        this.grid[index].down = row < numRows - 1 ? index + numCols : null
-        linkedGrid.push({                    
-            left: this.grid[index].left,
-            up: this.grid[index].up,
-            right: this.grid[index].right,
-            down: this.grid[index].down
-            })
-        
-        return linkedGrid
-
-    }
-    gridCoordinatesTree() {
-        const coordsTree = []
-        
-        for (const index in this.indexTree) {
-
-            const node = this.indexTree[index]
-            const leftIndex = node.left
-            const upIndex = node.up
-            const rightIndex = node.right
-            const downIndex = node.down
-
-            const coords = {
-                left: leftIndex !== null ? this.findCoords(leftIndex) : null,
-                up: upIndex !== null ? this.findCoords(upIndex) : null,
-                right: rightIndex !== null ? this.findCoords(rightIndex) : null,
-                down: downIndex !== null ? this.findCoords(downIndex) : null
-            }
-
-            coordsTree.push(coords)
-            
-        }
-        return coordsTree       
     }
     findCoords(index) {
         const grid = this.grid
