@@ -592,6 +592,8 @@ const renderGridShip = () => {
     for (let i = 0; i < shipImages.length; i++) {
         const shipsCoords = currentPlayerShips[i].ship.shipLocation
         console.log(shipsCoords)
+        const shipIsHorizontal = currentPlayerShips[i].isHorizontal
+        console.log('ship horizonal', shipIsHorizontal)
         const shipImage = document.createElement('img')
         shipImage.id = shipImages[i].id
         shipImage.src = shipImages[i].src
@@ -605,7 +607,10 @@ const renderGridShip = () => {
             continue
         }
         const gridAreaValue = convertCoordinatesToGrid(shipsCoords)
-        shipImage.className = 'gridShip'        
+        shipImage.className = 'gridShip'   
+        if (shipIsHorizontal) {
+            shipImage.classList.add('rotate')
+        }     
         shipImage.style.width = (currentPlayerShips[i].ship.length * 45) + 'px'
         shipImage.style.gridArea = gridAreaValue
         revealedGrid.appendChild(shipImage)
