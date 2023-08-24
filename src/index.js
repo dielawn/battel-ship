@@ -1,6 +1,5 @@
 import { Game, Grid} from './script'
 
-
 function createtGame() {
     return new Game()
 }
@@ -10,6 +9,8 @@ newGame.startGame()
 const containerDiv = document.getElementById('container')
 const revealedGrid = document.getElementById('revealedGrid')
 const hiddenGrid = document.getElementById('hiddenGrid')
+
+let currentShip = null
 
 function labelGrid(alphaParent, numParent, parentTxt) {
 
@@ -84,16 +85,16 @@ function handleSquares() {
         const number = id.match(/\d+/)[0];
         const rowLetter = id[0]
       
-        console.log(number)
+        // console.log(number)
         const startCoords = rowLetter + number
-        console.log(startCoords)
+        // console.log(startCoords)
         const coords = startCoords
         
         square.addEventListener('click', ()  => {
             resetDropLoc()
-            console.log(id)
-            console.log(number)
-            console.log(startCoords)
+            // console.log(id)
+            // console.log(number)
+            // console.log(startCoords)
         })
         square.addEventListener('dragover', (e) => {
             e.preventDefault()
@@ -102,9 +103,15 @@ function handleSquares() {
         square.addEventListener('drop', (e) => {
             e.preventDefault()
             console.log(coords)
-            console.log(newGame.p1Board.isValid(coords))
+           if (!newGame.p1Board.isValid(coords))return
             //get ship
-            placeHorizontalShip(newGame.currentPlayer.ships[0].ship, coords)
+            console.log(currentShip)
+            const currentShipIndex = getIndexFromName(currentShip)
+            const shipObject = newGame.player1.ships[currentShipIndex].ship
+            console.log(shipObject)
+            placeHorizontalShip(shipObject, coords)
+            
+           
             renderGridShip()
    
         })
@@ -124,15 +131,6 @@ const convertCoordinatesToGrid = (coordinate) => {
 
     return `${rowStart} / ${columnStart} / ${rowEnd} / ${columnEnd}`
 }
-
-// const renderShipOnGrid = () => {
-//   const battleship2 = document.createElement('img')
-//   battleship2.id = 'b2'
-//   battleship2.src = 'images/battleship.png'
-//   battleship2.style.gridArea = '1/2/6/2'
-//   battleship2.style.zIndex = '2'
-//   revealedGrid.appendChild(battleship2)
-// }
 
 const placeHorizontalShip = (ship, dropCoord) => {
    
@@ -159,7 +157,8 @@ const placeHorizontalShip = (ship, dropCoord) => {
         console.log(`${ship.name}: ${ship.shipLocation}`) 
     }
 }
-return 
+console.log(`${ship.name}: ${ship.shipLocation}`) 
+return
 
 }
 
@@ -278,9 +277,12 @@ const renderGridShip = () => {
 ]
     const currentPlayerShips = newGame.currentPlayer.ships
     const prevShips = document.querySelectorAll('.ship-icon')
-    for (el of prevShips) {
+    for (const el of prevShips) {
         el.remove()
     }
+    const dryDock = document.createElement('div')
+    dryDock.className = 'dry-dock'
+    containerDiv.appendChild(dryDock)
     for (let i = 0; i < shipImages.length; i++) {
         const shipsCoords = currentPlayerShips[i].ship.shipLocation
         console.log(shipsCoords)
@@ -292,8 +294,8 @@ const renderGridShip = () => {
         if (shipsCoords[0] === 0) {
             console.log('No coordinates set for ship')  
             shipImage.className = 'ship-icon'
-            revealedGrid.appendChild(shipImage)
-            
+            dryDock.appendChild(shipImage)
+            addShipListeners()
             continue
         }
         const gridAreaValue = convertCoordinatesToGrid(shipsCoords)
@@ -304,7 +306,19 @@ const renderGridShip = () => {
     }
 
 }
+function addShipListeners() {
 
+    const dryShipImg = document.querySelectorAll('.ship-icon')
+
+    for (const ship of dryShipImg) {
+        ship.addEventListener('mousedown', () => {
+            const capitalizedName = capFirstLetter(ship.id)
+            console.log(capitalizedName)
+            currentShip = capitalizedName
+        })
+    }
+    
+}
 
 const testShip1 = newGame.player1.ships[0].ship
 const testShip2 = newGame.player1.ships[1].ship
@@ -321,17 +335,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
 getIndexFromName('Carrier')
 
-placeHorizontalShip(testShip1, 'a1')    
-placeHorizontalShip(testShip2, 'b3')
-placeHorizontalShip(testShip3, 'c5')
-placeHorizontalShip(testShip4, 'j10')
+// placeHorizontalShip(testShip1, 'a1')    
+// placeHorizontalShip(testShip2, 'b3')
+// placeHorizontalShip(testShip3, 'c5')
+// placeHorizontalShip(testShip4, 'j10')
 // placeHorizontalShip(testShip5, 'h2')
 // placeVerticalShip(testShip1, 'e7')
 
 handleSquares()
 
 newGame.setPlayer()
+
 renderGridShip()
+console.log(addShipListeners())
  })
 
 
