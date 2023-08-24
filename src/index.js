@@ -85,9 +85,7 @@ function handleSquares() {
         const number = id.match(/\d+/)[0];
         const rowLetter = id[0]
       
-        // console.log(number)
         const startCoords = rowLetter + number
-        // console.log(startCoords)
         const coords = startCoords
         
         square.addEventListener('click', ()  => {
@@ -102,18 +100,12 @@ function handleSquares() {
         })
         square.addEventListener('drop', (e) => {
             e.preventDefault()
-            console.log(coords)
            if (!newGame.p1Board.isValid(coords))return
             //get ship
-            console.log(currentShip)
             const currentShipIndex = getIndexFromName(currentShip)
             const shipObject = newGame.player1.ships[currentShipIndex].ship
-            console.log(shipObject)
-            placeHorizontalShip(shipObject, coords)
-            
-           
-            renderGridShip()
-   
+            placeShip(shipObject, coords) 
+            renderGridShip()   
         })
     })
 }
@@ -133,7 +125,7 @@ const convertCoordinatesToGrid = (coordinate) => {
 }
 
 const placeHorizontalShip = (ship, dropCoord) => {
-   
+   console.log(ship)
     const player = newGame.currentPlayer
     const  length = ship.length   
     const midIndex = Math.ceil(length / 2) - 1
@@ -171,9 +163,7 @@ const placeVerticalShip = (ship, dropCoord) => {
 
     for (let i = 0; i < length; i++) {
         const matches = dropCoord.match(/([a-zA-Z]+)(\d+)/)
-        console.log(matches[1])
         let rowLetter = shiftLetter(matches[1], + i)
-        console.log(rowLetter)
         let colNum = parseInt(matches[2])  
         let prevCoords = rowLetter + colNum
         console.log(`${ship.name}: ${ship.shipLocation}`) 
@@ -293,9 +283,9 @@ const renderGridShip = () => {
 
         if (shipsCoords[0] === 0) {
             console.log('No coordinates set for ship')  
-            shipImage.className = 'ship-icon'
+            shipImage.classList.add('ship-icon')
             dryDock.appendChild(shipImage)
-            addShipListeners()
+            
             continue
         }
         const gridAreaValue = convertCoordinatesToGrid(shipsCoords)
@@ -304,17 +294,32 @@ const renderGridShip = () => {
         shipImage.style.gridArea = gridAreaValue
         revealedGrid.appendChild(shipImage)
     }
-
+    addShipListeners(shipImages)
 }
 function addShipListeners() {
 
     const dryShipImg = document.querySelectorAll('.ship-icon')
 
     for (const ship of dryShipImg) {
+
+        const capitalizedName = capFirstLetter(ship.id)
         ship.addEventListener('mousedown', () => {
-            const capitalizedName = capFirstLetter(ship.id)
             console.log(capitalizedName)
             currentShip = capitalizedName
+        })
+        
+        ship.addEventListener('dblclick', () => {
+            // ship.classList.toggle('rotate')
+            // console.log(ship.classList)
+            const shipIndex = getIndexFromName(capitalizedName)
+            const selectedShip = newGame.player1.ships[shipIndex]
+            selectedShip.switchOrientation()
+            console.log(selectedShip.isHorizontal)
+            if (selectedShip.isHorizontal) {
+                ship.classList.remove('rotate')
+            }
+            ship.classList.add('rotate')
+         
         })
     }
     
@@ -345,10 +350,50 @@ getIndexFromName('Carrier')
 handleSquares()
 
 newGame.setPlayer()
-
+addShipListeners()
 renderGridShip()
 console.log(addShipListeners())
  })
 
+const placeShip = (ship, dropCoord) => {
 
+    const player = newGame.currentPlayer
+    const shipName = ship.name
+    const shipIndex = getIndexFromName(shipName)
+    let isHorizontal = player.ships[shipIndex].isHorizontal 
+    const  length = ship.length   
+    const midIndex = Math.ceil(length / 2) - 1
+    ship.shipLocation[midIndex] = dropCoord
+    for (let i = 0; i < length; i++) {
+        const matches = dropCoord.match(/([a-zA-Z]+)(\d+)/)
+        let rowLetter = null
+        let colNum = null
+        let adjustedPosition = null
 
+    if (isHorizontal) {
+       rowLetter = matches[1]
+       colNum = parseInt(matches[2])  + i
+       adjustedPosition = colNum - length 
+    } else {
+        rowLetter = shiftLetter(matches[1], + i)
+        colNum = parseInt(matches[2]) 
+        adjustedPosition = shiftLetter(rowLetter, - 1)
+    }
+    let prevCoords = rowLetter + colNum
+    
+    if (newGame.p1Board.isValid(prevCoords)) {
+        ship.shipLocation[i] = prevCoords
+        player.occupiedCoordinates.push({
+            name: ship.name,
+            location: ship.shipLocation[i]
+        })
+    } else {
+        console.log(`invalid: ${prevCoords}`)
+        placeShip(ship, rowLetter + adjustedPosition)
+        console.log(`${ship.name}: ${ship.shipLocation}`) 
+    }
+}
+console.log(`${ship.name}: ${ship.shipLocation}`) 
+return
+
+}
