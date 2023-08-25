@@ -195,11 +195,11 @@ class Player {
         return 'shot fired'
         } 
     switchOrientation(shipIndex) {
-        let isShipHorizontal = this.ships[shipIndex].ship.isHorizontal
-        if (isShipHorizontal) {
-            isShipHorizontal = false
-        }
-        isShipHorizontal = true
+        const ship = this.ships[shipIndex].ship
+        
+        ship.isHorizontal = !ship.isHorizontal
+        console.log(ship.name, ship.isHorizontal)
+        
     }
     }
     
