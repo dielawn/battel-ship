@@ -276,7 +276,7 @@ const renderGridShip = () => {
     for (let i = 0; i < shipImages.length; i++) {
         const shipsCoords = currentPlayerShips[i].ship.shipLocation
         console.log(shipsCoords)
-        const shipIsHorizontal = currentPlayerShips[i].isHorizontal
+        const shipIsHorizontal = currentPlayerShips[i].ship.isHorizontal
         console.log('ship horizonal', shipIsHorizontal)
         const shipImage = document.createElement('img')
         shipImage.id = shipImages[i].id
@@ -317,10 +317,10 @@ function addShipListeners() {
             // ship.classList.toggle('rotate')
             // console.log(ship.classList)
             const shipIndex = getIndexFromName(capitalizedName)
-            const selectedShip = newGame.player1.ships[shipIndex]
-            selectedShip.switchOrientation()
-            console.log(selectedShip.isHorizontal)
-            if (selectedShip.isHorizontal) {
+            const selectedShip = newGame.player1
+            console.log(selectedShip.ships[shipIndex].ship.isHorizontal)
+            selectedShip.switchOrientation(shipIndex)
+            if (selectedShip.ships[shipIndex].ship.isHorizontal) {
                 ship.classList.remove('rotate')
             }
             ship.classList.add('rotate')
@@ -361,11 +361,11 @@ console.log(addShipListeners())
  })
 
 const placeShip = (ship, dropCoord) => {
-
+console.log(ship)
     const player = newGame.currentPlayer
     const shipName = ship.name
     const shipIndex = getIndexFromName(shipName)
-    let isHorizontal = player.ships[shipIndex].isHorizontal 
+    let isHorizontal = ship.isHorizontal 
     const  length = ship.length   
     const midIndex = Math.ceil(length / 2) - 1
     ship.shipLocation[midIndex] = dropCoord
@@ -374,7 +374,7 @@ const placeShip = (ship, dropCoord) => {
         let rowLetter = null
         let colNum = null
         let adjustedPosition = null
-
+console.log(isHorizontal)
     if (isHorizontal) {
        rowLetter = matches[1]
        colNum = parseInt(matches[2])  + i
