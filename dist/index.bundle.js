@@ -509,7 +509,7 @@ const renderGridShip = () => {
         shipImage.id = shipImages[i].id
         shipImage.src = shipImages[i].src
         shipImages.alt = shipImages[i].alt
-
+        shipImage.style.width = (currentPlayerShips[i].ship.length * 45) + 'px'
         if (shipsCoords[0] === 0) {
             console.log('No coordinates set for ship')  
             shipImage.classList.add('ship-icon')
@@ -525,7 +525,7 @@ const renderGridShip = () => {
         } else {
             shipImage.classList.add('rotate')
         }    
-        shipImage.style.width = (currentPlayerShips[i].ship.length * 45) + 'px'
+        
         shipImage.style.gridArea = gridAreaValue
         revealedGrid.appendChild(shipImage)
     }

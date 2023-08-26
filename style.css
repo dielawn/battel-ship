@@ -21,7 +21,7 @@
 }
 
 .rotate {
-    transform: rotate(90deg);
+    transform: rotate(270deg);
    
 }
 .gridSquare {
@@ -40,11 +40,11 @@
     display: flex;
     flex-direction: column;
 }
-
+.gridShip,
 .ship-icon {
     background-color: transparent;
     z-index: 9;
-    max-width: 200px;
+    
 }
 .alphaDiv {
     position: absolute;
