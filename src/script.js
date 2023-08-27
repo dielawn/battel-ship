@@ -9,7 +9,7 @@ class Game {
         this.p2Board = new Grid()
         this.gameOver = false
     }
-   startGame() {
+    startGame() {
         // start new game
         this.setPlayer()
         //if ships locations are not set, set them
@@ -17,12 +17,12 @@ class Game {
         //     this.currentPlayer.setShipLocation(i, promptPlayer())
         //     this.otherPlayer.setShipLocation(i, promptPlayer())
         // }
-        if (!this.gameOver) {
-           this.playRound()            
-        }
+        // if (!this.gameOver) {
+        //    this.playRound()            
+        // }
     } 
     // promptPlayer() {
-
+    
     // }
     playRound() {
 
@@ -41,12 +41,97 @@ class Game {
         } else if (this.currentPlayer === this.player2) {
             this.currentPlayer = this.player1
             this.otherPlayer = this.player2
-            return this.player1 
+            return this.player1
         }
         this.currentPlayer = this.player2
         this.otherPlayer = this.player1
         return this.player2
     }
+    setShipLocation(player, shipIndex, coordinate) {
+        
+        let ship = player.ships[shipIndex].ship
+        let location = ship.shipLocation
+    
+        const  length = ship.length   
+        const midIndex = Math.ceil(length / 2) - 1
+
+        // ex. if length = 5 & coordinate = '45' location = [0, 0, '45', 0, 0]
+        location[midIndex] = coordinate
+        console.log(coordinate)
+
+    for (let i = 0; i < midIndex; i++) {
+        
+        let rowNum = parseInt(coordinate[0]) % 10
+        let colNum = (parseInt(coordinate.slice(1)) + 1) % 10
+
+        let prevCoord = null
+        let nextCoord = null
+
+    if (ship.isHorizontal) {
+        console.log('ship is horizontal')
+        prevCoord = coordinate.slice(0, 1) + (parseInt(coordinate.slice(1)) - 1)
+        nextCoord = coordinate.slice(0, 1) + (parseInt(coordinate.slice(1)) + 1)
+        console.log(prevCoord, nextCoord)
+        if ( this.p1Board.isValid(prevCoord) && this.p1Board.isValid(nextCoord)) {
+            console.log('coords are valid')
+        //first interation location = [0, '44', '45', '46', 0]
+        //second interation location = ['43', '43', '45', '46', '47']
+            location[midIndex - i] = prevCoord
+            location[midIndex + i] = nextCoord
+        } else { //if coordinates are not valid adjust column and try again
+            console.log('coords NOT valid')
+            let adjustedPosition = `${rowNum}${this.adjustColumn(colNum)}`
+            console.log(adjustedPosition)
+            this.setShipLocation(player, shipIndex, adjustedPosition)
+        }
+    
+       console.log( ship.shipLocation[midIndex - i],  ship.shipLocation[midIndex + i])       
+      
+       console.log('horizonal', 'row number', rowNum, 'column number', colNum, 'ship location', ship.shipLocation[i])
+    } else { //vertical
+        prevCoord = coordinate.slice(0, 1) + (parseInt(coordinate.slice(1)) - (i * 10))
+        nextCoord = coordinate.slice(0, 1) + (parseInt(coordinate.slice(1)) + (i * 10))
+        if (this.p1Board.isValid(prevCoord) && this.p1Board.isValid(nextCoord)) {
+        //first interation location = [0, '35', '45', '55', 0]
+        //second interation location = ['25', '35', '45', '55', '65']
+            location[midIndex - (i * 10)] = prevCoord
+            location[midIndex + (i * 10)] = nextCoord
+        } else { //if coordinates are not valid adjust row and try again
+            let adjustedPosition = `${this.adjustRow(rowNum)}${colNum}`
+            this.setShipLocation(player, shipIndex, adjustedPosition)
+        }
+            
+        console.log('vertical', 'row numberr', rowNum, 'column number', colNum, 'ship location', ship.shipLocation[i])
+        }
+
+    }
+        console.log(`${ship.name}: ${location}`) 
+        player.occupiedCoordinates.push([ship.name, location])
+        return location
+    }
+    adjustColumn = (colNum) => {
+        while (colNum > 0 && colNum < 10) {
+            if (colNum > 4) {
+                colNum = colNum - 1
+            } else {
+                colNum = colNum + 1
+            }
+            return colNum
+        }
+        
+    }
+    adjustRow = (rowNum) => {
+        while (rowNum > 0 && rowNum < 10) {
+            if (rowNum > 4) {
+                rowNum = rowNum-- 
+            } else {
+                rowNum = rowNum++
+            }
+            return rowNum
+        }
+        
+    }
+        
     isHit(coords) {
         let coordinates = this.otherPlayer.occupiedCoordinates
         for (let i = 0; i < coordinates.length; i++) {
@@ -75,10 +160,11 @@ class Game {
 }
 
 
+
 class Grid {
     constructor() {
-        this.yAxis = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
-        this.xAxis = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
+        this.yAxis = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+        this.xAxis =[ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
         this.grid = this.createGrid()
     }
     createGrid() {
@@ -92,24 +178,27 @@ class Grid {
         
         return grid
     }
-    findCoords(index) {
-        const grid = this.grid
-       if (index >= 0 && index < grid.length) {        
-        return grid[index][0]
-       }
-       return 'Invalid index'
-    }
-    findIndex(x, y) {
+    findIndex(xy) {
         const grid = this.grid
         for (let i = 0; i < grid.length; i++) {
-            if (grid[i][0] === x && grid[i][1] === y) {
+            // console.log(grid[i], [xy])
+            if (grid[i][0] === xy ) {
              return grid[i]
             }
         }
         return 'Target not found'
     }
-    isValid(x, y) {
-        return this.grid.some(element => element[0] === x && element[1] === y)
+    findCoords(index) {
+        const grid = this.grid
+        if (index >= 0 && index < this.grid.length) {
+            return this.grid[index][0]
+        } else {
+            return 'Invalid index'
+        }
+
+    }
+    isValid(xy) {
+        return this.grid.some(element => element[0] === xy )
     }
     
 } 
@@ -157,24 +246,7 @@ class Player {
         }
         return playerShips
     }
-    setShipLocation(shipsIndex, coordinatesArray) {
-       
-      
-       const ship = this.ships[shipsIndex].ship
-       
-       const shipsCoords = []
-       for (let i = 0; i < ship.length; i++) {
-        ship.shipLocation[i] = coordinatesArray[i]        
-        shipsCoords.push( {
-                player: this.name,
-                ship: ship.name, 
-                location: ship.shipLocation[i], 
-                isHit: false
-            })
-       }
-       this.occupiedCoordinates.push(shipsCoords)
-       return shipsCoords
-    }
+    
     fire(coords) {
         for (let i = 0; i < this.choosenCoordinates.length; i++) {
             if( coords === this.choosenCoordinates[i]) 
@@ -197,25 +269,6 @@ class Player {
 
 
 
-const newGame = new Game()
-const carrierCoord = ['a1', 'a2', 'a3', 'a4', 'a5']
-const battleshipCoord = ['b2', 'b3', 'b4', 'b5']
-const destroyerCoord = ['c3', 'c4', 'c5']
-const submarineCoord = ['d3', 'e3', 'f3']
-const patrolCoord = ['f5', 'h5']
-const hitCoords = 'a2'
-
-newGame.player1.setShipLocation(0, carrierCoord)
-newGame.player1.setShipLocation(1, battleshipCoord)
-newGame.player1.setShipLocation(2, destroyerCoord)
-newGame.player1.setShipLocation(3, submarineCoord)
-newGame.player1.setShipLocation(4, patrolCoord)
-
-newGame.player2.setShipLocation(0, carrierCoord)
-newGame.player2.setShipLocation(1, battleshipCoord)
-newGame.player2.setShipLocation(2, destroyerCoord)
-newGame.player2.setShipLocation(3, submarineCoord)
-newGame.player2.setShipLocation(4, patrolCoord)
 module.exports = {
     Grid,
     Player,

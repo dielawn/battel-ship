@@ -26,9 +26,9 @@ class Game {
         //     this.currentPlayer.setShipLocation(i, promptPlayer())
         //     this.otherPlayer.setShipLocation(i, promptPlayer())
         // }
-        if (!this.gameOver) {
-           this.playRound()            
-        }
+        // if (!this.gameOver) {
+        //    this.playRound()            
+        // }
     } 
     // promptPlayer() {
 
@@ -86,8 +86,8 @@ class Game {
 
 class Grid {
     constructor() {
-        this.yAxis = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
-        this.xAxis = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
+        this.yAxis = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+        this.xAxis =[ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
         this.grid = this.createGrid()
     }
     createGrid() {
@@ -101,24 +101,27 @@ class Grid {
         
         return grid
     }
-    findCoords(index) {
-        const grid = this.grid
-       if (index >= 0 && index < grid.length) {        
-        return grid[index][0]
-       }
-       return 'Invalid index'
-    }
-    findIndex(x, y) {
+    findIndex(xy) {
         const grid = this.grid
         for (let i = 0; i < grid.length; i++) {
-            if (grid[i][0] === x && grid[i][1] === y) {
+            // console.log(grid[i], [xy])
+            if (grid[i][0] === xy ) {
              return grid[i]
             }
         }
         return 'Target not found'
     }
-    isValid(x, y) {
-        return this.grid.some(element => element[0] === x && element[1] === y)
+    findCoords(index) {
+        const grid = this.grid
+        if (index >= 0 && index < this.grid.length) {
+            return this.grid[index][0]
+        } else {
+            return 'Invalid index'
+        }
+
+    }
+    isValid(xy) {
+        return this.grid.some(element => element === xy )
     }
     
 } 
@@ -206,25 +209,6 @@ class Player {
 
 
 
-const newGame = new Game()
-const carrierCoord = ['a1', 'a2', 'a3', 'a4', 'a5']
-const battleshipCoord = ['b2', 'b3', 'b4', 'b5']
-const destroyerCoord = ['c3', 'c4', 'c5']
-const submarineCoord = ['d3', 'e3', 'f3']
-const patrolCoord = ['f5', 'h5']
-const hitCoords = 'a2'
-
-newGame.player1.setShipLocation(0, carrierCoord)
-newGame.player1.setShipLocation(1, battleshipCoord)
-newGame.player1.setShipLocation(2, destroyerCoord)
-newGame.player1.setShipLocation(3, submarineCoord)
-newGame.player1.setShipLocation(4, patrolCoord)
-
-newGame.player2.setShipLocation(0, carrierCoord)
-newGame.player2.setShipLocation(1, battleshipCoord)
-newGame.player2.setShipLocation(2, destroyerCoord)
-newGame.player2.setShipLocation(3, submarineCoord)
-newGame.player2.setShipLocation(4, patrolCoord)
 module.exports = {
     Grid,
     Player,

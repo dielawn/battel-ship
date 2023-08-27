@@ -13,7 +13,7 @@ const { Game,} = require('./src/script')
             expect(testGame.setPlayer()).not.toBe(testGame.otherPlayer)
             expect(testGame.currentPlayer).toBe(testGame.player2)
         })
-
+   
         describe('Player class has a name, 2 grids, and a fleet of ships', () => {
             const testPlayer = testGame.player1
             test(`test player name: ${testPlayer.name}`, () => {
@@ -34,21 +34,24 @@ const { Game,} = require('./src/script')
                     expect(carrier.isSunk).toBeTruthy()
                 })
             })
+            describe('setShipLocation takes a player, shipIndex, and coord and should validate and set', () => {
+                expect(testGame.setShipLocation(testPlayer, 0, '45' )).toBe(['43', '44', '45', '46', '47'])
+            })
         }) 
         describe('10 x 10 grid, where every square has coordinates and a grid index', () => {
-            const testGrid = testGame.player1.revealedBoard
+            const testGrid = testGame.p1Board
             test('checks for a grid length of 100', () => {
                 expect(testGrid.grid.length).toBe(100)
             })
-            
             test('findIndex returns a grid index from x y coordinates', () => {
-                expect(testGrid.findIndex('a1')).toBe(testGrid.grid[0])
-                expect(testGrid.findIndex('j10')).toBe(testGrid.grid[99])
+                expect(testGrid.findIndex("00")).toBe(testGrid.grid[0])
+                expect(testGrid.findIndex("50")).toBe(testGrid.grid[50])
+                expect(testGrid.findIndex('99')).toBe(testGrid.grid[99])
             })
-            test('isValid checks if board coordinates are truthy', () => {
-                expect(testGrid.isValid('a1')).toBeTruthy()
-                expect(testGrid.isValid('a11')).toBeFalsy()
+            test('findCoords returns the grid coordinates from an index', () => {
+                expect(testGrid.findCoords(0)).toBe(testGrid.grid[0][0], testGrid.grid[0][1])
             })
+            
             // test('set player should set player 1 to initialize then toggle players')
            
             
