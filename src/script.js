@@ -54,23 +54,24 @@ class Game {
     
         const  length = ship.length   
         const midIndex = Math.ceil(length / 2) - 1
+       
 
         // ex. if length = 5 & coordinate = '45' location = [0, 0, '45', 0, 0]
         location[midIndex] = coordinate
         console.log(coordinate)
 
-    for (let i = 0; i < midIndex; i++) {
+    for (let i = 0; i < midIndex + 1; i++) {
         
         let rowNum = parseInt(coordinate[0]) % 10
         let colNum = (parseInt(coordinate.slice(1)) + 1) % 10
 
         let prevCoord = null
         let nextCoord = null
-
-    if (ship.isHorizontal) {
+console.log(ship.isHorizontal)
+    if (ship.isHorizontal === true) {
         console.log('ship is horizontal')
-        prevCoord = coordinate.slice(0, 1) + (parseInt(coordinate.slice(1)) - 1)
-        nextCoord = coordinate.slice(0, 1) + (parseInt(coordinate.slice(1)) + 1)
+        prevCoord = coordinate.slice(0, 1) + (parseInt(coordinate.slice(1)) - i)
+        nextCoord = coordinate.slice(0, 1) + (parseInt(coordinate.slice(1)) + i)
         console.log(prevCoord, nextCoord)
         if ( this.p1Board.isValid(prevCoord) && this.p1Board.isValid(nextCoord)) {
             console.log('coords are valid')
@@ -87,15 +88,18 @@ class Game {
     
        console.log( ship.shipLocation[midIndex - i],  ship.shipLocation[midIndex + i])       
       
-       console.log('horizonal', 'row number', rowNum, 'column number', colNum, 'ship location', ship.shipLocation[i])
+       console.log('horizonal', 'row number', rowNum, 'column number', colNum, 'ship location', location)
     } else { //vertical
-        prevCoord = coordinate.slice(0, 1) + (parseInt(coordinate.slice(1)) - (i * 10))
-        nextCoord = coordinate.slice(0, 1) + (parseInt(coordinate.slice(1)) + (i * 10))
+        console.log(ship.isHorizontal)
+        console.log('ship is vertical')
+        prevCoord = (parseInt(coordinate.slice(0, 1)) - i) + (coordinate.slice(1))
+        nextCoord = (parseInt(coordinate.slice(0, 1)) + i) + (coordinate.slice(1))
+        console.log(this.p1Board.isValid(prevCoord) && this.p1Board.isValid(nextCoord))
         if (this.p1Board.isValid(prevCoord) && this.p1Board.isValid(nextCoord)) {
         //first interation location = [0, '35', '45', '55', 0]
         //second interation location = ['25', '35', '45', '55', '65']
-            location[midIndex - (i * 10)] = prevCoord
-            location[midIndex + (i * 10)] = nextCoord
+            location[midIndex - i] = prevCoord
+            location[midIndex + i] = nextCoord
         } else { //if coordinates are not valid adjust row and try again
             let adjustedPosition = `${this.adjustRow(rowNum)}${colNum}`
             this.setShipLocation(player, shipIndex, adjustedPosition)

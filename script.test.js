@@ -19,9 +19,7 @@ const { Game,} = require('./src/script')
             test(`test player name: ${testPlayer.name}`, () => {
                 expect(testPlayer.name).toBe('player1')
             })
-            test('player revealed board occupied coordinates set', () => {
-                expect(testPlayer.setShipLocation(0, ['a1', 'a2', 'a3', 'a4', 'a5'])).toBe(testPlayer.occupiedCoordinates[0])
-            })            
+          
             describe('the Ship class keeps track of hits, sets isSunk', () => {
                 const carrier = testPlayer.ships[0]
                 test('decrease hit count until ship is sunk', () => {
@@ -35,7 +33,14 @@ const { Game,} = require('./src/script')
                 })
             })
             describe('setShipLocation takes a player, shipIndex, and coord and should validate and set', () => {
-                expect(testGame.setShipLocation(testPlayer, 0, '45' )).toBe(['43', '44', '45', '46', '47'])
+              test('horizontal location tree', () => {
+                expect(testGame.setShipLocation(testPlayer, 0, '45' )).toStrictEqual(['43', '44', '45', '46', '47'])
+              })
+              test('vertical location tree', () => {
+                testPlayer.switchOrientation(0)
+                expect(testGame.setShipLocation(testPlayer, 0, '45')).toStrictEqual(['25', '35', '45', '55', '65'])
+              })
+                
             })
         }) 
         describe('10 x 10 grid, where every square has coordinates and a grid index', () => {
