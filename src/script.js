@@ -48,41 +48,45 @@ class Game {
         return this.player2
     }
     setShipLocation(player, shipIndex, coordinate) {
-        
+        console.log(coordinate)
         let ship = player.ships[shipIndex].ship
         let location = ship.shipLocation
     
         const  length = ship.length   
-        const midIndex = Math.ceil(length / 2) - 1
-       
-
-        // ex. if length = 5 & coordinate = '45' location = [0, 0, '45', 0, 0]
+        let midIndex = Math.ceil(length / 2) - 1
+    
         location[midIndex] = coordinate
         console.log(coordinate)
-
+        // let loopLength = null
+        // if (length % 2 === 0) {
+        //   loopLength = midIndex - 1
+        // } else {
+        //     loopLength = midIndex 
+        // }
+        console.log('mid index', midIndex)
     for (let i = 0; i < midIndex + 1; i++) {
-        
+        console.log('mid index', midIndex, i)
         let rowNum = parseInt(coordinate[0]) % 10
         let colNum = (parseInt(coordinate.slice(1)) + 1) % 10
-
+       
         let prevCoord = null
         let nextCoord = null
-console.log(ship.isHorizontal)
+
     if (ship.isHorizontal === true) {
         console.log('ship is horizontal')
         prevCoord = coordinate.slice(0, 1) + (parseInt(coordinate.slice(1)) - i)
         nextCoord = coordinate.slice(0, 1) + (parseInt(coordinate.slice(1)) + i)
-        console.log(prevCoord, nextCoord)
+        console.log(prevCoord, nextCoord, i)
         if ( this.p1Board.isValid(prevCoord) && this.p1Board.isValid(nextCoord)) {
-            console.log('coords are valid')
-        //first interation location = [0, '44', '45', '46', 0]
-        //second interation location = ['43', '43', '45', '46', '47']
+            console.log('coords are valid', i)
             location[midIndex - i] = prevCoord
             location[midIndex + i] = nextCoord
         } else { //if coordinates are not valid adjust column and try again
-            console.log('coords NOT valid')
-            let adjustedPosition = `${rowNum}${this.adjustColumn(colNum)}`
-            console.log(adjustedPosition)
+            console.log('coords NOT valid', i)            
+            let adjustedColNum = this.adjustRowOrColumn(colNum)
+            console.log(adjustedColNum, i)
+            let adjustedPosition = `${rowNum}${adjustedColNum}`
+            console.log(adjustedPosition, i)
             this.setShipLocation(player, shipIndex, adjustedPosition)
         }
     
@@ -101,7 +105,7 @@ console.log(ship.isHorizontal)
             location[midIndex - i] = prevCoord
             location[midIndex + i] = nextCoord
         } else { //if coordinates are not valid adjust row and try again
-            let adjustedPosition = `${this.adjustRow(rowNum)}${colNum}`
+            let adjustedPosition = `${this.adjustRowOrColumn(rowNum)}${colNum}`
             this.setShipLocation(player, shipIndex, adjustedPosition)
         }
             
@@ -113,15 +117,17 @@ console.log(ship.isHorizontal)
         player.occupiedCoordinates.push([ship.name, location])
         return location
     }
-    adjustColumn = (colNum) => {
-        while (colNum > 0 && colNum < 10) {
-            if (colNum > 4) {
-                colNum = colNum - 1
+    adjustRowOrColumn = (num) => {
+        
+            if (num > 4) {
+                console.log('greater than 4', num)
+                num = num - 1
             } else {
-                colNum = colNum + 1
+                console.log('less than or equal 4', num)
+                num = num + 1
             }
-            return colNum
-        }
+            console.log(num)
+            return num
         
     }
     adjustRow = (rowNum) => {

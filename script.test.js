@@ -32,10 +32,19 @@ const { Game,} = require('./src/script')
                     expect(carrier.isSunk).toBeTruthy()
                 })
             })
-            describe('setShipLocation takes a player, shipIndex, and coord and should validate and set', () => {
+            describe('validates coordinates and pushes to ship array, invalid coordinates adjust and retry', () => {
               test('horizontal location tree', () => {
                 expect(testGame.setShipLocation(testPlayer, 0, '45' )).toStrictEqual(['43', '44', '45', '46', '47'])
               })
+              test('horizontal with invalid coordinates', () => {
+                expect(testGame.setShipLocation(testPlayer, 2, '00' )).toStrictEqual(['00', '01', '02', ])
+                expect(testGame.setShipLocation(testPlayer, 1, '00' )).toStrictEqual(['00', '01', '02', '03'])
+              })
+            test('adjust row or column increments by +1 for less than 4 or -1 for greater than 4', () => {
+                expect(testGame.adjustRowOrColumn(3)).toBe(4)
+                expect(testGame.adjustRowOrColumn(5)).toBe(4)
+                expect(testGame.adjustRowOrColumn(4)).toBe(5)
+            })
               test('vertical location tree', () => {
                 testPlayer.switchOrientation(0)
                 expect(testGame.setShipLocation(testPlayer, 0, '45')).toStrictEqual(['25', '35', '45', '55', '65'])
