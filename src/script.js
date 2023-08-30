@@ -50,21 +50,30 @@ class Game {
     setShipLocation(player, shipIndex, coordinate) {
         console.log(coordinate)
         let ship = player.ships[shipIndex].ship
+        // location array is initilized with 0 for each ships length
         let location = ship.shipLocation
     
         const  length = ship.length   
         let midIndex = Math.ceil(length / 2) - 1
-    
+        //set the middle index of each ship to the coordinate
         location[midIndex] = coordinate
         console.log(coordinate)
-        // let loopLength = null
-        // if (length % 2 === 0) {
-        //   loopLength = midIndex - 1
-        // } else {
-        //     loopLength = midIndex 
-        // }
+
+        let loopLength = midIndex + 1
+        // if ship length is even number add 1 to loop
+        console.log(ship.name, length)
+        console.log('is even number?',length % 2 === 0)
+        if (length % 2 === 0) {
+            console.log('even length')
+          location[midIndex - 1] = `${parseInt(coordinate[0])}${parseInt(coordinate.slice(1)) - 1}`
+          console.log(loopLength, location)
+          loopLength
+          console.log(loopLength)
+        } 
+        
+
         console.log('mid index', midIndex)
-    for (let i = 0; i < midIndex + 1; i++) {
+    for (let i = 0; i < loopLength; i++) {
         console.log('mid index', midIndex, i)
         let rowNum = parseInt(coordinate[0]) % 10
         let colNum = (parseInt(coordinate.slice(1)) + 1) % 10
@@ -83,8 +92,19 @@ class Game {
             location[midIndex + i] = nextCoord
         } else { //if coordinates are not valid adjust column and try again
             console.log('coords NOT valid', i)            
+
+
+
+
+
+
+
+
+
+
+
             let adjustedColNum = this.adjustRowOrColumn(colNum)
-            console.log(adjustedColNum, i)
+            console.log(adjustedColNum, colNum)
             let adjustedPosition = `${rowNum}${adjustedColNum}`
             console.log(adjustedPosition, i)
             this.setShipLocation(player, shipIndex, adjustedPosition)
