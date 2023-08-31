@@ -99,7 +99,7 @@ class Game {
                 } else { // start at the right end
                     const lastIndex = location.length - 1
                     location[lastIndex] = coordinate
-                    location[j] = coordinate[0] - j 
+                    location[lastIndex - j] = coordinate[0] + (coordinate[1] - j) 
                 }
                 
               }
