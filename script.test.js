@@ -39,6 +39,7 @@ const { Game,} = require('./src/script')
               test('horizontal with invalid coordinates', () => {
                 // expect(testGame.setShipLocation(testPlayer, 2, '00' )).toStrictEqual(['00', '01', '02', '03'])
                 expect(testGame.setShipLocation(testPlayer, 1, '00' )).toStrictEqual(['00', '01', '02', '03'])
+                expect(testGame.setShipLocation(testPlayer, 1, '09' )).toStrictEqual(['06', '07', '08', '09'])
               })
             test('adjust row or column increments by +1 for less than 4 or -1 for greater than 4', () => {
                 expect(testGame.adjustRowOrColumn(3)).toBe(4)

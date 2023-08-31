@@ -61,15 +61,7 @@ class Game {
 
         let loopLength = midIndex + 1
         // if ship length is even number add 1 to loop
-        console.log(ship.name, length)
-        console.log('is even number?',length % 2 === 0)
-        if (length % 2 === 0) {
-            console.log('even length')
-          location[midIndex - 1] = `${parseInt(coordinate[0])}${parseInt(coordinate.slice(1)) - 1}`
-          console.log(loopLength, location)
-          loopLength
-          console.log(loopLength)
-        } 
+       
         
 
         console.log('mid index', midIndex)
@@ -93,21 +85,26 @@ class Game {
         } else { //if coordinates are not valid adjust column and try again
             console.log('coords NOT valid', i)            
 
-
-
-
-
-
-
-
-
-
-
-            let adjustedColNum = this.adjustRowOrColumn(colNum)
-            console.log(adjustedColNum, colNum)
-            let adjustedPosition = `${rowNum}${adjustedColNum}`
-            console.log(adjustedPosition, i)
-            this.setShipLocation(player, shipIndex, adjustedPosition)
+            console.log(ship.name, length)
+            console.log('is even number?',length % 2 === 0)
+            //if even number
+            if (length % 2 === 0) {
+                loopLength = 0
+                console.log('even length')              
+              for (let j = 0; j < location.length; j++) {
+                //start on the left end
+                if (coordinate.slice(1) < 4) {
+                    location[0] = coordinate
+                    location[j] = coordinate[0] + j
+                } else { // start at the right end
+                    const lastIndex = location.length - 1
+                    location[lastIndex] = coordinate
+                    location[j] = coordinate[0] - j 
+                }
+                
+              }
+       
+            } 
         }
     
        console.log( ship.shipLocation[midIndex - i],  ship.shipLocation[midIndex + i])       
