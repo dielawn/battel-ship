@@ -47,6 +47,54 @@ class Game {
         this.otherPlayer = this.player1
         return this.player2
     }
+    setLocation(player, shipIndex, coordinate) {
+
+        if (!this.p1Board.isValid(coordinate)) {
+            return 'invalid coordinate'
+        }
+
+        const ship = player.ships[shipIndex].ship
+        const location = ship.shipLocation
+        const  length = ship.length
+        let midIndex = Math.ceil(length / 2) - 1
+
+        location[midIndex] = coordinate
+        
+        for (let i = 0; i < length; i++) {
+
+            let rowNum = parseInt(coordinate[0]) % 10
+            let colNum = (parseInt(coordinate.slice(1)) + 1) % 10
+            let current = this.togglePlusMinus()
+            console.log(current, i)
+           if (ship.isHorizontal == true) {
+            if (current === '-') {
+                location[midIndex - i] = coordinate - i
+            } else {
+                location[midIndex + i] = coordinate + i
+            }
+           } else { //isVertical
+            if (current === '-') {
+                location[midIndex - i] = coordinate - (i * 10)
+            } else {
+                location[midIndex + i] = coordinate + (i * 10)
+            }
+           }
+            
+
+        }
+
+    }
+    togglePlusMinus() {
+        let minus = '-'
+        let plus = '+'
+        let current = null
+        if (current === minus) {
+            current = plus
+        } else {
+            current = minus
+        }
+        return current
+    }
     setShipLocation(player, shipIndex, coordinate) {
         console.log(coordinate)
         let ship = player.ships[shipIndex].ship
@@ -82,33 +130,27 @@ class Game {
             console.log('coords are valid', i)
             location[midIndex - i] = prevCoord
             location[midIndex + i] = nextCoord
-        } else { //if coordinates are not valid adjust column and try again
+        } else { //if coordinates are not valid adjust coordinate to first valid coordinate 
             console.log('coords NOT valid', i)            
-
-            console.log(ship.name, length)
-            console.log('is even number?',length % 2 === 0)
             //if even number
             if (length % 2 === 0) {
                 loopLength = 0
-                console.log('even length')              
-              for (let j = 0; j < location.length; j++) {
+                console.log('even length')       
+                let locationLength = location.length       
+              for (let j = 0; j < locationLength; j++) {
                 //start on the left end
                 if (coordinate.slice(1) < 4) {
                     location[0] = coordinate
                     location[j] = coordinate[0] + j
                 } else { // start at the right end
-                    const lastIndex = location.length - 1
+                    const lastIndex = locationLength - 1
                     location[lastIndex] = coordinate
                     location[lastIndex - j] = coordinate[0] + (coordinate[1] - j) 
-                }
-                
+                } 
               }
-       
             } 
-        }
-    
-       console.log( ship.shipLocation[midIndex - i],  ship.shipLocation[midIndex + i])       
-      
+        }    
+       console.log( ship.shipLocation[midIndex - i],  ship.shipLocation[midIndex + i])             
        console.log('horizonal', 'row number', rowNum, 'column number', colNum, 'ship location', location)
     } else { //vertical
         console.log(ship.isHorizontal)

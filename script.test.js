@@ -33,9 +33,11 @@ const { Game,} = require('./src/script')
                 })
             })
             describe('validates coordinates and pushes to ship array, invalid coordinates adjust and retry', () => {
+          
               test('horizontal location tree', () => {
                 expect(testGame.setShipLocation(testPlayer, 0, '45' )).toStrictEqual(['43', '44', '45', '46', '47'])
-              })
+                expect(testGame.setShipLocation(testPlayer, 1, '45' )).toStrictEqual([ '44', '45', '46', '47'])
+            })
               test('horizontal with invalid coordinates', () => {
                 // expect(testGame.setShipLocation(testPlayer, 2, '00' )).toStrictEqual(['00', '01', '02', '03'])
                 expect(testGame.setShipLocation(testPlayer, 1, '00' )).toStrictEqual(['00', '01', '02', '03'])
