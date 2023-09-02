@@ -54,49 +54,51 @@ class Game {
         }
 
         const ship = player.ships[shipIndex].ship
+        // location array is initilized with a 0 for ships length
         const location = ship.shipLocation
         const  length = ship.length
+         //set the middle index of each ship to the coordinate
         let midIndex = Math.ceil(length / 2) - 1
 
         location[midIndex] = coordinate
-        
-        for (let i = 0; i < length; i++) {
+        let isMinus = true
+        for (let i = 0; i < length + 1; i++) {
 
-            let rowNum = parseInt(coordinate[0]) % 10
-            let colNum = (parseInt(coordinate.slice(1)) + 1) % 10
-            let current = this.togglePlusMinus()
-            console.log(current, i)
+            isMinus = this.toggleTrueFalse(isMinus)
+            console.log(isMinus, i)
            if (ship.isHorizontal == true) {
-            if (current === '-') {
+            if (isMinus) {
                 location[midIndex - i] = coordinate - i
             } else {
                 location[midIndex + i] = coordinate + i
             }
            } else { //isVertical
-            if (current === '-') {
-                location[midIndex - i] = coordinate - (i * 10)
+            if (isMinus) {
+                location[midIndex - i] = (coordinate[0] - (i * 10)) + coordinate[1]
             } else {
-                location[midIndex + i] = coordinate + (i * 10)
+                location[midIndex + i] = (coordinate[0] + (i * 10)) + coordinate[1]
             }
+           }         
+           // if invalid 
+           if (!this.p1Board.isValid(location[i])) {
+            //start at the left end of the grid
+            if (coordinate.slice(1) < 4) {
+                location[0] = coordinate
+                location[i] = coordinate[0] + i
+            } else { // start at the right end
+                const lastIndex = location.length - 1
+                location[lastIndex] = coordinate
+                location[lastIndex - i] = coordinate[0] + (coordinate[1] - i) 
+            } 
            }
-            
-
         }
-
+        return location
     }
-    togglePlusMinus() {
-        let minus = '-'
-        let plus = '+'
-        let current = null
-        if (current === minus) {
-            current = plus
-        } else {
-            current = minus
-        }
-        return current
+    toggleTrueFalse(current) {
+      return !current
     }
     setShipLocation(player, shipIndex, coordinate) {
-        console.log(coordinate)
+
         let ship = player.ships[shipIndex].ship
         // location array is initilized with 0 for each ships length
         let location = ship.shipLocation
@@ -105,16 +107,11 @@ class Game {
         let midIndex = Math.ceil(length / 2) - 1
         //set the middle index of each ship to the coordinate
         location[midIndex] = coordinate
-        console.log(coordinate)
 
         let loopLength = midIndex + 1
         // if ship length is even number add 1 to loop
        
-        
-
-        console.log('mid index', midIndex)
     for (let i = 0; i < loopLength; i++) {
-        console.log('mid index', midIndex, i)
         let rowNum = parseInt(coordinate[0]) % 10
         let colNum = (parseInt(coordinate.slice(1)) + 1) % 10
        
@@ -122,20 +119,15 @@ class Game {
         let nextCoord = null
 
     if (ship.isHorizontal === true) {
-        console.log('ship is horizontal')
         prevCoord = coordinate.slice(0, 1) + (parseInt(coordinate.slice(1)) - i)
         nextCoord = coordinate.slice(0, 1) + (parseInt(coordinate.slice(1)) + i)
-        console.log(prevCoord, nextCoord, i)
         if ( this.p1Board.isValid(prevCoord) && this.p1Board.isValid(nextCoord)) {
-            console.log('coords are valid', i)
             location[midIndex - i] = prevCoord
             location[midIndex + i] = nextCoord
-        } else { //if coordinates are not valid adjust coordinate to first valid coordinate 
-            console.log('coords NOT valid', i)            
+        } else { //if coordinates are not valid adjust coordinate to first valid coordinate            
             //if even number
             if (length % 2 === 0) {
-                loopLength = 0
-                console.log('even length')       
+                loopLength = 0    
                 let locationLength = location.length       
               for (let j = 0; j < locationLength; j++) {
                 //start on the left end
@@ -150,8 +142,6 @@ class Game {
               }
             } 
         }    
-       console.log( ship.shipLocation[midIndex - i],  ship.shipLocation[midIndex + i])             
-       console.log('horizonal', 'row number', rowNum, 'column number', colNum, 'ship location', location)
     } else { //vertical
         console.log(ship.isHorizontal)
         console.log('ship is vertical')
@@ -179,13 +169,10 @@ class Game {
     adjustRowOrColumn = (num) => {
         
             if (num > 4) {
-                console.log('greater than 4', num)
                 num = num - 1
             } else {
-                console.log('less than or equal 4', num)
                 num = num + 1
             }
-            console.log(num)
             return num
         
     }

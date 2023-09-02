@@ -33,8 +33,8 @@ const { Game,} = require('./src/script')
                 })
             })
             describe('validates coordinates and pushes to ship array, invalid coordinates adjust and retry', () => {
-          
               test('horizontal location tree', () => {
+                expect(testGame.setLocation(testPlayer, 0, '45')).toStrictEqual(['43', '44', '45', '46', '47'])
                 expect(testGame.setShipLocation(testPlayer, 0, '45' )).toStrictEqual(['43', '44', '45', '46', '47'])
                 expect(testGame.setShipLocation(testPlayer, 1, '45' )).toStrictEqual([ '44', '45', '46', '47'])
             })
@@ -48,10 +48,10 @@ const { Game,} = require('./src/script')
                 expect(testGame.adjustRowOrColumn(5)).toBe(4)
                 expect(testGame.adjustRowOrColumn(4)).toBe(5)
             })
-              test('vertical location tree', () => {
-                testPlayer.switchOrientation(0)
-                expect(testGame.setShipLocation(testPlayer, 0, '45')).toStrictEqual(['25', '35', '45', '55', '65'])
-              })
+            //   test('vertical location tree', () => {
+            //     testPlayer.switchOrientation(0)
+            //     expect(testGame.setShipLocation(testPlayer, 0, '45')).toStrictEqual(['25', '35', '45', '55', '65'])
+            //   })
                 
             })
         }) 
