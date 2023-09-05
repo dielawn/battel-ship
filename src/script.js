@@ -47,6 +47,47 @@ class Game {
         this.otherPlayer = this.player1
         return this.player2
     }
+    setNewLocation(player, shipIndex, coordinate) {
+
+        if (!this.p1Board.isValid(coordinate)) {
+            return 'invalid coordinate'
+        }
+
+        const ship = player.ships[shipIndex].ship
+        const location = ship.shipLocation
+        const length = ship.length
+        const midIndex = Math.floor(length / 2)
+
+        location[midIndex] = coordinate
+
+        for (let i = 0; i < length; i++) {
+            let prevCoord, nextCoord
+
+            if (ship.isHorizontal) {
+                prevCoord = coordinate - i
+                nextCoord = coordinate + i
+            } else {
+                const rowNum = parseInt(coordinate[0])
+                const colNum = parseInt(coordinate.slice(1))
+                prevCoord = `${rowNum - i}${colNum}`
+                nextCoord = `${rowNum + i}${colNum}`
+            }
+
+            if (this.p1Board.isValid(prevCoord)) {
+                location[midIndex - i] = prevCoord
+            } else {
+                break // stop if a prevCoord is invalid
+            }
+
+            if (this.p1Board.isValid(nextCoord)) {
+                location[midIndex + 1] = nextCoord
+            } else {
+                break
+            }
+        }
+
+        return location
+    }
     setLocation(player, shipIndex, coordinate) {
 
         if (!this.p1Board.isValid(coordinate)) {
