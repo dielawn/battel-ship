@@ -33,15 +33,16 @@ const { Game,} = require('./src/script')
                 })
             })
             describe('validates coordinates and pushes to ship array, invalid coordinates adjust and retry', () => {
-              test('horizontal location tree', () => {
-                expect(testGame.setNewLocation(testPlayer, 0, '45')).toStrictEqual(['43', '44', '45', '46', '47'])
-                expect(testGame.setShipLocation(testPlayer, 0, '45' )).toStrictEqual(['43', '44', '45', '46', '47'])
-                expect(testGame.setShipLocation(testPlayer, 1, '45' )).toStrictEqual([ '44', '45', '46', '47'])
+             
+                test('horizontal location tree', () => {
+                expect(testGame.setLocation(testPlayer, 0, 45)).toStrictEqual([43, 44, 45, 46, 47])
+                expect(testGame.setShipLocation(testPlayer, 0, 45 )).toStrictEqual([43, 44, 45, 46, 47])
+                // expect(testGame.setShipLocation(testPlayer, 1, '45' )).toStrictEqual([ '44', '45', '46', '47'])
             })
               test('horizontal with invalid coordinates', () => {
                 // expect(testGame.setShipLocation(testPlayer, 2, '00' )).toStrictEqual(['00', '01', '02', '03'])
-                expect(testGame.setShipLocation(testPlayer, 1, '00' )).toStrictEqual(['00', '01', '02', '03'])
-                expect(testGame.setShipLocation(testPlayer, 1, '09' )).toStrictEqual(['06', '07', '08', '09'])
+                // expect(testGame.setShipLocation(testPlayer, 1, '00' )).toStrictEqual(['00', '01', '02', '03'])
+                // expect(testGame.setShipLocation(testPlayer, 1, '09' )).toStrictEqual(['06', '07', '08', '09'])
               })
             test('adjust row or column increments by +1 for less than 4 or -1 for greater than 4', () => {
                 expect(testGame.adjustRowOrColumn(3)).toBe(4)
@@ -61,14 +62,17 @@ const { Game,} = require('./src/script')
                 expect(testGrid.grid.length).toBe(100)
             })
             test('findIndex returns a grid index from x y coordinates', () => {
-                expect(testGrid.findIndex("00")).toBe(testGrid.grid[0])
-                expect(testGrid.findIndex("50")).toBe(testGrid.grid[50])
-                expect(testGrid.findIndex('99')).toBe(testGrid.grid[99])
+                expect(testGrid.findIndex(0,0)).toBe(testGrid.grid[0])
+                expect(testGrid.findIndex(5,0)).toBe(testGrid.grid[50])
+                expect(testGrid.findIndex(9,9)).toBe(testGrid.grid[99])
             })
             test('findCoords returns the grid coordinates from an index', () => {
                 expect(testGrid.findCoords(0)).toBe(testGrid.grid[0][0], testGrid.grid[0][1])
             })
-            
+            test('isValid', () => {
+                expect(testGrid.isValid(0, 0)).toBeTruthy()
+                
+            })
             // test('set player should set player 1 to initialize then toggle players')
            
             

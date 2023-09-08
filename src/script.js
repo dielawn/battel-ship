@@ -49,95 +49,62 @@ class Game {
     }
     setNewLocation(player, shipIndex, coordinate) {
 
-        if (!this.p1Board.isValid(coordinate)) {
-            return 'invalid coordinate'
+        if (this.p1Board.isValid(coordinate)) {
+            return 'invalid coordinate';
         }
-
-        const ship = player.ships[shipIndex].ship
-        const location = ship.shipLocation
-        const length = ship.length
-        const midIndex = Math.floor(length / 2)
-
-        location[midIndex] = coordinate
-
+    
+        const ship = player.ships[shipIndex].ship;
+        const location = ship.shipLocation;
+        const length = ship.length;
+    
         for (let i = 0; i < length; i++) {
-            let prevCoord, nextCoord
-
             if (ship.isHorizontal) {
-                prevCoord = coordinate - i
-                nextCoord = coordinate + i
-            } else {
-                const rowNum = parseInt(coordinate[0])
-                const colNum = parseInt(coordinate.slice(1))
-                prevCoord = `${rowNum - i}${colNum}`
-                nextCoord = `${rowNum + i}${colNum}`
+                location[i] = coordinate + i;
+            } else { // isVertical
+                const rowNum = parseInt(coordinate[0]);
+                const colNum = parseInt(coordinate.slice(1));
+                location[i] = `${rowNum + i}${colNum}`;
             }
-
-            if (this.p1Board.isValid(prevCoord)) {
-                location[midIndex - i] = prevCoord
-            } else {
-                break // stop if a prevCoord is invalid
-            }
-
-            if (this.p1Board.isValid(nextCoord)) {
-                location[midIndex + 1] = nextCoord
-            } else {
-                break
+    
+            if (!this.p1Board.isValid(location[i])) {
+                return 'invalid location'; // Return error if any coordinate is invalid
             }
         }
-
-        return location
+    
+        return location;
     }
+    
+   completeArray(array) {
+    
+    for (let i = 0; i < array.length; i++) {
+
+        if (array[i] > 0) {
+            midIndex = array[i]
+        }
+    }
+   }
     setLocation(player, shipIndex, coordinate) {
 
-        if (!this.p1Board.isValid(coordinate)) {
-            return 'invalid coordinate'
-        }
+        let ship = player.ships[shipIndex].ship
+        let location = ship.shipLocation    
+        const  length = ship.length   
+        console.log(`ship: ${ship.name}, length: ${length},  coordinate: ${coordinate}`)
+       console.log(`ship-location: ${location}`)
 
-        const ship = player.ships[shipIndex].ship
-        // location array is initilized with a 0 for ships length
-        const location = ship.shipLocation
-        const  length = ship.length
-         //set the middle index of each ship to the coordinate
-        let midIndex = Math.ceil(length / 2) - 1
+       let midIndex = Math.ceil(length / 2) - 1
+       console.log(`midIndex: ${midIndex}`)
+       let lastIndex = length - 1
+       console.log(`lastIndex: ${lastIndex}`)
 
-        location[midIndex] = coordinate
-        let isMinus = true
-        for (let i = 0; i < length + 1; i++) {
-
-            isMinus = this.toggleTrueFalse(isMinus)
-            console.log(isMinus, i)
-           if (ship.isHorizontal == true) {
-            if (isMinus) {
-                location[midIndex - i] = coordinate - i
-            } else {
-                location[midIndex + i] = coordinate + i
-            }
-           } else { //isVertical
-            if (isMinus) {
-                location[midIndex - i] = (coordinate[0] - (i * 10)) + coordinate[1]
-            } else {
-                location[midIndex + i] = (coordinate[0] + (i * 10)) + coordinate[1]
-            }
-           }         
-           // if invalid 
-           if (!this.p1Board.isValid(location[i])) {
-            //start at the left end of the grid
-            if (coordinate.slice(1) < 4) {
-                location[0] = coordinate
-                location[i] = coordinate[0] + i
-            } else { // start at the right end
-                const lastIndex = location.length - 1
-                location[lastIndex] = coordinate
-                location[lastIndex - i] = coordinate[0] + (coordinate[1] - i) 
-            } 
-           }
-        }
-        return location
+       for (let i = 0; i < length; i++) {
+        console.log(i)
+        console.log(`coord - midIndex + i: ${((coordinate - midIndex) + i)}`)
+         location[i] = (coordinate - midIndex) + i
+       }
+       console.log(`location: ${location}`)
+       return location
     }
-    toggleTrueFalse(current) {
-      return !current
-    }
+ 
     setShipLocation(player, shipIndex, coordinate) {
 
         let ship = player.ships[shipIndex].ship
@@ -150,44 +117,38 @@ class Game {
         location[midIndex] = coordinate
 
         let loopLength = midIndex + 1
-        // if ship length is even number add 1 to loop
-       
-    for (let i = 0; i < loopLength; i++) {
-        let rowNum = parseInt(coordinate[0]) % 10
-        let colNum = (parseInt(coordinate.slice(1)) + 1) % 10
+              
+    for (let i = 1; i < length; i++) {
+        let rowNum = coordinate[0] % 10
+        let colNum = coordinate + 1 % 10
        
         let prevCoord = null
         let nextCoord = null
 
     if (ship.isHorizontal === true) {
-        prevCoord = coordinate.slice(0, 1) + (parseInt(coordinate.slice(1)) - i)
-        nextCoord = coordinate.slice(0, 1) + (parseInt(coordinate.slice(1)) + i)
-        if ( this.p1Board.isValid(prevCoord) && this.p1Board.isValid(nextCoord)) {
+        console.log('coordinate:', coordinate)
+        prevCoord = coordinate - i
+        nextCoord = coordinate + i
+        console.log(`prevCoord ${prevCoord}, nextCoord ${nextCoord}`)
+        console.log(this.p1Board.isValid(prevCoord[0], prevCoord[1]))
+        console.log( this.p1Board.isValid(nextCoord[0], nextCoord[1]))
+        if ( this.p1Board.isValid(prevCoord[0], prevCoord[1]) && this.p1Board.isValid(nextCoord[0], nextCoord[1])) {
             location[midIndex - i] = prevCoord
             location[midIndex + i] = nextCoord
+            console.log(length % 2 === 0 )
+            console.log( i, loopLength)
+            console.log(`location ${location}, prevCoord ${prevCoord}, nextCoord ${nextCoord}`)
         } else { //if coordinates are not valid adjust coordinate to first valid coordinate            
             //if even number
             if (length % 2 === 0) {
-                loopLength = 0    
-                let locationLength = location.length       
-              for (let j = 0; j < locationLength; j++) {
-                //start on the left end
-                if (coordinate.slice(1) < 4) {
-                    location[0] = coordinate
-                    location[j] = coordinate[0] + j
-                } else { // start at the right end
-                    const lastIndex = locationLength - 1
-                    location[lastIndex] = coordinate
-                    location[lastIndex - j] = coordinate[0] + (coordinate[1] - j) 
-                } 
-              }
+                
             } 
         }    
     } else { //vertical
         console.log(ship.isHorizontal)
         console.log('ship is vertical')
-        prevCoord = (parseInt(coordinate.slice(0, 1)) - i) + (coordinate.slice(1))
-        nextCoord = (parseInt(coordinate.slice(0, 1)) + i) + (coordinate.slice(1))
+        prevCoord = coordinate / 10
+        nextCoord = coordinate * 10
         console.log(this.p1Board.isValid(prevCoord) && this.p1Board.isValid(nextCoord))
         if (this.p1Board.isValid(prevCoord) && this.p1Board.isValid(nextCoord)) {
         //first interation location = [0, '35', '45', '55', 0]
@@ -260,8 +221,8 @@ class Game {
 
 class Grid {
     constructor() {
-        this.yAxis = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-        this.xAxis =[ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+        this.yAxis = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        this.xAxis = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         this.grid = this.createGrid()
     }
     createGrid() {
@@ -269,22 +230,28 @@ class Grid {
 
         for (let i = 0; i < this.yAxis.length; i++) {
             for (let j = 0; j < this.xAxis.length; j++) {
-                grid.push([this.yAxis[i] + this.xAxis[j]])
+                grid.push([this.yAxis[i], this.xAxis[j]])
             }
         }
         
         return grid
     }
-    findIndex(xy) {
+    findIndex(x, y) {
+        
         const grid = this.grid
         for (let i = 0; i < grid.length; i++) {
-            // console.log(grid[i], [xy])
-            if (grid[i][0] === xy ) {
+            
+            if (grid[i][0] === x && grid[i][1] === y) {
              return grid[i]
             }
         }
         return 'Target not found'
     }
+    
+    isValid(x, y) {
+        return this.grid.some(element => element[0] === x && element[1] === y )
+    }
+  
     findCoords(index) {
         const grid = this.grid
         if (index >= 0 && index < this.grid.length) {
@@ -294,9 +261,7 @@ class Grid {
         }
 
     }
-    isValid(xy) {
-        return this.grid.some(element => element[0] === xy )
-    }
+    
     
 } 
 
@@ -331,11 +296,11 @@ class Player {
     }
     createShips() {
         const ships = [
-            { name: 'Carrier', length: 5, shipLocation: [0,0,0,0,0], isHorizontal: true},     //ship 0
-            { name: 'Battleship', length: 4, shipLocation: [0,0,0,0], isHorizontal: true },    //ship 1
-            { name: 'Destroyer', length: 3, shipLocation: [0,0,0], isHorizontal: true },       //ship 2
-            { name: 'Submarine', length: 3, shipLocation: [0,0,0], isHorizontal: true },       //ship 3
-            { name: 'Patrol', length: 2, shipLocation: [0,0], isHorizontal: true }             //ship 4
+            { name: 'Carrier', length: 5, shipLocation: [[0],[0],[0],[0],[0]], isHorizontal: true},     //ship 0
+            { name: 'Battleship', length: 4, shipLocation: [[0],[0],[0],[0]], isHorizontal: true },    //ship 1
+            { name: 'Destroyer', length: 3, shipLocation: [[0],[0],[0]], isHorizontal: true },       //ship 2
+            { name: 'Submarine', length: 3, shipLocation: [[0],[0],[0]], isHorizontal: true },       //ship 3
+            { name: 'Patrol', length: 2, shipLocation: [[0],[0]], isHorizontal: true }             //ship 4
         ]
         const playerShips = []
         for(const ship of ships) {
