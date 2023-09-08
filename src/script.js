@@ -88,19 +88,20 @@ class Game {
         let ship = player.ships[shipIndex].ship
         let location = ship.shipLocation    
         const  length = ship.length   
-        console.log(`ship: ${ship.name}, length: ${length},  coordinate: ${coordinate}`)
-       console.log(`ship-location: ${location}`)
+        let midIndex = Math.ceil(length / 2) - 1
 
-       let midIndex = Math.ceil(length / 2) - 1
-       console.log(`midIndex: ${midIndex}`)
-       let lastIndex = length - 1
-       console.log(`lastIndex: ${lastIndex}`)
+       console.log(`isHorizontal: ${ship.isHorizontal}`)
 
        for (let i = 0; i < length; i++) {
-        console.log(i)
-        console.log(`coord - midIndex + i: ${((coordinate - midIndex) + i)}`)
-         location[i] = (coordinate - midIndex) + i
+        
+        if (ship.isHorizontal) {
+            location[i] = (coordinate - midIndex) + i
+        } else { //vertical
+            location[i] = (coordinate - (midIndex * 10)) + (i * 10)
+        }
+         
        }
+
        console.log(`location: ${location}`)
        return location
     }
