@@ -63,16 +63,16 @@ const { Game,} = require('./src/script')
             test('checks for a grid length of 100', () => {
                 expect(testGrid.grid.length).toBe(100)
             })
-            test('findIndex returns a grid index from x y coordinates', () => {
-                expect(testGrid.findIndex(0,0)).toBe(testGrid.grid[0])
-                expect(testGrid.findIndex(5,0)).toBe(testGrid.grid[50])
-                expect(testGrid.findIndex(9,9)).toBe(testGrid.grid[99])
-            })
+         
             test('findCoords returns the grid coordinates from an index', () => {
-                expect(testGrid.findCoords(0)).toBe(testGrid.grid[0][0], testGrid.grid[0][1])
+                expect(testGrid.findCoords(0)).toBe(testGrid.grid[0])
+                expect(testGrid.findCoords(9)).toBe(testGrid.grid[9])
+                expect(testGrid.findCoords(19)).toBe(testGrid.grid[19])
             })
             test('isValid', () => {
-                expect(testGrid.isValid(0, 0)).toBeTruthy()
+                expect(testGrid.isValid(45)).toBeTruthy()
+                expect(testGrid.isValid(100)).toBeFalsy()
+                expect(testGrid.isValid(-1)).toBeFalsy()
                 
             })
             // test('set player should set player 1 to initialize then toggle players')

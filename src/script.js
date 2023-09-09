@@ -92,20 +92,29 @@ class Game {
 
        console.log(`isHorizontal: ${ship.isHorizontal}`)
 
-       for (let i = 0; i < length; i++) {
-        
+       for (let i = 0; i < length; i++) {        
         if (ship.isHorizontal) {
             location[i] = (coordinate - midIndex) + i
         } else { //vertical
             location[i] = (coordinate - (midIndex * 10)) + (i * 10)
         }
-         
        }
 
-       console.log(`location: ${location}`)
+       //check location validity
+       console.log(`location: ${location}, location-length: ${location.length}`)
+       for (let i = 0; i < location.length; i++) {
+        console.log( `location-coordinates: ${location[i]}, isValid: ${this.p1Board.isValid(location[i])}, index: ${i}`)
+        // when coordinate is valid set to lastValid
+        // if coordinate is not valid call a function that adjusts 
+        // the starting coordinate untill all coordinates are valid
+        }
+
        return location
     }
- 
+    adjustInvalid(coordinate, lastValid) {
+        //use lastValid coord to set coordinate 
+        //startingCoord = lastValid 
+    }
     setShipLocation(player, shipIndex, coordinate) {
 
         let ship = player.ships[shipIndex].ship
@@ -231,39 +240,26 @@ class Grid {
 
         for (let i = 0; i < this.yAxis.length; i++) {
             for (let j = 0; j < this.xAxis.length; j++) {
-                grid.push([this.yAxis[i], this.xAxis[j]])
+                grid.push(`${this.yAxis[i]}${this.xAxis[j]}`)
             }
         }
         
         return grid
     }
-    findIndex(x, y) {
-        
-        const grid = this.grid
-        for (let i = 0; i < grid.length; i++) {
-            
-            if (grid[i][0] === x && grid[i][1] === y) {
-             return grid[i]
-            }
+    isValid(coordinate) {
+        if (coordinate >= 0 && coordinate <= 99) {
+            return true
         }
-        return 'Target not found'
+        return false
     }
-    
-    isValid(x, y) {
-        return this.grid.some(element => element[0] === x && element[1] === y )
-    }
-  
     findCoords(index) {
-        const grid = this.grid
         if (index >= 0 && index < this.grid.length) {
-            return this.grid[index][0]
+            return this.grid[index]
         } else {
             return 'Invalid index'
         }
 
     }
-    
-    
 } 
 
 class Ship {
@@ -283,8 +279,6 @@ class Ship {
       }
       return this.hitPoints
     }    
-   
-   
 }
 
 class Player {
@@ -293,7 +287,6 @@ class Player {
         this.occupiedCoordinates = []
         this.choosenCoordinates = []        
         this.ships = this.createShips()
-        
     }
     createShips() {
         const ships = [
@@ -309,25 +302,20 @@ class Player {
         }
         return playerShips
     }
-    
     fire(coords) {
         for (let i = 0; i < this.choosenCoordinates.length; i++) {
             if( coords === this.choosenCoordinates[i]) 
             return 'coordinates already been fired at'
         } 
-        const selected = []
-        selected.push(coords)
-        this.choosenCoordinates.push(selected)    
+        this.choosenCoordinates.push(coords)    
         return 'shot fired'
         } 
     switchOrientation(shipIndex) {
-        const ship = this.ships[shipIndex].ship
-        
+        const ship = this.ships[shipIndex].ship        
         ship.isHorizontal = !ship.isHorizontal
         console.log(ship.name, ship.isHorizontal)
-        
     }
-    }
+}
     
 
 
