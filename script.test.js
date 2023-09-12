@@ -38,17 +38,16 @@ const { Game,} = require('./src/script')
                 expect(testGame.setLocation(testPlayer, 0, 45)).toStrictEqual([43, 44, 45, 46, 47])
                 expect(testGame.setLocation(testPlayer, 0, 45 )).toStrictEqual([43, 44, 45, 46, 47])
                 expect(testGame.setLocation(testPlayer, 1, 45 )).toStrictEqual([ 44, 45, 46, 47])
+               
+                //invalid coord
+                // expect(testGame.setLocation(testPlayer, 1, 0)).toStrictEqual([ 0, 1, 2, 3])
+                // expect(testGame.setLocation(testPlayer, 1, 9)).toStrictEqual([ 6, 7, 8, 9])
             })
-              test('horizontal with invalid coordinates', () => {
-                // expect(testGame.setShipLocation(testPlayer, 2, '00' )).toStrictEqual(['00', '01', '02', '03'])
-                // expect(testGame.setShipLocation(testPlayer, 1, '00' )).toStrictEqual(['00', '01', '02', '03'])
-                // expect(testGame.setShipLocation(testPlayer, 1, '09' )).toStrictEqual(['06', '07', '08', '09'])
-              })
-            test('adjust row or column increments by +1 for less than 4 or -1 for greater than 4', () => {
-                expect(testGame.adjustRowOrColumn(3)).toBe(4)
-                expect(testGame.adjustRowOrColumn(5)).toBe(4)
-                expect(testGame.adjustRowOrColumn(4)).toBe(5)
+            test('linkCells', () => {
+                expect(testGame.linkCells(45)).toEqual({"cell": 45, "nextHorizontal": 46, "nextVertical": 55, "prevHorizontal": 44, "prevVertical": 35}
+                )
             })
+
               test('vertical location tree', () => {
                 testPlayer.switchOrientation(0)
                 expect(testGame.setLocation(testPlayer, 0, 45)).toStrictEqual([25, 35, 45, 55, 65])
@@ -71,6 +70,7 @@ const { Game,} = require('./src/script')
             })
             test('isValid', () => {
                 expect(testGrid.isValid(45)).toBeTruthy()
+                expect(testGrid.isValid(0)).toBeTruthy()
                 expect(testGrid.isValid(100)).toBeFalsy()
                 expect(testGrid.isValid(-1)).toBeFalsy()
                 

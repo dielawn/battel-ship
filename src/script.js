@@ -1,3 +1,4 @@
+const { isValid } = require("date-fns")
 
 class Game {
     constructor() {
@@ -47,50 +48,12 @@ class Game {
         this.otherPlayer = this.player1
         return this.player2
     }
-    setNewLocation(player, shipIndex, coordinate) {
-
-        if (this.p1Board.isValid(coordinate)) {
-            return 'invalid coordinate';
-        }
-    
-        const ship = player.ships[shipIndex].ship;
-        const location = ship.shipLocation;
-        const length = ship.length;
-    
-        for (let i = 0; i < length; i++) {
-            if (ship.isHorizontal) {
-                location[i] = coordinate + i;
-            } else { // isVertical
-                const rowNum = parseInt(coordinate[0]);
-                const colNum = parseInt(coordinate.slice(1));
-                location[i] = `${rowNum + i}${colNum}`;
-            }
-    
-            if (!this.p1Board.isValid(location[i])) {
-                return 'invalid location'; // Return error if any coordinate is invalid
-            }
-        }
-    
-        return location;
-    }
-    
-   completeArray(array) {
-    
-    for (let i = 0; i < array.length; i++) {
-
-        if (array[i] > 0) {
-            midIndex = array[i]
-        }
-    }
-   }
     setLocation(player, shipIndex, coordinate) {
-
+        console.log(`coord: ${coordinate}`)
         let ship = player.ships[shipIndex].ship
         let location = ship.shipLocation    
         const  length = ship.length   
         let midIndex = Math.ceil(length / 2) - 1
-
-       console.log(`isHorizontal: ${ship.isHorizontal}`)
 
        for (let i = 0; i < length; i++) {        
         if (ship.isHorizontal) {
@@ -100,106 +63,56 @@ class Game {
         }
        }
 
-       //check location validity
-       console.log(`location: ${location}, location-length: ${location.length}`)
-       for (let i = 0; i < location.length; i++) {
-        console.log( `location-coordinates: ${location[i]}, isValid: ${this.p1Board.isValid(location[i])}, index: ${i}`)
-        // when coordinate is valid set to lastValid
-        // if coordinate is not valid call a function that adjusts 
-        // the starting coordinate untill all coordinates are valid
-        }
-
-       return location
-    }
-    adjustInvalid(coordinate, lastValid) {
-        //use lastValid coord to set coordinate 
-        //startingCoord = lastValid 
-    }
-    setShipLocation(player, shipIndex, coordinate) {
-
-        let ship = player.ships[shipIndex].ship
-        // location array is initilized with 0 for each ships length
-        let location = ship.shipLocation
-    
-        const  length = ship.length   
-        let midIndex = Math.ceil(length / 2) - 1
-        //set the middle index of each ship to the coordinate
-        location[midIndex] = coordinate
-
-        let loopLength = midIndex + 1
-              
-    for (let i = 1; i < length; i++) {
-        let rowNum = coordinate[0] % 10
-        let colNum = coordinate + 1 % 10
-       
-        let prevCoord = null
-        let nextCoord = null
-
-    if (ship.isHorizontal === true) {
-        console.log('coordinate:', coordinate)
-        prevCoord = coordinate - i
-        nextCoord = coordinate + i
-        console.log(`prevCoord ${prevCoord}, nextCoord ${nextCoord}`)
-        console.log(this.p1Board.isValid(prevCoord[0], prevCoord[1]))
-        console.log( this.p1Board.isValid(nextCoord[0], nextCoord[1]))
-        if ( this.p1Board.isValid(prevCoord[0], prevCoord[1]) && this.p1Board.isValid(nextCoord[0], nextCoord[1])) {
-            location[midIndex - i] = prevCoord
-            location[midIndex + i] = nextCoord
-            console.log(length % 2 === 0 )
-            console.log( i, loopLength)
-            console.log(`location ${location}, prevCoord ${prevCoord}, nextCoord ${nextCoord}`)
-        } else { //if coordinates are not valid adjust coordinate to first valid coordinate            
-            //if even number
-            if (length % 2 === 0) {
-                
-            } 
-        }    
-    } else { //vertical
-        console.log(ship.isHorizontal)
-        console.log('ship is vertical')
-        prevCoord = coordinate / 10
-        nextCoord = coordinate * 10
-        console.log(this.p1Board.isValid(prevCoord) && this.p1Board.isValid(nextCoord))
-        if (this.p1Board.isValid(prevCoord) && this.p1Board.isValid(nextCoord)) {
-        //first interation location = [0, '35', '45', '55', 0]
-        //second interation location = ['25', '35', '45', '55', '65']
-            location[midIndex - i] = prevCoord
-            location[midIndex + i] = nextCoord
-        } else { //if coordinates are not valid adjust row and try again
-            let adjustedPosition = `${this.adjustRowOrColumn(rowNum)}${colNum}`
-            this.setShipLocation(player, shipIndex, adjustedPosition)
-        }
-            
-        console.log('vertical', 'row numberr', rowNum, 'column number', colNum, 'ship location', ship.shipLocation[i])
-        }
-
-    }
-        console.log(`${ship.name}: ${location}`) 
-        player.occupiedCoordinates.push([ship.name, location])
+    //check location validity 
+      let isLocationValid = this.checkValidity(location)
+      let invalidLength = isLocationValid.invalid.length
+      let validLength = isLocationValid.valid.length
+      console.log(`invalid length: ${invalidLength}, location: ${location}`)
+      if (invalidLength === 0) {
         return location
+      } else {
+      
+        for (let i = 0; i < invalidLength; i++) {
+        //ship length of 4 left side of grid
+            if (location[0] < 0) {
+
+                location[length] = isLocationValid.valid[validLength - 1] + ( i + 1 )
+                location.shift() 
+
+            } 
+        }        
     }
-    adjustRowOrColumn = (num) => {
-        
-            if (num > 4) {
-                num = num - 1
-            } else {
-                num = num + 1
-            }
-            return num
-        
+      return location
     }
-    adjustRow = (rowNum) => {
-        while (rowNum > 0 && rowNum < 10) {
-            if (rowNum > 4) {
-                rowNum = rowNum-- 
-            } else {
-                rowNum = rowNum++
-            }
-            return rowNum
+    linkCells(value) {
+        const isEndOfRow = value % 10 === 9
+        const isStartOfRow = value % 10 === 0
+        const isTop = value >= 0
+        const isBottom = value <= 99
+        return {
+            cell: value,
+            prevHorizontal: isStartOfRow ? null : value - 1,
+            nextHorizontal: isEndOfRow ? null : value + 1,
+            prevVertical: isTop ? value - 10 : null,
+            nextVertical: isBottom ? value + 10 : null
         }
-        
     }
-        
+    checkValidity(array) {
+        const validityData = {
+            invalid: [],
+            valid: []
+        }
+    
+        for (let i = 0; i < array.length; i++) {
+            if (!this.p1Board.isValid(array[i])) {
+                validityData.invalid.push(array[i])
+            } else {
+                validityData.valid.push(array[i])
+            }
+        }
+
+        return validityData
+    }        
     isHit(coords) {
         let coordinates = this.otherPlayer.occupiedCoordinates
         for (let i = 0; i < coordinates.length; i++) {
