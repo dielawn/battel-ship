@@ -84,17 +84,38 @@ class Game {
     }
       return location
     }
+    shipLocation(player, shipIndex, coordinate) {
+
+        let ship = player.ships[shipIndex].ship
+        let location = ship.shipLocation    
+        const  length = ship.length   
+        let midIndex = Math.ceil(length / 2) - 1
+
+        location[midIndex] = coordinate
+        let testArray = []
+       for (let i = 0; i < length; i++) {      
+            let cellObject = this.linkCells((coordinate - midIndex) + i)
+            if (cellObject.nextHorizontal != null && cellObject.prevHorizontal != null) {
+                
+                testArray.push(cellObject.cell)
+
+                location[i] = testArray[i]
+            }  
+            
+       }
+       return location
+    }
     linkCells(value) {
-        const isEndOfRow = value % 10 === 9
-        const isStartOfRow = value % 10 === 0
-        const isTop = value >= 0
-        const isBottom = value <= 99
+        const isLastCol = value % 10 === 9
+        const isFirstCol = value % 10 === 0
+        const isTopRow = value >= 0
+        const isBottomRow = value <= 99
         return {
             cell: value,
-            prevHorizontal: isStartOfRow ? null : value - 1,
-            nextHorizontal: isEndOfRow ? null : value + 1,
-            prevVertical: isTop ? value - 10 : null,
-            nextVertical: isBottom ? value + 10 : null
+            prevHorizontal: isFirstCol ? null : value - 1,
+            nextHorizontal: isLastCol ? null : value + 1,
+            prevVertical: isTopRow ? value - 10 : null,
+            nextVertical: isBottomRow ? value + 10 : null
         }
     }
     checkValidity(array) {
