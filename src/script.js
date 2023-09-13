@@ -84,6 +84,7 @@ class Game {
     }
       return location
     }
+   
     shipLocation(player, shipIndex, coordinate) {
 
         let ship = player.ships[shipIndex].ship
@@ -95,15 +96,34 @@ class Game {
         let testArray = []
        for (let i = 0; i < length; i++) {      
             let cellObject = this.linkCells((coordinate - midIndex) + i)
-            if (cellObject.nextHorizontal != null && cellObject.prevHorizontal != null) {
-                
-                testArray.push(cellObject.cell)
+            if (ship.isHorizontal) {
+                if (cellObject.nextHorizontal != null && cellObject.prevHorizontal != null) {
+                    
+                    testArray.push(cellObject.cell)
+                    if ( testArray.length === length ) {
+                        location[i] = testArray[i]
+                    }
+                    
+                }  
+                //handle invalid
 
-                location[i] = testArray[i]
-            }  
+            } else { //vertical
+
+            }
+            
             
        }
        return location
+    }
+    linkCoords(coordinate, length) {
+
+        let isLocationValid = this.checkValidity(coordinate)
+        let invalidLength = isLocationValid.invalid.length
+        let validLength = isLocationValid.valid.length
+
+        for (let i = 0; i < length; i++) {
+            
+        }
     }
     linkCells(value) {
         const isLastCol = value % 10 === 9
