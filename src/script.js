@@ -49,7 +49,7 @@ class Game {
         return this.player2
     }
     setLocation(player, shipIndex, coordinate) {
-        console.log(`coord: ${coordinate}`)
+
         let ship = player.ships[shipIndex].ship
         let location = ship.shipLocation    
         const  length = ship.length   
@@ -63,57 +63,9 @@ class Game {
         }
        }
 
-    //check location validity 
-      let isLocationValid = this.checkValidity(location)
-      let invalidLength = isLocationValid.invalid.length
-      let validLength = isLocationValid.valid.length
-      console.log(`invalid length: ${invalidLength}, location: ${location}`)
-      for (let i = 0; i < location.length; i++ ) {
-        console.log(location[i[1]])
-        if (location[i] < 0) {
-            console.log(`less than zero: ${location[i]}, index: ${i}`)
-        }
-        console.log(location[i])
-        if (location[i] > 9) {
-            console.log(`greater than 9: ${location[i]}, index: ${i}`)
-        }
-    }
-      if (invalidLength === 0) {
-        return location
-      } else {
-      
-        for (let i = 0; i < location.length; i++ ) {
-            console.log(location[i])
-            if (location[i] < 0) {
-                console.log(`less than zero`)
-            }
-            if (location[i] > 9) {
-                console.log(`greater than 9`)
-            }
-        }
-        for (let i = 0; i < invalidLength; i++) {
-        //ship length of 4 left side of grid
-            if (location[0] < 0) {
-
-                location[length] = isLocationValid.valid[validLength - 1] + ( i + 1 )
-                location.shift() 
-
-            } 
-        }        
-       
-    }
       return location
     }
-    linkCoords(coordinate, length) {
-
-        let isLocationValid = this.checkValidity(coordinate)
-        let invalidLength = isLocationValid.invalid.length
-        let validLength = isLocationValid.valid.length
-
-        for (let i = 0; i < length; i++) {
-            
-        }
-    }
+    
     linkCells(value) {
         const isLastCol = value % 10 === 9
         const isFirstCol = value % 10 === 0
@@ -233,11 +185,11 @@ class Player {
     }
     createShips() {
         const ships = [
-            { name: 'Carrier', length: 5, shipLocation: [[0],[0],[0],[0],[0]], isHorizontal: true},     //ship 0
-            { name: 'Battleship', length: 4, shipLocation: [[0],[0],[0],[0]], isHorizontal: true },    //ship 1
-            { name: 'Destroyer', length: 3, shipLocation: [[0],[0],[0]], isHorizontal: true },       //ship 2
-            { name: 'Submarine', length: 3, shipLocation: [[0],[0],[0]], isHorizontal: true },       //ship 3
-            { name: 'Patrol', length: 2, shipLocation: [[0],[0]], isHorizontal: true }             //ship 4
+            { name: 'Carrier', length: 5, shipLocation: [0,0,0,0,0], isHorizontal: true},     //ship 0
+            { name: 'Battleship', length: 4, shipLocation: [0,0,0,0], isHorizontal: true },    //ship 1
+            { name: 'Destroyer', length: 3, shipLocation: [0,0,0], isHorizontal: true },       //ship 2
+            { name: 'Submarine', length: 3, shipLocation: [0,0,0], isHorizontal: true },       //ship 3
+            { name: 'Patrol', length: 2, shipLocation: [0,0], isHorizontal: true }             //ship 4
         ]
         const playerShips = []
         for(const ship of ships) {

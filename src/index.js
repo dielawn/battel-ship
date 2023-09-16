@@ -50,7 +50,7 @@ function renderGrid(parent, parentTxt) {
        gridSquare.classList.add('gridSquare')
        gridSquare.id = `${coords}-${parentTxt}`     
        gridSquare.setAttribute('data-coords', coords)
-         
+         console.log(`converted: ${convertCoordinatesToGrid(coords)}`)
        gridSquare.style.gridArea =  convertCoordinatesToGrid(coords)  
        parent.appendChild(gridSquare)
     }
@@ -86,9 +86,11 @@ function handleSquares() {
            
             const currentShipIndex = getIndexFromName(currentShip)
             
-            console.log(newGame.player1.ships[currentShipIndex].ship.name, newGame.player1.ships[currentShipIndex].ship.isShipHorizontal)
-            const shipObject = newGame.player1.ships[currentShipIndex].ship
-            placeShip(shipObject, coords) 
+            console.log(newGame.player1.ships[currentShipIndex].ship.name, newGame.player1.ships[currentShipIndex].ship.isHorizontal)
+            // const shipObject = newGame.player1.ships[currentShipIndex].ship
+            // placeShip(shipObject, coords) 
+            newGame.setLocation(newGame.player1, currentShipIndex, coords)
+            console.log(`shipIndex: ${currentShipIndex}`)
             renderGridShip()   
         })
     })
@@ -181,11 +183,13 @@ const renderGridShip = () => {
         shipImages.alt = shipImages[i].alt
         shipImage.style.width = (currentPlayerShips[i].ship.length * 45) + 'px'
         // unplaced ships Coords are initialized as all 0's
-        if (shipsCoords[0] === 0) {
+        console.log(`shipsCoords[1]: ${shipsCoords[1]}, ${shipsCoords[1] == 0}`)
+        if (shipsCoords[1] == 0) {
             console.log('No coordinates set for ship')  
             shipImage.classList.add('ship-icon')
             dryDock.appendChild(shipImage)
-            
+            //prompt ship placement
+
             continue
         }
         // convert board coordinates to css grid values to place ships on board
@@ -220,11 +224,11 @@ function addShipListeners() {
         ship.addEventListener('dblclick', () => {
     
             const shipIndex = getIndexFromName(capitalizedName)
-            const selectedShip = newGame.player1
+            const p1 = newGame.player1
             
-            console.log(selectedShip.ships[shipIndex].ship.isHorizontal)
-            selectedShip.switchOrientation(shipIndex)
-            if (selectedShip.ships[shipIndex].ship.isHorizontal) {
+            console.log(p1.ships[shipIndex].ship.isHorizontal)
+            p1.switchOrientation(shipIndex)
+            if (p1.ships[shipIndex].ship.isHorizontal) {
                 ship.classList.remove('rotate')
                 
             } else {
@@ -232,13 +236,14 @@ function addShipListeners() {
                 ship.classList.add('rotate')
             }
             
-            console.log(ship.id, selectedShip.ships[shipIndex].ship.isHorizontal)
+            console.log(ship.id, p1.ships[shipIndex].ship.isHorizontal)
         })
     }
     
 }
 
 const testShip1 = newGame.player1.ships[0].ship
+
 const testShip2 = newGame.player1.ships[1].ship
 
 const testShip3 = newGame.player1.ships[2].ship
@@ -262,60 +267,61 @@ getIndexFromName('Carrier')
 
 handleSquares()
 
-newGame.setPlayer()
-addShipListeners()
+// newGame.setPlayer()
+console.log(newGame.setLocation(newGame.player1, 0, 45))
 renderGridShip()
 addShipListeners()
+
  })
 
-const placeShip = (ship, coordinate) => {
-console.log(ship)
+// const placeShip = (ship, coordinate) => {
+// console.log(ship)
     
-    let isHorizontal = ship.isHorizontal 
-    const  length = ship.length   
-    const midIndex = Math.ceil(length / 2) - 1
+//     let isHorizontal = ship.isHorizontal 
+//     const  length = ship.length   
+//     const midIndex = Math.ceil(length / 2) - 1
 
-    ship.shipLocation[midIndex] = coordinate
+//     ship.shipLocation[midIndex] = coordinate
     
-    for (let i = 0; i < midIndex; i++) {
+//     for (let i = 0; i < midIndex; i++) {
     
-        const rowNum = parseInt(coordinate[0]) % 10
-        const colNum = (parseInt(coordinate.slice(1)) + 1) % 10
+//         const rowNum = parseInt(coordinate[0]) % 10
+//         const colNum = (parseInt(coordinate.slice(1)) + 1) % 10
 
-    if (isHorizontal) {
-        if (newGame.p1Board.isValid(coordinate - i) 
-        && newGame.p1Board.isValid(coordinate - i)) {
-        ship.shipLocation[midIndex - i] = coordinate - i
-        ship.shipLocation[midIndex + i] = coordinate + i
-        } else {
-            let adjustedPosition = adjustColumn(colNum)
-            placeShip(ship, adjustedPosition)
-        }
+//     if (isHorizontal) {
+//         if (newGame.p1Board.isValid(coordinate - i) 
+//         && newGame.p1Board.isValid(coordinate - i)) {
+//         ship.shipLocation[midIndex - i] = coordinate - i
+//         ship.shipLocation[midIndex + i] = coordinate + i
+//         } else {
+//             let adjustedPosition = adjustColumn(colNum)
+//             placeShip(ship, adjustedPosition)
+//         }
     
-       console.log( ship.shipLocation[midIndex - i],  ship.shipLocation[midIndex + i])       
+//        console.log( ship.shipLocation[midIndex - i],  ship.shipLocation[midIndex + i])       
       
-       console.log('horizonal', 'row number', rowNum, 'column number', colNum, 'ship location', ship.shipLocation[i])
-    } else {
-        if (newGame.p1Board.isValid(coordinate - (i * 10)) 
-        && newGame.p1Board.isValid(coordinate + (i * 10))) {
-            ship.shipLocation[midIndex - (i * 10)] = coordinate - (i * 10)
-            ship.shipLocation[midIndex + (i * 10)] = coordinate + (i * 10)
-        } else {
-            let adjustedPosition = adjustRow(rowNum)
-            placeShip(ship, adjustedPosition)
-        }
+//        console.log('horizonal', 'row number', rowNum, 'column number', colNum, 'ship location', ship.shipLocation[i])
+//     } else {
+//         if (newGame.p1Board.isValid(coordinate - (i * 10)) 
+//         && newGame.p1Board.isValid(coordinate + (i * 10))) {
+//             ship.shipLocation[midIndex - (i * 10)] = coordinate - (i * 10)
+//             ship.shipLocation[midIndex + (i * 10)] = coordinate + (i * 10)
+//         } else {
+//             let adjustedPosition = adjustRow(rowNum)
+//             placeShip(ship, adjustedPosition)
+//         }
             
-        console.log('vertical', 'row numberr', rowNum, 'column number', colNum, 'ship location', ship.shipLocation[i])
-    }
+//         console.log('vertical', 'row numberr', rowNum, 'column number', colNum, 'ship location', ship.shipLocation[i])
+//     }
 
-}
-console.log(`${ship.name}: ${ship.shipLocation}`) 
-return
+// }
+// console.log(`${ship.name}: ${ship.shipLocation}`) 
+// return
 
-}
+// }
 
-const adjustColumn = (colNum) => 
-    colNum > 4 ? colNum - 4 : colNum
+// const adjustColumn = (colNum) => 
+//     colNum > 4 ? colNum - 4 : colNum
 
-  const adjustRow = (rowNum) => 
-    rowNum > 4 ? rowNum - 4 : rowNum
+//   const adjustRow = (rowNum) => 
+//     rowNum > 4 ? rowNum - 4 : rowNum
