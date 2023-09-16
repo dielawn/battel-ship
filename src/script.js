@@ -68,10 +68,29 @@ class Game {
       let invalidLength = isLocationValid.invalid.length
       let validLength = isLocationValid.valid.length
       console.log(`invalid length: ${invalidLength}, location: ${location}`)
+      for (let i = 0; i < location.length; i++ ) {
+        console.log(location[i[1]])
+        if (location[i] < 0) {
+            console.log(`less than zero: ${location[i]}, index: ${i}`)
+        }
+        console.log(location[i])
+        if (location[i] > 9) {
+            console.log(`greater than 9: ${location[i]}, index: ${i}`)
+        }
+    }
       if (invalidLength === 0) {
         return location
       } else {
       
+        for (let i = 0; i < location.length; i++ ) {
+            console.log(location[i])
+            if (location[i] < 0) {
+                console.log(`less than zero`)
+            }
+            if (location[i] > 9) {
+                console.log(`greater than 9`)
+            }
+        }
         for (let i = 0; i < invalidLength; i++) {
         //ship length of 4 left side of grid
             if (location[0] < 0) {
@@ -81,39 +100,9 @@ class Game {
 
             } 
         }        
+       
     }
       return location
-    }
-   
-    shipLocation(player, shipIndex, coordinate) {
-
-        let ship = player.ships[shipIndex].ship
-        let location = ship.shipLocation    
-        const  length = ship.length   
-        let midIndex = Math.ceil(length / 2) - 1
-
-        location[midIndex] = coordinate
-        let testArray = []
-       for (let i = 0; i < length; i++) {      
-            let cellObject = this.linkCells((coordinate - midIndex) + i)
-            if (ship.isHorizontal) {
-                if (cellObject.nextHorizontal != null && cellObject.prevHorizontal != null) {
-                    
-                    testArray.push(cellObject.cell)
-                    if ( testArray.length === length ) {
-                        location[i] = testArray[i]
-                    }
-                    
-                }  
-                //handle invalid
-
-            } else { //vertical
-
-            }
-            
-            
-       }
-       return location
     }
     linkCoords(coordinate, length) {
 

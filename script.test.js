@@ -42,7 +42,7 @@ const { Game,} = require('./src/script')
                 //invalid coord
                 // expect(testGame.setLocation(testPlayer, 1, 0)).toStrictEqual([ 0, 1, 2, 3])
                 // expect(testGame.setLocation(testPlayer, 1, 9)).toStrictEqual([ 6, 7, 8, 9])
-                expect(testGame.shipLocation(testPlayer, 0, 45)).toStrictEqual([43, 44, 45, 46, 47])
+                
             })
             test('linkCells', () => {
                 expect(testGame.linkCells(45)).toEqual({"cell": 45, "nextHorizontal": 46, "nextVertical": 55, "prevHorizontal": 44, "prevVertical": 35}
