@@ -21721,6 +21721,16 @@ function renderGrid(parent, parentTxt) {
     for (let i = 0; i < 100; i++) {
         const coords = newGame.p1Board.findCoords(i)
         console.log(coords)
+        let formatedCoords = null
+        if (coords[0] == 0) {
+            const coordsString = coords.toString().slice(1)
+            console.log(coordsString)
+            formatedCoords = coordsString
+        } else {
+            formatedCoords = coords
+        }
+     
+
        const gridSquare = document.createElement('div')
        gridSquare.classList.add('gridSquare')
        gridSquare.id = `${coords}-${parentTxt}`     
@@ -21770,13 +21780,52 @@ function handleSquares() {
         })
     })
 }
+const convertVerticalToGrid = (coordinate) => {
+    console.log(`${coordinate}`)
 
+    const rowNum = parseInt(coordinate[0])
+    const colNum = parseInt(coordinate.slice(1))
+    console.log(`rowNum: ${rowNum}, colNum: ${typeof(colNum)}`)
+
+    const firstDigit = Math.floor(colNum / 10) + 1
+    const secondDigit = colNum % 10 + 1
+    console.log(`firstDigit: ${firstDigit}, secondDigit: ${secondDigit}`)
+
+    const rowStart = firstDigit
+    const rowEnd = rowStart 
+    const colStart = secondDigit
+    const colEnd = colStart
+    console.log(`${rowStart} / ${colStart} / ${rowEnd} / ${colEnd}`)
+    return `${rowStart} / ${colStart} / ${rowEnd} / ${colEnd}`
+}
+const convertHorizontalToGrid = (coordinate) => {
+    console.log(`${coordinate}`)
+
+    const rowNum = parseInt(coordinate[0])
+    const colNum = parseInt(coordinate.slice(1))
+    console.log(`rowNum: ${rowNum}, colNum: ${typeof(colNum)}`)
+
+    const firstDigit = Math.floor(colNum / 10) + 1
+    const secondDigit = colNum % 10
+    console.log(`firstDigit: ${firstDigit}, secondDigit: ${secondDigit}`)
+
+
+
+    const rowStart = firstDigit
+    const rowEnd = rowStart + 1
+    const colStart = secondDigit
+    const colEnd = colStart + 1
+    console.log(`${rowStart} / ${colStart} / ${rowEnd} / ${colEnd}`)
+    return `${rowStart} / ${colStart} / ${rowEnd} / ${colEnd}`
+}
 const convertCoordinatesToGrid = (coordinate) => {
 console.log(coordinate)
-    const rowNum = parseInt(coordinate[0]) % 10
-    const columnNum = (parseInt(coordinate.slice(1)) + 1) % 10
+    let rowNum = parseInt(coordinate[0])
+    rowNum++
+    let columnNum = (parseInt(coordinate.slice(1)))
+    columnNum++
 console.log(rowNum, columnNum)
-    const rowStart = rowNum + 1
+    const rowStart = rowNum
     const rowEnd = rowStart + 1
     const columnStart = columnNum
     const columnEnd = columnStart + 1
@@ -21857,27 +21906,33 @@ const renderGridShip = () => {
         shipImage.src = shipImages[i].src
         shipImages.alt = shipImages[i].alt
         shipImage.style.width = (currentPlayerShips[i].ship.length * 45) + 'px'
+    
         // unplaced ships Coords are initialized as all 0's
         console.log(`shipsCoords[1]: ${shipsCoords[1]}, ${shipsCoords[1] == 0}`)
         if (shipsCoords[1] == 0) {
+
             console.log('No coordinates set for ship')  
             shipImage.classList.add('ship-icon')
-            dryDock.appendChild(shipImage)
-            //prompt ship placement
+            dryDock.appendChild(shipImage)       
 
             continue
         }
         // convert board coordinates to css grid values to place ships on board
-        const gridAreaValue = convertCoordinatesToGrid(shipsCoords)
+        console.log(`shipsCoords: ${shipsCoords}`)
+        let gridAreaValue = null    
         shipImage.className = 'gridShip'   
-        console.log('ship horizonal', shipIsHorizontal, 'grid area', gridAreaValue)
+       
         if (shipIsHorizontal) {
             shipImage.classList.remove('rotate')
-            
+           
+            gridAreaValue = convertHorizontalToGrid(shipsCoords)
+
         } else {
             shipImage.classList.add('rotate')
-            
+           
+            gridAreaValue = convertVerticalToGrid(shipsCoords)
         }    
+        console.log('ship horizonal', shipIsHorizontal, 'grid area', gridAreaValue)
         
         shipImage.style.gridArea = gridAreaValue
         revealedGrid.appendChild(shipImage)
@@ -21943,7 +21998,7 @@ getIndexFromName('Carrier')
 handleSquares()
 
 // newGame.setPlayer()
-console.log(newGame.setLocation(newGame.player1, 0, 45))
+// console.log(newGame.setLocation(newGame.player1, 0, 45))
 renderGridShip()
 addShipListeners()
 

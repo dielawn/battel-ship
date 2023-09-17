@@ -20,9 +20,22 @@
     align-content: center;
 }
 
-.rotate {
-    transform: rotate(270deg);
-   
+
+#patrol.gridShip.rotate {
+    transform: translateY(-12px) translate(-10px) rotate(90deg);
+
+}
+#destroyer.gridShip.rotate {
+    transform: translate(-45px) rotate(270deg);
+}
+#submarine.gridShip.rotate {
+    transform: translateY(10px) translate(-50px) rotate(270deg);
+}
+#battleship.gridShip.rotate {
+    transform: translateY(-12px) translate(-65px) rotate(90deg);
+}
+#carrier.gridShip.rotate {
+    transform: translateY(5px) translate(-85px) rotate(90deg);
 }
 .gridSquare {
     width: 50px;
@@ -42,8 +55,8 @@
 }
 .gridShip,
 .ship-icon {
-    background-color: transparent;
     z-index: 9;
+    
     
 }
 .alphaDiv {
