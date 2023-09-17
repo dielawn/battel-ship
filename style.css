@@ -20,7 +20,9 @@
     align-content: center;
 }
 
-
+.rotate {
+    transform: rotate(90deg);
+}
 #patrol.gridShip.rotate {
     transform: translateY(-12px) translate(-10px) rotate(90deg);
 

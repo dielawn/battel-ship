@@ -21,19 +21,10 @@ class Game {
     }
     startGame() {
         // start new game
+        this.setAIShips()
         this.setPlayer()
-        //if ships locations are not set, set them
-        // for (let i = 0; i < 5; i ++) {
-        //     this.currentPlayer.setShipLocation(i, promptPlayer())
-        //     this.otherPlayer.setShipLocation(i, promptPlayer())
-        // }
-        // if (!this.gameOver) {
-        //    this.playRound()            
-        // }
+
     } 
-    // promptPlayer() {
-    
-    // }
     playRound() {
 
         //prompt for coords
@@ -59,22 +50,47 @@ class Game {
     }
     setLocation(player, shipIndex, coordinate) {
 
-        let ship = player.ships[shipIndex].ship
-        let location = ship.shipLocation    
-        const  length = ship.length   
-        let midIndex = Math.ceil(length / 2) - 1
+        const ship = player.ships[shipIndex].ship
+        const location = ship.shipLocation    
+        const length = ship.length   
+        const midIndex = Math.ceil(length / 2) - 1
 
        for (let i = 0; i < length; i++) {        
         if (ship.isHorizontal) {
             location[i] = (coordinate - midIndex) + i
+            
         } else { //vertical
             location[i] = (coordinate - (midIndex * 10)) + (i * 10)
-        }
+        }        
        }
 
-      return location
+        player.occupiedCoordinates.push( location )
+        console.log(`location: ${location}`)
+        return location
     }
-    
+    setAIShips() {
+        const ai = this.player2
+        const aiShips = ai.ships
+
+        let randomCoord = null
+        let location = null
+               
+        for (let i = 0; i < aiShips.length; i++) {
+
+            // randomize isHorizontal   
+            let randomBoolean = Math.random() < 0.5
+            console.log(randomBoolean)
+            aiShips[i].ship.isHorizontal = randomBoolean
+            console.log(`isHorizontal: ${aiShips[i].ship.isHorizontal}`)
+            // random coordinates
+            randomCoord = Math.floor(Math.random() * 99)
+            console.log(`randomCoord: ${randomCoord}`)
+
+            location = this.setLocation(this.player2, i, randomCoord)
+        }
+        console.log(`location: ${location}`)
+        return location
+    }
     linkCells(value) {
         const isLastCol = value % 10 === 9
         const isFirstCol = value % 10 === 0
@@ -21694,18 +21710,22 @@ function labelGrid(alphaParent, numParent, parentTxt) {
     const numCoords = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
 
     for (let i = 0; i < 10; i++ ) {
+
         const alphaSquare = document.createElement('div')
         alphaSquare.id = `${parentTxt}gridSquare${i}`
         alphaSquare.classList.add('alphaSquare')
         alphaSquare.innerHTML = alphaCoords[i]
         alphaParent.appendChild(alphaSquare)
+
     }
     for (let i = 0; i < 10; i++ ) {
+
         const numSquare = document.createElement('div')
         numSquare.id = `${parentTxt}gridSquare${i}`
         numSquare.classList.add('numSquare')
         numSquare.innerHTML = numCoords[i]
         numParent.appendChild(numSquare)
+
     }
 
 }
@@ -21717,35 +21737,23 @@ function renderGrid(parent, parentTxt) {
     alphaDiv.classList.add('alphaDiv')
     numDiv.classList.add('numDiv')
    
-
     for (let i = 0; i < 100; i++) {
-        const coords = newGame.p1Board.findCoords(i)
-        console.log(coords)
-        let formatedCoords = null
-        if (coords[0] == 0) {
-            const coordsString = coords.toString().slice(1)
-            console.log(coordsString)
-            formatedCoords = coordsString
-        } else {
-            formatedCoords = coords
-        }
-     
 
-       const gridSquare = document.createElement('div')
-       gridSquare.classList.add('gridSquare')
-       gridSquare.id = `${coords}-${parentTxt}`     
-       gridSquare.setAttribute('data-coords', coords)
-         console.log(`converted: ${convertCoordinatesToGrid(coords)}`)
-       gridSquare.style.gridArea =  convertCoordinatesToGrid(coords)  
-       parent.appendChild(gridSquare)
+        const coords = newGame.p1Board.findCoords(i)    
+        const gridSquare = document.createElement('div')
+        gridSquare.classList.add('gridSquare')
+        gridSquare.id = `${coords}-${parentTxt}`     
+        gridSquare.setAttribute('data-coords', coords)
+        console.log(`converted: ${convertCoordinatesToGrid(coords)}`)
+        gridSquare.style.gridArea =  convertCoordinatesToGrid(coords)  
+        parent.appendChild(gridSquare)
+
     }
 
     parent.appendChild(alphaDiv)
     parent.appendChild(numDiv)
     labelGrid(alphaDiv, numDiv, parentTxt)
 }
-
-//add event listener to each square
 
 function handleSquares() {
 
@@ -21767,21 +21775,21 @@ function handleSquares() {
         })
         square.addEventListener('drop', (e) => {
             e.preventDefault()
-           if (!newGame.p1Board.isValid(coords))return
+
+            if (!newGame.p1Board.isValid(coords))return
            
             const currentShipIndex = getIndexFromName(currentShip)
+            const location = newGame.setLocation(newGame.player1, currentShipIndex, coords)
             
-            console.log(newGame.player1.ships[currentShipIndex].ship.name, newGame.player1.ships[currentShipIndex].ship.isHorizontal)
-            // const shipObject = newGame.player1.ships[currentShipIndex].ship
-            // placeShip(shipObject, coords) 
-            newGame.setLocation(newGame.player1, currentShipIndex, coords)
-            console.log(`shipIndex: ${currentShipIndex}`)
-            renderGridShip()   
+            console.log(location)
+            renderGridShip()  
+            setupGame() 
+
         })
     })
 }
+//for ships
 const convertVerticalToGrid = (coordinate) => {
-    console.log(`${coordinate}`)
 
     const rowNum = parseInt(coordinate[0])
     const colNum = parseInt(coordinate.slice(1))
@@ -21799,7 +21807,6 @@ const convertVerticalToGrid = (coordinate) => {
     return `${rowStart} / ${colStart} / ${rowEnd} / ${colEnd}`
 }
 const convertHorizontalToGrid = (coordinate) => {
-    console.log(`${coordinate}`)
 
     const rowNum = parseInt(coordinate[0])
     const colNum = parseInt(coordinate.slice(1))
@@ -21809,8 +21816,6 @@ const convertHorizontalToGrid = (coordinate) => {
     const secondDigit = colNum % 10
     console.log(`firstDigit: ${firstDigit}, secondDigit: ${secondDigit}`)
 
-
-
     const rowStart = firstDigit
     const rowEnd = rowStart + 1
     const colStart = secondDigit
@@ -21818,13 +21823,14 @@ const convertHorizontalToGrid = (coordinate) => {
     console.log(`${rowStart} / ${colStart} / ${rowEnd} / ${colEnd}`)
     return `${rowStart} / ${colStart} / ${rowEnd} / ${colEnd}`
 }
+//for grid squares
 const convertCoordinatesToGrid = (coordinate) => {
-console.log(coordinate)
+
     let rowNum = parseInt(coordinate[0])
     rowNum++
     let columnNum = (parseInt(coordinate.slice(1)))
     columnNum++
-console.log(rowNum, columnNum)
+
     const rowStart = rowNum
     const rowEnd = rowStart + 1
     const columnStart = columnNum
@@ -21839,7 +21845,10 @@ const capFirstLetter = (inputString) => {
 }
 
 function getIndexFromName(shipName) {
+    
     console.log(shipName)
+    if (shipName === null) return
+
     let upperCaseName = capFirstLetter(shipName)
     const ships = newGame.player1.ships
     for (let i = 0; i < ships.length; i++) {
@@ -21879,7 +21888,6 @@ const renderGridShip = () => {
         }
 ]
     
-
     //remove duplicates
     const prevShips = document.querySelectorAll('.ship-icon')    
     for (const el of prevShips) {
@@ -21923,21 +21931,45 @@ const renderGridShip = () => {
         shipImage.className = 'gridShip'   
        
         if (shipIsHorizontal) {
-            shipImage.classList.remove('rotate')
-           
+            shipImage.classList.remove('rotate')           
             gridAreaValue = convertHorizontalToGrid(shipsCoords)
 
         } else {
-            shipImage.classList.add('rotate')
-           
+            shipImage.classList.add('rotate')           
             gridAreaValue = convertVerticalToGrid(shipsCoords)
+
         }    
         console.log('ship horizonal', shipIsHorizontal, 'grid area', gridAreaValue)
         
         shipImage.style.gridArea = gridAreaValue
         revealedGrid.appendChild(shipImage)
     }
-    addShipListeners(shipImages)
+    addShipListeners()
+  
+}
+function setupGame() {
+
+    const instructionsDiv = document.getElementById('instructions')
+    instructionsDiv.textContent = `Drag & drop ships on grid. Double click to rotate.`
+
+    const unplacedShips = document.querySelectorAll('.ship-icon')
+    console.log(`length: ${unplacedShips.length}`)
+    if (unplacedShips.length < 1) {
+
+        //remove instructions
+        instructionsDiv.innerHTML = ''
+
+        const startBtn = document.createElement('button')
+        startBtn.textContent = `Start Game`
+        instructionsDiv.appendChild(startBtn)
+
+        startBtn.addEventListener('click', () => {
+            currentShip = null
+        })
+    }
+    
+       
+    
 }
 function addShipListeners() {
 
@@ -22001,7 +22033,7 @@ handleSquares()
 // console.log(newGame.setLocation(newGame.player1, 0, 45))
 renderGridShip()
 addShipListeners()
-
+setupGame()
  })
 
 // const placeShip = (ship, coordinate) => {

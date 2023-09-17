@@ -12,19 +12,10 @@ class Game {
     }
     startGame() {
         // start new game
+        this.setAIShips()
         this.setPlayer()
-        //if ships locations are not set, set them
-        // for (let i = 0; i < 5; i ++) {
-        //     this.currentPlayer.setShipLocation(i, promptPlayer())
-        //     this.otherPlayer.setShipLocation(i, promptPlayer())
-        // }
-        // if (!this.gameOver) {
-        //    this.playRound()            
-        // }
+
     } 
-    // promptPlayer() {
-    
-    // }
     playRound() {
 
         //prompt for coords
@@ -50,22 +41,47 @@ class Game {
     }
     setLocation(player, shipIndex, coordinate) {
 
-        let ship = player.ships[shipIndex].ship
-        let location = ship.shipLocation    
-        const  length = ship.length   
-        let midIndex = Math.ceil(length / 2) - 1
+        const ship = player.ships[shipIndex].ship
+        const location = ship.shipLocation    
+        const length = ship.length   
+        const midIndex = Math.ceil(length / 2) - 1
 
        for (let i = 0; i < length; i++) {        
         if (ship.isHorizontal) {
             location[i] = (coordinate - midIndex) + i
+            
         } else { //vertical
             location[i] = (coordinate - (midIndex * 10)) + (i * 10)
-        }
+        }        
        }
 
-      return location
+        player.occupiedCoordinates.push( location )
+        console.log(`location: ${location}`)
+        return location
     }
-    
+    setAIShips() {
+        const ai = this.player2
+        const aiShips = ai.ships
+
+        let randomCoord = null
+        let location = null
+               
+        for (let i = 0; i < aiShips.length; i++) {
+
+            // randomize isHorizontal   
+            let randomBoolean = Math.random() < 0.5
+            console.log(randomBoolean)
+            aiShips[i].ship.isHorizontal = randomBoolean
+            console.log(`isHorizontal: ${aiShips[i].ship.isHorizontal}`)
+            // random coordinates
+            randomCoord = Math.floor(Math.random() * 99)
+            console.log(`randomCoord: ${randomCoord}`)
+
+            location = this.setLocation(this.player2, i, randomCoord)
+        }
+        console.log(`location: ${location}`)
+        return location
+    }
     linkCells(value) {
         const isLastCol = value % 10 === 9
         const isFirstCol = value % 10 === 0
