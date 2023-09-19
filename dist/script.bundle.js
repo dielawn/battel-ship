@@ -74,6 +74,7 @@ class Game {
         })
         if (!isOccupied) {
             player.occupiedCoordinates.push(location)
+            console.log(`occupied: ${player.occupiedCoordinates}`)
            return  false
         } else {
             console.log(`duplicate found`)
@@ -92,7 +93,7 @@ class Game {
         
         const p2Occupodo = this.player2.occupiedCoordinates
         for (let i = 0; i < p2Occupodo.length; i++ ) {
-            console.log(`isOccupodoP2: ${p2Occupodo[i]}, coords: ${coordiantes}, equal? ${(p2Occupodo[i] === coordiantes)} `)
+            console.log(`isOccupodoP2: ${p2Occupodo[i]}, coords: ${coordiantes}, equal? ${(p2Occupodo[i] == coordiantes)} `)
         }
         console.log(`isOccupodoP2: ${p2Occupodo}`)
         return p2Occupodo
@@ -125,13 +126,16 @@ class Game {
             //check for invalid coordiantes
             const isDuplicateFound = this.isDuplicate(this.player2, location)
             for (let j = 0; j < location.length; j++) {
-               console.log( this.isOccupied(location[j]))
-               console.log(`isDuplicateFound: ${isDuplicateFound}`)
-                if (!this.p1Board.isValid(location[j]) || isDuplicateFound) {
-                    this.setAIShips()
+               
+               console.log(`isDuplicateFound: ${isDuplicateFound}, ${location[j]}`)
+               console.log(`isValid: ${this.p1Board.isValid(location[j])}, ${location[j]}`)
+               //if coordinates are invalid or already occupied try again
+                if (this.p1Board.isValid(location[j]) === false || isDuplicateFound ) {
+                    location = this.setLocation(this.player2, i, randomCoord)
                 }
             }
         }
+        console.log(`occupied: ${ai.occupiedCoordinates}`)
         console.log(`location: ${location}`)     
         return location
     }
@@ -211,9 +215,14 @@ class Grid {
         return grid
     }
     isValid(coordinate) {
-        if (coordinate >= 0 && coordinate <= 99) {
+        const row = Math.floor(coordinate / 10)
+        const col = coordinate % 10
+        console.log(`row: ${row}, col: ${col}`)
+        if (row >= 0 && row < 10 && col >= 0 && col < 10 ) {
+            console.log(`valid: ${coordinate}`)
             return true
         }
+        console.log(`invalid: ${coordinate}`)
         return false
     }
     findCoords(index) {
