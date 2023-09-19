@@ -154,7 +154,7 @@ const capFirstLetter = (inputString) => {
 }
 
 function getIndexFromName(shipName) {
-    
+
     console.log(shipName)
     if (shipName === null) return
 
@@ -273,7 +273,9 @@ function setupGame() {
         instructionsDiv.appendChild(startBtn)
 
         startBtn.addEventListener('click', () => {
+            
             currentShip = null
+
         })
     }
     

@@ -63,32 +63,76 @@ class Game {
             location[i] = (coordinate - (midIndex * 10)) + (i * 10)
         }        
        }
-
-        player.occupiedCoordinates.push( location )
+       
+       
         console.log(`location: ${location}`)
         return location
+    }
+    isDuplicate(player, location) {
+        const isOccupied = player.occupiedCoordinates.some(occupiedLocation => {
+            return occupiedLocation.some(occupiedCoordinate => location.includes(occupiedCoordinate))
+        })
+        if (!isOccupied) {
+            player.occupiedCoordinates.push(location)
+           return  false
+        } else {
+            console.log(`duplicate found`)
+            return true
+        }
+    }
+   
+    isOccupied(coordiantes) {
+        
+        console.log(`coordinates: ${coordiantes}`)
+        const p1Occupodo = this.player1.occupiedCoordinates
+        for (let i = 0; i < p1Occupodo.length; i++ ) {
+            console.log(`isOccupodoP1: ${p1Occupodo[i]}`)
+        }
+        console.log(`isOccupodoP1: ${p1Occupodo}`)
+        
+        const p2Occupodo = this.player2.occupiedCoordinates
+        for (let i = 0; i < p2Occupodo.length; i++ ) {
+            console.log(`isOccupodoP2: ${p2Occupodo[i]}, coords: ${coordiantes}, equal? ${(p2Occupodo[i] === coordiantes)} `)
+        }
+        console.log(`isOccupodoP2: ${p2Occupodo}`)
+        return p2Occupodo
+    }
+    getRandomCoord() {
+        return Math.floor(Math.random() * 99)
     }
     setAIShips() {
         const ai = this.player2
         const aiShips = ai.ships
 
-        let randomCoord = null
+        //empty the array 
+        this.player2.choosenCoordinates.length = 0
+
         let location = null
                
         for (let i = 0; i < aiShips.length; i++) {
 
             // randomize isHorizontal   
-            let randomBoolean = Math.random() < 0.5
+            const randomBoolean = Math.random() < 0.5
             console.log(randomBoolean)
             aiShips[i].ship.isHorizontal = randomBoolean
             console.log(`isHorizontal: ${aiShips[i].ship.isHorizontal}`)
             // random coordinates
-            randomCoord = Math.floor(Math.random() * 99)
+            const randomCoord = this.getRandomCoord()
             console.log(`randomCoord: ${randomCoord}`)
-
+            
             location = this.setLocation(this.player2, i, randomCoord)
+            
+            //check for invalid coordiantes
+            const isDuplicateFound = this.isDuplicate(this.player2, location)
+            for (let j = 0; j < location.length; j++) {
+               console.log( this.isOccupied(location[j]))
+               console.log(`isDuplicateFound: ${isDuplicateFound}`)
+                if (!this.p1Board.isValid(location[j]) || isDuplicateFound) {
+                    this.setAIShips()
+                }
+            }
         }
-        console.log(`location: ${location}`)
+        console.log(`location: ${location}`)     
         return location
     }
     linkCells(value) {
@@ -21845,7 +21889,7 @@ const capFirstLetter = (inputString) => {
 }
 
 function getIndexFromName(shipName) {
-    
+
     console.log(shipName)
     if (shipName === null) return
 
@@ -21964,7 +22008,9 @@ function setupGame() {
         instructionsDiv.appendChild(startBtn)
 
         startBtn.addEventListener('click', () => {
+            
             currentShip = null
+
         })
     }
     
