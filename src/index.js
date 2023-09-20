@@ -7,10 +7,11 @@ const newGame = createtGame()
 newGame.startGame()
 
 const containerDiv = document.getElementById('container')
-const revealedGrid = document.getElementById('revealedGrid')
-const hiddenGrid = document.getElementById('hiddenGrid')
+const friendlyWaters = document.getElementById('friendlyWaters')
+const enemyWaters = document.getElementById('enemyWaters')
 
 let currentShip = null
+let selectedSquare = null
 
 function labelGrid(alphaParent, numParent, parentTxt) {
 
@@ -77,6 +78,8 @@ function handleSquares() {
             
         square.addEventListener('click', ()  => {
            console.log(squareData)
+           selectedSquare = squareData
+           
         })
         square.addEventListener('dragover', (e) => {
             e.preventDefault()
@@ -97,6 +100,7 @@ function handleSquares() {
         })
     })
 }
+
 //for ships
 const convertVerticalToGrid = (coordinate) => {
 
@@ -207,22 +211,22 @@ const renderGridShip = () => {
         el.remove()
     }
     // unplaced ships initialize to dryDock div
-    const currentPlayerShips = newGame.currentPlayer.ships
+    const p1Ships = newGame.player1.ships
     const dryDock = document.createElement('div')
     dryDock.className = 'dry-dock'
     containerDiv.appendChild(dryDock)
     //loop ship images rendering into different parent based on coordinates
     for (let i = 0; i < shipImages.length; i++) {
         
-        const shipsCoords = currentPlayerShips[i].ship.shipLocation
+        const shipsCoords = p1Ships[i].ship.shipLocation
         console.log(shipsCoords)
-        let shipIsHorizontal = currentPlayerShips[i].ship.isHorizontal
-        console.log(currentPlayerShips[i].ship.name,'ship horizonal', shipIsHorizontal)
+        let shipIsHorizontal = p1Ships[i].ship.isHorizontal
+        console.log(p1Ships[i].ship.name,'ship horizonal', shipIsHorizontal)
         const shipImage = document.createElement('img')
         shipImage.id = shipImages[i].id
         shipImage.src = shipImages[i].src
         shipImages.alt = shipImages[i].alt
-        shipImage.style.width = (currentPlayerShips[i].ship.length * 45) + 'px'
+        shipImage.style.width = (p1Ships[i].ship.length * 45) + 'px'
     
         // unplaced ships Coords are initialized as all 0's
         console.log(`shipsCoords[1]: ${shipsCoords[1]}, ${shipsCoords[1] == 0}`)
@@ -251,7 +255,7 @@ const renderGridShip = () => {
         console.log('ship horizonal', shipIsHorizontal, 'grid area', gridAreaValue)
         
         shipImage.style.gridArea = gridAreaValue
-        revealedGrid.appendChild(shipImage)
+        friendlyWaters.appendChild(shipImage)
     }
     addShipListeners()
   
@@ -281,6 +285,9 @@ function setupGame() {
     
        
     
+}
+function fireAt() {
+
 }
 function addShipListeners() {
 
@@ -325,8 +332,8 @@ const testShip5 = newGame.player1.ships[4].ship
 
 document.addEventListener("DOMContentLoaded", function () {
     
-    renderGrid(hiddenGrid, 'hidden')
-    renderGrid(revealedGrid, 'revealed')
+    renderGrid(enemyWaters, 'hidden')
+    renderGrid(friendlyWaters, 'revealed')
     
 
 getIndexFromName('Carrier')
@@ -345,56 +352,13 @@ handleSquares()
 renderGridShip()
 addShipListeners()
 setupGame()
+if( newGame.currentPlayer === newGame.player1) {
+    newGame.playRound(52)
+} else {
+    const randomCoord = newGame.getRandomCoord()
+    newGame.playRound(randomCoord)
+}
+
+
  })
 
-// const placeShip = (ship, coordinate) => {
-// console.log(ship)
-    
-//     let isHorizontal = ship.isHorizontal 
-//     const  length = ship.length   
-//     const midIndex = Math.ceil(length / 2) - 1
-
-//     ship.shipLocation[midIndex] = coordinate
-    
-//     for (let i = 0; i < midIndex; i++) {
-    
-//         const rowNum = parseInt(coordinate[0]) % 10
-//         const colNum = (parseInt(coordinate.slice(1)) + 1) % 10
-
-//     if (isHorizontal) {
-//         if (newGame.p1Board.isValid(coordinate - i) 
-//         && newGame.p1Board.isValid(coordinate - i)) {
-//         ship.shipLocation[midIndex - i] = coordinate - i
-//         ship.shipLocation[midIndex + i] = coordinate + i
-//         } else {
-//             let adjustedPosition = adjustColumn(colNum)
-//             placeShip(ship, adjustedPosition)
-//         }
-    
-//        console.log( ship.shipLocation[midIndex - i],  ship.shipLocation[midIndex + i])       
-      
-//        console.log('horizonal', 'row number', rowNum, 'column number', colNum, 'ship location', ship.shipLocation[i])
-//     } else {
-//         if (newGame.p1Board.isValid(coordinate - (i * 10)) 
-//         && newGame.p1Board.isValid(coordinate + (i * 10))) {
-//             ship.shipLocation[midIndex - (i * 10)] = coordinate - (i * 10)
-//             ship.shipLocation[midIndex + (i * 10)] = coordinate + (i * 10)
-//         } else {
-//             let adjustedPosition = adjustRow(rowNum)
-//             placeShip(ship, adjustedPosition)
-//         }
-            
-//         console.log('vertical', 'row numberr', rowNum, 'column number', colNum, 'ship location', ship.shipLocation[i])
-//     }
-
-// }
-// console.log(`${ship.name}: ${ship.shipLocation}`) 
-// return
-
-// }
-
-// const adjustColumn = (colNum) => 
-//     colNum > 4 ? colNum - 4 : colNum
-
-//   const adjustRow = (rowNum) => 
-//     rowNum > 4 ? rowNum - 4 : rowNum

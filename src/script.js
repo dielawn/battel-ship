@@ -1,5 +1,3 @@
-const { isValid } = require("date-fns")
-
 class Game {
     constructor() {
         this.player1 = new Player('player1')
@@ -11,21 +9,23 @@ class Game {
         this.gameOver = false
     }
     startGame() {
+
         // start new game
         this.setAIShips()
         this.setPlayer()
-
     } 
-    playRound() {
+    playRound(hitCoords) {
 
         //prompt for coords
-        this.currentPlayer.fire(hitCoords)
-        this.isHit(hitCoords)
+        const directHit = this.currentPlayer.fire(hitCoords)
+        console.log(`direct hit: ${directHit}`)
+        
         this.setPlayer()
+        console.log(`current player: ${this.currentPlayer}`)
     }
     setPlayer() {
-        //select starting player and change player turn at end of previous turn
 
+        //select starting player and change player turn at end of previous turn
         if (this.currentPlayer === null) {
             this.currentPlayer = this.player1 
             this.otherPlayer = this.player2        
@@ -54,12 +54,11 @@ class Game {
             location[i] = (coordinate - (midIndex * 10)) + (i * 10)
         }        
        }
-       
-       
         console.log(`location: ${location}`)
         return location
     }
     isDuplicate(player, location) {
+
         const isOccupied = player.occupiedCoordinates.some(occupiedLocation => {
             return occupiedLocation.some(occupiedCoordinate => location.includes(occupiedCoordinate))
         })
@@ -72,7 +71,6 @@ class Game {
             return true
         }
     }
-   
     isOccupied(coordiantes) {
         
         console.log(`coordinates: ${coordiantes}`)
@@ -90,14 +88,16 @@ class Game {
         return p2Occupodo
     }
     getRandomCoord() {
+
         return Math.floor(Math.random() * 99)
     }
     setAIShips() {
+
         const ai = this.player2
         const aiShips = ai.ships
 
         //empty the array 
-        this.player2.choosenCoordinates.length = 0
+        this.player2.occupiedCoordinates.length = 0
 
         let location = null
                
@@ -105,12 +105,11 @@ class Game {
 
             // randomize isHorizontal   
             const randomBoolean = Math.random() < 0.5
-            console.log(randomBoolean)
             aiShips[i].ship.isHorizontal = randomBoolean
-            console.log(`isHorizontal: ${aiShips[i].ship.isHorizontal}`)
+
             // random coordinates
             const randomCoord = this.getRandomCoord()
-            console.log(`randomCoord: ${randomCoord}`)
+            const randomCoord2 = this.getRandomCoord()
             
             location = this.setLocation(this.player2, i, randomCoord)
             
@@ -122,7 +121,11 @@ class Game {
                console.log(`isValid: ${this.p1Board.isValid(location[j])}, ${location[j]}`)
                //if coordinates are invalid or already occupied try again
                 if (this.p1Board.isValid(location[j]) === false || isDuplicateFound ) {
-                    location = this.setLocation(this.player2, i, randomCoord)
+                    location = this.setLocation(this.player2, i, randomCoord2)
+                    console.log(`retry: ${location[j]}`)
+                    console.log(`isDuplicateFound: ${isDuplicateFound}, ${location[j]}`)
+                    console.log(`isValid: ${this.p1Board.isValid(location[j])}, ${location[j]}`)
+                    
                 }
             }
         }
@@ -131,6 +134,7 @@ class Game {
         return location
     }
     linkCells(value) {
+
         const isLastCol = value % 10 === 9
         const isFirstCol = value % 10 === 0
         const isTopRow = value >= 0
@@ -142,39 +146,27 @@ class Game {
             prevVertical: isTopRow ? value - 10 : null,
             nextVertical: isBottomRow ? value + 10 : null
         }
-    }
-    checkValidity(array) {
-        const validityData = {
-            invalid: [],
-            valid: []
-        }
-    
-        for (let i = 0; i < array.length; i++) {
-            if (!this.p1Board.isValid(array[i])) {
-                validityData.invalid.push(array[i])
-            } else {
-                validityData.valid.push(array[i])
-            }
-        }
-
-        return validityData
-    }        
+    }       
     isHit(coords) {
-        let coordinates = this.otherPlayer.occupiedCoordinates
-        for (let i = 0; i < coordinates.length; i++) {
-            for (let j = 0; j < coordinates[i].length; j++) {
-                if (coords === coordinates[i][j].location) {
-                    if (!coordinates[i][j].isHit) {
+
+        const occupied = this.otherPlayer.occupiedCoordinates
+
+        for (let i = 0; i < occupied.length; i++) {
+            for (let j = 0; j < occupied[i].length; j++) {
+                if (coords === occupied[i][j].location) {
+                    if (!occupied[i][j].isHit) {
                         this.otherPlayer.ships[i].hit()
-                        coordinates[i][j].isHit = true
+                        occupied[i][j].isHit = true
                         return true
                     }
                 }
             }
         }
+
         return false
     }
     isGameOver() {
+        
         //if otherplayer .ships[i].isSunk game is over
         for (let i = 0; i < this.otherPlayer.ships.length; i++) {
             if (this.otherPlayer.ships[i].isSunk === true) {
@@ -185,8 +177,6 @@ class Game {
       return  this.gameOver = false
     }
 }
-
-
 
 class Grid {
     constructor() {
@@ -222,7 +212,6 @@ class Grid {
         } else {
             return 'Invalid index'
         }
-
     }
 } 
 
@@ -254,7 +243,7 @@ class Player {
     }
     createShips() {
         const ships = [
-            { name: 'Carrier', length: 5, shipLocation: [0,0,0,0,0], isHorizontal: true},     //ship 0
+            { name: 'Carrier', length: 5, shipLocation: [0,0,0,0,0], isHorizontal: true },     //ship 0
             { name: 'Battleship', length: 4, shipLocation: [0,0,0,0], isHorizontal: true },    //ship 1
             { name: 'Destroyer', length: 3, shipLocation: [0,0,0], isHorizontal: true },       //ship 2
             { name: 'Submarine', length: 3, shipLocation: [0,0,0], isHorizontal: true },       //ship 3
@@ -272,7 +261,7 @@ class Player {
             return 'coordinates already been fired at'
         } 
         this.choosenCoordinates.push(coords)    
-        return 'shot fired'
+        return newGame.isHit(coords)
         } 
     switchOrientation(shipIndex) {
         const ship = this.ships[shipIndex].ship        
