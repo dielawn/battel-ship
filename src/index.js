@@ -1,9 +1,6 @@
 import { Game, Grid} from './script'
 
-function createtGame() {
-    return new Game()
-}
-const newGame = createtGame()
+const newGame = new Game()
 newGame.startGame()
 
 const containerDiv = document.getElementById('container')
@@ -54,7 +51,7 @@ function renderGrid(parent, parentTxt) {
         gridSquare.classList.add('gridSquare')
         gridSquare.id = `${coords}-${parentTxt}`     
         gridSquare.setAttribute('data-coords', coords)
-        console.log(`converted: ${convertCoordinatesToGrid(coords)}`)
+        // console.log(`converted: ${convertCoordinatesToGrid(coords)}`)
         gridSquare.style.gridArea =  convertCoordinatesToGrid(coords)  
         parent.appendChild(gridSquare)
 
@@ -106,7 +103,7 @@ const convertVerticalToGrid = (coordinate) => {
 
     const rowNum = parseInt(coordinate[0])
     const colNum = parseInt(coordinate.slice(1))
-    console.log(`rowNum: ${rowNum}, colNum: ${typeof(colNum)}`)
+    console.log(`rowNum: ${rowNum}, colNum: ${colNum}`)
 
     const firstDigit = Math.floor(colNum / 10) + 1
     const secondDigit = colNum % 10 + 1
@@ -123,7 +120,7 @@ const convertHorizontalToGrid = (coordinate) => {
 
     const rowNum = parseInt(coordinate[0])
     const colNum = parseInt(coordinate.slice(1))
-    console.log(`rowNum: ${rowNum}, colNum: ${typeof(colNum)}`)
+    console.log(`rowNum: ${rowNum}, colNum: ${colNum}`)
 
     const firstDigit = Math.floor(colNum / 10) + 1
     const secondDigit = colNum % 10
@@ -148,7 +145,7 @@ const convertCoordinatesToGrid = (coordinate) => {
     const rowEnd = rowStart + 1
     const columnStart = columnNum
     const columnEnd = columnStart + 1
-    console.log( `${rowStart} / ${columnStart} / ${rowEnd} / ${columnEnd}`)
+    // console.log( `${rowStart} / ${columnStart} / ${rowEnd} / ${columnEnd}`)
     return `${rowStart} / ${columnStart} / ${rowEnd} / ${columnEnd}`
 }
 
@@ -210,6 +207,41 @@ const renderGridShip = () => {
     for (const el of prevGridShip) {
         el.remove()
     }
+    const prevEnemyShip = document.querySelectorAll('.enemyShip')
+    for (const el of prevEnemyShip) {
+        el.remove()
+    }
+
+    const enemyShip = newGame.player2.ships
+    for ( let i = 0; i < shipImages.length; i++) {
+
+        let shipsCoord = enemyShip[i].ship.shipLocation   
+        let gridAreaValue = null
+
+        console.log(`enemy ships: ${enemyShip[i].ship.name}`)
+        let shipIsHorizontal = enemyShip[i].ship.isHorizontal
+        const shipImage = document.createElement('img')
+        shipImage.classList.add('enemyShip')
+        shipImage.id = `enemy-${shipImages[i].id}`
+        shipImage.src = shipImages[i].src
+        shipImages.alt = `enemy-${shipImages[i].alt}`
+        shipImage.style.width = (enemyShip[i].ship.length * 45) + 'px'
+
+        if (shipIsHorizontal) {
+            shipImage.classList.remove('rotate')           
+            gridAreaValue = convertHorizontalToGrid(shipsCoord)
+
+        } else {
+            shipImage.classList.add('rotate')           
+            gridAreaValue = convertVerticalToGrid(shipsCoord)
+
+        }    
+        console.log('ship horizonal', shipIsHorizontal, 'grid area', gridAreaValue)
+        
+        shipImage.style.gridArea = gridAreaValue
+        enemyWaters.appendChild(shipImage)
+    }
+
     // unplaced ships initialize to dryDock div
     const p1Ships = newGame.player1.ships
     const dryDock = document.createElement('div')
@@ -279,6 +311,7 @@ function setupGame() {
         startBtn.addEventListener('click', () => {
             
             currentShip = null
+            instructionsDiv.textContent = messages.currentPlayerTurn
 
         })
     }
@@ -286,7 +319,11 @@ function setupGame() {
        
     
 }
-function fireAt() {
+
+const messages = {
+
+    currentPlayerTurn: `${newGame.currentPlayer.name}'s Turn`,
+
 
 }
 function addShipListeners() {
@@ -322,42 +359,22 @@ function addShipListeners() {
     
 }
 
-const testShip1 = newGame.player1.ships[0].ship
-
-const testShip2 = newGame.player1.ships[1].ship
-
-const testShip3 = newGame.player1.ships[2].ship
-const testShip4 = newGame.player1.ships[3].ship
-const testShip5 = newGame.player1.ships[4].ship
 
 document.addEventListener("DOMContentLoaded", function () {
     
     renderGrid(enemyWaters, 'hidden')
     renderGrid(friendlyWaters, 'revealed')
-    
+    handleSquares()
+    setupGame()
+    renderGridShip()
+    addShipListeners()
+   
 
-getIndexFromName('Carrier')
-
-// placeHorizontalShip(testShip1, 'a1')    
-// placeHorizontalShip(testShip2, 'b3')
-// placeHorizontalShip(testShip3, 'c5')
-// placeHorizontalShip(testShip4, 'j10')
-// placeHorizontalShip(testShip5, 'h2')
-// placeVerticalShip(testShip1, 'e7')
-
-handleSquares()
-
-// newGame.setPlayer()
-// console.log(newGame.setLocation(newGame.player1, 0, 45))
-renderGridShip()
-addShipListeners()
-setupGame()
-if( newGame.currentPlayer === newGame.player1) {
-    newGame.playRound(52)
-} else {
-    const randomCoord = newGame.getRandomCoord()
-    newGame.playRound(randomCoord)
-}
+    console.log(`current player ${newGame.currentPlayer.name}`)
+    newGame.togglePlayer()
+    console.log(`current player ${newGame.currentPlayer.name}`)
+    newGame.togglePlayer()
+    console.log(`current player ${newGame.currentPlayer.name}`)
 
 
  })

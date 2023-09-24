@@ -11,8 +11,8 @@ class Game {
     constructor() {
         this.player1 = new Player('player1')
         this.player2 = new Player('player2')        
-        this.currentPlayer = null
-        this.otherPlayer = null
+        this.currentPlayer = this.player1
+        this.otherPlayer = this.player2
         this.p1Board = new Grid()        
         this.p2Board = new Grid()
         this.gameOver = false
@@ -21,33 +21,12 @@ class Game {
 
         // start new game
         this.setAIShips()
-        this.setPlayer()
+    
     } 
-    playRound(hitCoords) {
-
-        //prompt for coords
-        const directHit = this.currentPlayer.fire(hitCoords)
-        console.log(`direct hit: ${directHit}`)
-        
-        this.setPlayer()
-        console.log(`current player: ${this.currentPlayer}`)
+    togglePlayer() {
+        [this.currentPlayer, this.otherPlayer] = [this.otherPlayer, this.currentPlayer]
     }
-    setPlayer() {
-
-        //select starting player and change player turn at end of previous turn
-        if (this.currentPlayer === null) {
-            this.currentPlayer = this.player1 
-            this.otherPlayer = this.player2        
-            return this.player1
-        } else if (this.currentPlayer === this.player2) {
-            this.currentPlayer = this.player1
-            this.otherPlayer = this.player2
-            return this.player1
-        }
-        this.currentPlayer = this.player2
-        this.otherPlayer = this.player1
-        return this.player2
-    }
+    
     setLocation(player, shipIndex, coordinate) {
 
         const ship = player.ships[shipIndex].ship
@@ -80,22 +59,6 @@ class Game {
             return true
         }
     }
-    isOccupied(coordiantes) {
-        
-        console.log(`coordinates: ${coordiantes}`)
-        const p1Occupodo = this.player1.occupiedCoordinates
-        for (let i = 0; i < p1Occupodo.length; i++ ) {
-            console.log(`isOccupodoP1: ${p1Occupodo[i]}`)
-        }
-        console.log(`isOccupodoP1: ${p1Occupodo}`)
-        
-        const p2Occupodo = this.player2.occupiedCoordinates
-        for (let i = 0; i < p2Occupodo.length; i++ ) {
-            console.log(`isOccupodoP2: ${p2Occupodo[i]}, coords: ${coordiantes}, equal? ${(p2Occupodo[i] == coordiantes)} `)
-        }
-        console.log(`isOccupodoP2: ${p2Occupodo}`)
-        return p2Occupodo
-    }
     getRandomCoord() {
 
         return Math.floor(Math.random() * 99)
@@ -106,12 +69,10 @@ class Game {
         const aiShips = ai.ships
 
         //empty the array 
-        this.player2.occupiedCoordinates.length = 0
-
+        ai.occupiedCoordinates.length = 0
         let location = null
                
         for (let i = 0; i < aiShips.length; i++) {
-
             // randomize isHorizontal   
             const randomBoolean = Math.random() < 0.5
             aiShips[i].ship.isHorizontal = randomBoolean
@@ -120,27 +81,31 @@ class Game {
             const randomCoord = this.getRandomCoord()
             const randomCoord2 = this.getRandomCoord()
             
-            location = this.setLocation(this.player2, i, randomCoord)
+            location = this.setLocation(ai, i, randomCoord)
             
             //check for invalid coordiantes
-            const isDuplicateFound = this.isDuplicate(this.player2, location)
-            for (let j = 0; j < location.length; j++) {
-               
-               console.log(`isDuplicateFound: ${isDuplicateFound}, ${location[j]}`)
-               console.log(`isValid: ${this.p1Board.isValid(location[j])}, ${location[j]}`)
-               //if coordinates are invalid or already occupied try again
-                if (this.p1Board.isValid(location[j]) === false || isDuplicateFound ) {
-                    location = this.setLocation(this.player2, i, randomCoord2)
-                    console.log(`retry: ${location[j]}`)
-                    console.log(`isDuplicateFound: ${isDuplicateFound}, ${location[j]}`)
-                    console.log(`isValid: ${this.p1Board.isValid(location[j])}, ${location[j]}`)
-                    
-                }
+            const isDuplicateFound = this.isDuplicate(ai, location)
+            let validCoords = this.checkValidity()
+            while (!validCoords) {
+                location = this.setLocation(ai, i, randomCoord2)
             }
+
         }
         console.log(`occupied: ${ai.occupiedCoordinates}`)
         console.log(`location: ${location}`)     
         return location
+    }
+    checkValidity() {
+        for (let j = 0; j < location.length; j++) {               
+            //if coordinates are invalid or already occupied try again
+             if (this.p1Board.isValid(location[j]) === false || isDuplicateFound ) {                 
+                 console.log(`retry: ${location[j]}`)
+                 console.log(`isDuplicateFound: ${isDuplicateFound}, ${location[j]}`)
+                 console.log(`isValid: ${this.p1Board.isValid(location[j])}, ${location[j]}`)
+                return false
+             }
+         }
+         return true
     }
     linkCells(value) {
 
@@ -155,11 +120,19 @@ class Game {
             prevVertical: isTopRow ? value - 10 : null,
             nextVertical: isBottomRow ? value + 10 : null
         }
-    }       
+    }     
+
+    // isHit(coords) {
+
+    //     const occupied = this.otherPlayer.occupiedCoordinates
+    //     const includesCoords = occupied.includes(coords)
+    
+    //     return includesCoords  
+    // }
     isHit(coords) {
-
         const occupied = this.otherPlayer.occupiedCoordinates
-
+        console.log(`${this.otherPlayer}`)
+        console.log(`coords: ${coords}, occupied: ${occupied}`)
         for (let i = 0; i < occupied.length; i++) {
             for (let j = 0; j < occupied[i].length; j++) {
                 if (coords === occupied[i][j].location) {
@@ -249,6 +222,7 @@ class Player {
         this.occupiedCoordinates = []
         this.choosenCoordinates = []        
         this.ships = this.createShips()
+        
     }
     createShips() {
         const ships = [
@@ -265,13 +239,9 @@ class Player {
         return playerShips
     }
     fire(coords) {
-        for (let i = 0; i < this.choosenCoordinates.length; i++) {
-            if( coords === this.choosenCoordinates[i]) 
-            return 'coordinates already been fired at'
-        } 
-        this.choosenCoordinates.push(coords)    
-        return newGame.isHit(coords)
-        } 
+        this.choosenCoordinates.push(coords)
+        return coords
+    } 
     switchOrientation(shipIndex) {
         const ship = this.ships[shipIndex].ship        
         ship.isHorizontal = !ship.isHorizontal
@@ -371,10 +341,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _script__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_script__WEBPACK_IMPORTED_MODULE_0__);
 
 
-function createtGame() {
-    return new _script__WEBPACK_IMPORTED_MODULE_0__.Game()
-}
-const newGame = createtGame()
+const newGame = new _script__WEBPACK_IMPORTED_MODULE_0__.Game()
 newGame.startGame()
 
 const containerDiv = document.getElementById('container')
@@ -425,7 +392,7 @@ function renderGrid(parent, parentTxt) {
         gridSquare.classList.add('gridSquare')
         gridSquare.id = `${coords}-${parentTxt}`     
         gridSquare.setAttribute('data-coords', coords)
-        console.log(`converted: ${convertCoordinatesToGrid(coords)}`)
+        // console.log(`converted: ${convertCoordinatesToGrid(coords)}`)
         gridSquare.style.gridArea =  convertCoordinatesToGrid(coords)  
         parent.appendChild(gridSquare)
 
@@ -477,7 +444,7 @@ const convertVerticalToGrid = (coordinate) => {
 
     const rowNum = parseInt(coordinate[0])
     const colNum = parseInt(coordinate.slice(1))
-    console.log(`rowNum: ${rowNum}, colNum: ${typeof(colNum)}`)
+    console.log(`rowNum: ${rowNum}, colNum: ${colNum}`)
 
     const firstDigit = Math.floor(colNum / 10) + 1
     const secondDigit = colNum % 10 + 1
@@ -494,7 +461,7 @@ const convertHorizontalToGrid = (coordinate) => {
 
     const rowNum = parseInt(coordinate[0])
     const colNum = parseInt(coordinate.slice(1))
-    console.log(`rowNum: ${rowNum}, colNum: ${typeof(colNum)}`)
+    console.log(`rowNum: ${rowNum}, colNum: ${colNum}`)
 
     const firstDigit = Math.floor(colNum / 10) + 1
     const secondDigit = colNum % 10
@@ -519,7 +486,7 @@ const convertCoordinatesToGrid = (coordinate) => {
     const rowEnd = rowStart + 1
     const columnStart = columnNum
     const columnEnd = columnStart + 1
-    console.log( `${rowStart} / ${columnStart} / ${rowEnd} / ${columnEnd}`)
+    // console.log( `${rowStart} / ${columnStart} / ${rowEnd} / ${columnEnd}`)
     return `${rowStart} / ${columnStart} / ${rowEnd} / ${columnEnd}`
 }
 
@@ -581,6 +548,41 @@ const renderGridShip = () => {
     for (const el of prevGridShip) {
         el.remove()
     }
+    const prevEnemyShip = document.querySelectorAll('.enemyShip')
+    for (const el of prevEnemyShip) {
+        el.remove()
+    }
+
+    const enemyShip = newGame.player2.ships
+    for ( let i = 0; i < shipImages.length; i++) {
+
+        let shipsCoord = enemyShip[i].ship.shipLocation   
+        let gridAreaValue = null
+
+        console.log(`enemy ships: ${enemyShip[i].ship.name}`)
+        let shipIsHorizontal = enemyShip[i].ship.isHorizontal
+        const shipImage = document.createElement('img')
+        shipImage.classList.add('enemyShip')
+        shipImage.id = `enemy-${shipImages[i].id}`
+        shipImage.src = shipImages[i].src
+        shipImages.alt = `enemy-${shipImages[i].alt}`
+        shipImage.style.width = (enemyShip[i].ship.length * 45) + 'px'
+
+        if (shipIsHorizontal) {
+            shipImage.classList.remove('rotate')           
+            gridAreaValue = convertHorizontalToGrid(shipsCoord)
+
+        } else {
+            shipImage.classList.add('rotate')           
+            gridAreaValue = convertVerticalToGrid(shipsCoord)
+
+        }    
+        console.log('ship horizonal', shipIsHorizontal, 'grid area', gridAreaValue)
+        
+        shipImage.style.gridArea = gridAreaValue
+        enemyWaters.appendChild(shipImage)
+    }
+
     // unplaced ships initialize to dryDock div
     const p1Ships = newGame.player1.ships
     const dryDock = document.createElement('div')
@@ -650,6 +652,7 @@ function setupGame() {
         startBtn.addEventListener('click', () => {
             
             currentShip = null
+            instructionsDiv.textContent = messages.currentPlayerTurn
 
         })
     }
@@ -657,7 +660,11 @@ function setupGame() {
        
     
 }
-function fireAt() {
+
+const messages = {
+
+    currentPlayerTurn: `${newGame.currentPlayer.name}'s Turn`,
+
 
 }
 function addShipListeners() {
@@ -693,42 +700,22 @@ function addShipListeners() {
     
 }
 
-const testShip1 = newGame.player1.ships[0].ship
-
-const testShip2 = newGame.player1.ships[1].ship
-
-const testShip3 = newGame.player1.ships[2].ship
-const testShip4 = newGame.player1.ships[3].ship
-const testShip5 = newGame.player1.ships[4].ship
 
 document.addEventListener("DOMContentLoaded", function () {
     
     renderGrid(enemyWaters, 'hidden')
     renderGrid(friendlyWaters, 'revealed')
-    
+    handleSquares()
+    setupGame()
+    renderGridShip()
+    addShipListeners()
+   
 
-getIndexFromName('Carrier')
-
-// placeHorizontalShip(testShip1, 'a1')    
-// placeHorizontalShip(testShip2, 'b3')
-// placeHorizontalShip(testShip3, 'c5')
-// placeHorizontalShip(testShip4, 'j10')
-// placeHorizontalShip(testShip5, 'h2')
-// placeVerticalShip(testShip1, 'e7')
-
-handleSquares()
-
-// newGame.setPlayer()
-// console.log(newGame.setLocation(newGame.player1, 0, 45))
-renderGridShip()
-addShipListeners()
-setupGame()
-if( newGame.currentPlayer === newGame.player1) {
-    newGame.playRound(52)
-} else {
-    const randomCoord = newGame.getRandomCoord()
-    newGame.playRound(randomCoord)
-}
+    console.log(`current player ${newGame.currentPlayer.name}`)
+    newGame.togglePlayer()
+    console.log(`current player ${newGame.currentPlayer.name}`)
+    newGame.togglePlayer()
+    console.log(`current player ${newGame.currentPlayer.name}`)
 
 
  })

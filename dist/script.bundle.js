@@ -11,8 +11,8 @@ class Game {
     constructor() {
         this.player1 = new Player('player1')
         this.player2 = new Player('player2')        
-        this.currentPlayer = null
-        this.otherPlayer = null
+        this.currentPlayer = this.player1
+        this.otherPlayer = this.player2
         this.p1Board = new Grid()        
         this.p2Board = new Grid()
         this.gameOver = false
@@ -21,33 +21,12 @@ class Game {
 
         // start new game
         this.setAIShips()
-        this.setPlayer()
+    
     } 
-    playRound(hitCoords) {
-
-        //prompt for coords
-        const directHit = this.currentPlayer.fire(hitCoords)
-        console.log(`direct hit: ${directHit}`)
-        
-        this.setPlayer()
-        console.log(`current player: ${this.currentPlayer}`)
+    togglePlayer() {
+        [this.currentPlayer, this.otherPlayer] = [this.otherPlayer, this.currentPlayer]
     }
-    setPlayer() {
-
-        //select starting player and change player turn at end of previous turn
-        if (this.currentPlayer === null) {
-            this.currentPlayer = this.player1 
-            this.otherPlayer = this.player2        
-            return this.player1
-        } else if (this.currentPlayer === this.player2) {
-            this.currentPlayer = this.player1
-            this.otherPlayer = this.player2
-            return this.player1
-        }
-        this.currentPlayer = this.player2
-        this.otherPlayer = this.player1
-        return this.player2
-    }
+    
     setLocation(player, shipIndex, coordinate) {
 
         const ship = player.ships[shipIndex].ship
@@ -80,22 +59,6 @@ class Game {
             return true
         }
     }
-    isOccupied(coordiantes) {
-        
-        console.log(`coordinates: ${coordiantes}`)
-        const p1Occupodo = this.player1.occupiedCoordinates
-        for (let i = 0; i < p1Occupodo.length; i++ ) {
-            console.log(`isOccupodoP1: ${p1Occupodo[i]}`)
-        }
-        console.log(`isOccupodoP1: ${p1Occupodo}`)
-        
-        const p2Occupodo = this.player2.occupiedCoordinates
-        for (let i = 0; i < p2Occupodo.length; i++ ) {
-            console.log(`isOccupodoP2: ${p2Occupodo[i]}, coords: ${coordiantes}, equal? ${(p2Occupodo[i] == coordiantes)} `)
-        }
-        console.log(`isOccupodoP2: ${p2Occupodo}`)
-        return p2Occupodo
-    }
     getRandomCoord() {
 
         return Math.floor(Math.random() * 99)
@@ -106,12 +69,10 @@ class Game {
         const aiShips = ai.ships
 
         //empty the array 
-        this.player2.occupiedCoordinates.length = 0
-
+        ai.occupiedCoordinates.length = 0
         let location = null
                
         for (let i = 0; i < aiShips.length; i++) {
-
             // randomize isHorizontal   
             const randomBoolean = Math.random() < 0.5
             aiShips[i].ship.isHorizontal = randomBoolean
@@ -120,27 +81,31 @@ class Game {
             const randomCoord = this.getRandomCoord()
             const randomCoord2 = this.getRandomCoord()
             
-            location = this.setLocation(this.player2, i, randomCoord)
+            location = this.setLocation(ai, i, randomCoord)
             
             //check for invalid coordiantes
-            const isDuplicateFound = this.isDuplicate(this.player2, location)
-            for (let j = 0; j < location.length; j++) {
-               
-               console.log(`isDuplicateFound: ${isDuplicateFound}, ${location[j]}`)
-               console.log(`isValid: ${this.p1Board.isValid(location[j])}, ${location[j]}`)
-               //if coordinates are invalid or already occupied try again
-                if (this.p1Board.isValid(location[j]) === false || isDuplicateFound ) {
-                    location = this.setLocation(this.player2, i, randomCoord2)
-                    console.log(`retry: ${location[j]}`)
-                    console.log(`isDuplicateFound: ${isDuplicateFound}, ${location[j]}`)
-                    console.log(`isValid: ${this.p1Board.isValid(location[j])}, ${location[j]}`)
-                    
-                }
+            const isDuplicateFound = this.isDuplicate(ai, location)
+            let validCoords = this.checkValidity()
+            while (!validCoords) {
+                location = this.setLocation(ai, i, randomCoord2)
             }
+
         }
         console.log(`occupied: ${ai.occupiedCoordinates}`)
         console.log(`location: ${location}`)     
         return location
+    }
+    checkValidity() {
+        for (let j = 0; j < location.length; j++) {               
+            //if coordinates are invalid or already occupied try again
+             if (this.p1Board.isValid(location[j]) === false || isDuplicateFound ) {                 
+                 console.log(`retry: ${location[j]}`)
+                 console.log(`isDuplicateFound: ${isDuplicateFound}, ${location[j]}`)
+                 console.log(`isValid: ${this.p1Board.isValid(location[j])}, ${location[j]}`)
+                return false
+             }
+         }
+         return true
     }
     linkCells(value) {
 
@@ -155,11 +120,19 @@ class Game {
             prevVertical: isTopRow ? value - 10 : null,
             nextVertical: isBottomRow ? value + 10 : null
         }
-    }       
+    }     
+
+    // isHit(coords) {
+
+    //     const occupied = this.otherPlayer.occupiedCoordinates
+    //     const includesCoords = occupied.includes(coords)
+    
+    //     return includesCoords  
+    // }
     isHit(coords) {
-
         const occupied = this.otherPlayer.occupiedCoordinates
-
+        console.log(`${this.otherPlayer}`)
+        console.log(`coords: ${coords}, occupied: ${occupied}`)
         for (let i = 0; i < occupied.length; i++) {
             for (let j = 0; j < occupied[i].length; j++) {
                 if (coords === occupied[i][j].location) {
@@ -249,6 +222,7 @@ class Player {
         this.occupiedCoordinates = []
         this.choosenCoordinates = []        
         this.ships = this.createShips()
+        
     }
     createShips() {
         const ships = [
@@ -265,13 +239,9 @@ class Player {
         return playerShips
     }
     fire(coords) {
-        for (let i = 0; i < this.choosenCoordinates.length; i++) {
-            if( coords === this.choosenCoordinates[i]) 
-            return 'coordinates already been fired at'
-        } 
-        this.choosenCoordinates.push(coords)    
-        return newGame.isHit(coords)
-        } 
+        this.choosenCoordinates.push(coords)
+        return coords
+    } 
     switchOrientation(shipIndex) {
         const ship = this.ships[shipIndex].ship        
         ship.isHorizontal = !ship.isHorizontal
