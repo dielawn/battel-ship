@@ -199,8 +199,8 @@ const renderShips = (isPlayer1) => {
     ]
 
     const dryDock = document.createElement('div')
-     dryDock.className = 'dry-dock'
-     containerDiv.appendChild(dryDock)
+    dryDock.className = 'dry-dock'
+    containerDiv.appendChild(dryDock)
 
     for (let i = 0; i < shipImages.length; i++) {
 
@@ -216,10 +216,8 @@ const renderShips = (isPlayer1) => {
         shipImages.alt = shipImages[i].alt
         shipImage.style.width = (shipData.length * 45) + 'px'
 
-        console.log(`coordinates: ${shipCoord}`)
         let gridAreaValue = null
-        console.log(`gridAreaValue ${gridAreaValue}, isplayer1?: ${isPlayer1}`)
-        
+        console.log(`isHorizontal: ${isHorizontal}`)
         if (isHorizontal) {
             shipImage.classList.remove('rotate')
             gridAreaValue = convertHorizontalToGrid(shipCoord)
@@ -229,10 +227,9 @@ const renderShips = (isPlayer1) => {
         }
         shipImage.style.gridArea = gridAreaValue
         
-
         if (isPlayer1) {
             let isNotSet = (shipCoord[1] == 0)
-            isNotSet ? shipImage.className = 'ship-icon' : shipImage.className = 'gridShip'
+            isNotSet ? shipImage.classList.add('ship-icon') : shipImage.classList.add('gridShip')
             isNotSet ? dryDock.appendChild(shipImage) : friendlyWaters.appendChild(shipImage)       
         } else {
             shipImage.classList.add('enemyShip')
@@ -256,144 +253,18 @@ const renderAllShips = () => {
     const prevEnemyShip = document.querySelectorAll('.enemyShip')
     removeElements(prevEnemyShip)
 
+    //player1
     renderShips(true)
+    //player2
     renderShips(false)
 
     addShipListeners()
 }
-const renderGridShip = () => {
-    const shipImages = [
-        {
-            id: 'carrier', 
-            src: "images/carrier.png",
-            alt: "carrier-icon"
-        },
-        {
-            id: 'battleship', 
-            src: "images/battleship.png",
-            alt: "battleship-icon"
-        },
-        {
-            id: 'destroyer', 
-            src: "images/destroyer.png",
-            alt: "destroyer-icon"
-        },
-        {
-            id: 'submarine', 
-            src: "images/submarine.png",
-            alt: "submarine-icon"
-        },
-        {
-            id: 'patrol', 
-            src: "images/patrol.png",
-            alt: "patrol-icon"
-        }
-]
-    
-    //remove duplicates
-    const prevShips = document.querySelectorAll('.ship-icon')    
-    for (const el of prevShips) {
-        el.remove()
-    }
-    const prevGridShip = document.querySelectorAll('.gridShip')
-    for (const el of prevGridShip) {
-        el.remove()
-    }
-    const prevEnemyShip = document.querySelectorAll('.enemyShip')
-    for (const el of prevEnemyShip) {
-        el.remove()
-    }
 
-     // unplaced ships initialize to dryDock div
-     const p1Ships = newGame.player1.ships
-     const dryDock = document.createElement('div')
-     dryDock.className = 'dry-dock'
-     containerDiv.appendChild(dryDock)
-
-    const enemyShip = newGame.player2.ships
-    
-    for ( let i = 0; i < shipImages.length; i++) {
-        //p1ships
-
-
-        //enemey ships
-        let enemyCoord = enemyShip[i].ship.shipLocation   
-        let gridAreaValue = null
-
-        console.log(`enemy ships: ${enemyShip[i].ship.name}`)
-        let shipIsHorizontal = enemyShip[i].ship.isHorizontal
-        const enemyShipImage = document.createElement('img')
-        enemyShipImage.classList.add('enemyShip')
-        enemyShipImage.id = `enemy-${shipImages[i].id}`
-        enemyShipImage.src = shipImages[i].src
-        enemyShipImage.alt = `enemy-${shipImages[i].alt}`
-        enemyShipImage.style.width = (enemyShip[i].ship.length * 45) + 'px'
-
-        if (shipIsHorizontal) {
-            enemyShipImage.classList.remove('rotate')           
-            gridAreaValue = convertHorizontalToGrid(enemyCoord)
-
-        } else {
-            enemyShipImage.classList.add('rotate')           
-            gridAreaValue = convertVerticalToGrid(enemyCoord)
-
-        }    
-        console.log('ship horizonal', shipIsHorizontal, 'grid area', gridAreaValue)
-        
-        enemyShipImage.style.gridArea = gridAreaValue
-        enemyWaters.appendChild(enemyShipImage)
-    }
-
-   
-    //loop ship images rendering into different parent based on coordinates
-    for (let i = 0; i < shipImages.length; i++) {
-        
-        const shipsCoords = p1Ships[i].ship.shipLocation
-        console.log(shipsCoords)
-        let shipIsHorizontal = p1Ships[i].ship.isHorizontal
-        console.log(p1Ships[i].ship.name,'ship horizonal', shipIsHorizontal)
-        const shipImage = document.createElement('img')
-        shipImage.id = shipImages[i].id
-        shipImage.src = shipImages[i].src
-        shipImages.alt = shipImages[i].alt
-        shipImage.style.width = (p1Ships[i].ship.length * 45) + 'px'
-    
-        // unplaced ships Coords are initialized as all 0's
-        console.log(`shipsCoords[1]: ${shipsCoords[1]}, ${shipsCoords[1] == 0}`)
-        if (shipsCoords[1] == 0) {
-
-            console.log('No coordinates set for ship')  
-            shipImage.classList.add('ship-icon')
-            dryDock.appendChild(shipImage)       
-
-            continue
-        }
-        // convert board coordinates to css grid values to place ships on board
-        console.log(`shipsCoords: ${shipsCoords}`)
-        let gridAreaValue = null    
-        shipImage.className = 'gridShip'   
-       
-        if (shipIsHorizontal) {
-            shipImage.classList.remove('rotate')           
-            gridAreaValue = convertHorizontalToGrid(shipsCoords)
-
-        } else {
-            shipImage.classList.add('rotate')           
-            gridAreaValue = convertVerticalToGrid(shipsCoords)
-
-        }    
-        console.log('ship horizonal', shipIsHorizontal, 'grid area', gridAreaValue)
-        
-        shipImage.style.gridArea = gridAreaValue
-        friendlyWaters.appendChild(shipImage)
-    }
-    addShipListeners()
-  
-}
 function setupGame() {
 
     const instructionsDiv = document.getElementById('instructions')
-    instructionsDiv.textContent = `Drag & drop ships on grid. Double click to rotate.`
+    instructionsDiv.textContent = messages.startingInstruction
 
     const unplacedShips = document.querySelectorAll('.ship-icon')
     console.log(`length: ${unplacedShips.length}`)
@@ -413,13 +284,12 @@ function setupGame() {
 
         })
     }
-    
-       
-    
+
 }
 
 const messages = {
 
+    startingInstruction: `Drag & drop ships on grid. Double click to rotate.`,
     currentPlayerTurn: `${newGame.currentPlayer.name}'s Turn`,
 
 
@@ -432,27 +302,23 @@ function addShipListeners() {
 
         const capitalizedName = capFirstLetter(ship.id)
         ship.addEventListener('mousedown', () => {
-            console.log(capitalizedName)
             currentShip = capitalizedName
         })
         
         ship.addEventListener('dblclick', () => {
     
             const shipIndex = getIndexFromName(capitalizedName)
-            const p1 = newGame.player1
+            const player1 = newGame.player1
             
-            console.log(p1.ships[shipIndex].ship.isHorizontal)
-            p1.switchOrientation(shipIndex)
-            if (p1.ships[shipIndex].ship.isHorizontal) {
-                ship.classList.remove('rotate')
-                
-            } else {
-               
-                ship.classList.add('rotate')
-            }
-            
-            console.log(ship.id, p1.ships[shipIndex].ship.isHorizontal)
+            player1.switchOrientation(shipIndex)
+
+            let isHorizontal = player1.ships[shipIndex].ship.isHorizontal            
+            isHorizontal = !isHorizontal
+            renderAllShips()
+      
+            console.log(`isHorizontal: ${player1.ships[shipIndex].ship.isHorizontal}`)
         })
+    
     }
     
 }
