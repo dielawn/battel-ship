@@ -76,7 +76,9 @@ function handleSquares() {
         square.addEventListener('click', ()  => {
            console.log(squareData)
            selectedSquare = squareData
-           
+           console.log(square.id)
+            markSquare(square.id, false)
+                     
         })
         square.addEventListener('dragover', (e) => {
             e.preventDefault()
@@ -97,7 +99,17 @@ function handleSquares() {
         })
     })
 }
+const markSquare = (squareId, isHit) => {
 
+    const selected = document.getElementById(squareId)
+
+    const peg = document.createElement('div')
+    peg.style.backgroundColor = isHit ? 'red' : 'blue'
+    peg.classList.add('peg')
+   
+
+   selected.appendChild(peg)
+}
 //for ships
 const convertVerticalToGrid = (coordinate) => {
 
@@ -243,6 +255,10 @@ const removeElements = (elements) => {
 }
 const renderAllShips = () => {
 
+    //remove dry dock
+    const prevDock = document.querySelectorAll('.dry-dock')
+    removeElements(prevDock)
+
     //remove previous ships
     const prevShips = document.querySelectorAll('.ship-icon')    
     removeElements(prevShips)
@@ -332,7 +348,7 @@ document.addEventListener("DOMContentLoaded", function () {
     setupGame()
     renderAllShips()
     addShipListeners()
-   
+  
 
     // console.log(`current player ${newGame.currentPlayer.name}`)
     // newGame.togglePlayer()
