@@ -26,7 +26,31 @@ class Game {
     togglePlayer() {
         [this.currentPlayer, this.otherPlayer] = [this.otherPlayer, this.currentPlayer]
     }
+    placeShips(isPlayer1, shipIndex, coordiantes) {
+        const player = isPlayer1 ? this.player1 : this.player2
+        const ship = player.ships[shipIndex].ship
+        const location = ship.shipLocation
+        const isHorizontal = ship.isHorizontal
+
+        for (let i = 0; i < ship.length; i++) {
+
+            location[i] = isHorizontal ? coordiantes + i : coordiantes + (i * 10)
     
+        }
+        return location
+    }
+    setAILocation(shipIndex, coordiantes) {
+        const ship = this.player2.ships[shipIndex].ship
+        const location = ship.shipLocation
+        const isHorizontal = ship.isHorizontal
+
+        for (let i = 0; i < ship.length; i++) {
+
+            location[i] = isHorizontal ? coordiantes + i : coordiantes + (i * 10)
+
+        }
+        return location
+    }
     setLocation(player, shipIndex, coordinate) {
 
         const ship = player.ships[shipIndex].ship
@@ -81,13 +105,13 @@ class Game {
             const randomCoord = this.getRandomCoord()
             const randomCoord2 = this.getRandomCoord()
             
-            location = this.setLocation(ai, i, randomCoord)
+            location = this.setAILocation(i, randomCoord)
             
             //check for invalid coordiantes
             const isDuplicateFound = this.isDuplicate(ai, location)
             let validCoords = this.checkValidity()
             while (!validCoords) {
-                location = this.setLocation(ai, i, randomCoord2)
+                location = this.setAILocation(i, randomCoord2)
             }
 
         }
@@ -131,12 +155,15 @@ class Game {
     // }
     isHit(coords) {
         const occupied = this.otherPlayer.occupiedCoordinates
-        console.log(`${this.otherPlayer}`)
-        console.log(`coords: ${coords}, occupied: ${occupied}`)
+        console.log(`${this.otherPlayer.name}`)
+        
         for (let i = 0; i < occupied.length; i++) {
             for (let j = 0; j < occupied[i].length; j++) {
-                if (coords === occupied[i][j].location) {
+                
+                if (coords === occupied[i][j]) {
                     if (!occupied[i][j].isHit) {
+                        console.log(`coords: ${coords}, occupied: ${occupied[i][j]}`)
+                console.log(`coords: ${coords == occupied[i][j]}`)
                         this.otherPlayer.ships[i].hit()
                         occupied[i][j].isHit = true
                         return true
@@ -204,6 +231,7 @@ class Ship {
         this.isSunk = false
     }
     hit() {
+        console.log()
         if(this.isSunk === true) {
             return
         }

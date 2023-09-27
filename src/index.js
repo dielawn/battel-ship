@@ -64,6 +64,12 @@ function renderGrid(parent, parentTxt) {
 
 function handleSquares() {
 
+    const ships = newGame.player1.ships
+    for (let i = 0; i < ships.length; i++) {
+        console.log(ships[i].ship)
+    }
+    
+
     const gridSquares = document.querySelectorAll('.gridSquare')
 
     gridSquares.forEach(square => {
@@ -72,13 +78,16 @@ function handleSquares() {
         const rowNum = squareData[0]
       
         const coords = rowNum + colNumber
+
+        
             
         square.addEventListener('click', ()  => {
-           console.log(squareData)
-           selectedSquare = squareData
-           console.log(square.id)
-            markSquare(square.id, false)
-                     
+            console.log(squareData)
+            selectedSquare = squareData
+            const isHit = newGame.isHit(coords)
+            console.log(`id: ${square.id} isHit: ${isHit}`)
+            markSquare(square.id, isHit)
+                     convertToGrid(coords, ships[1])
         })
         square.addEventListener('dragover', (e) => {
             e.preventDefault()
@@ -111,6 +120,27 @@ const markSquare = (squareId, isHit) => {
    selected.appendChild(peg)
 }
 //for ships
+const convertToGrid = (coordiante, ship) => {
+
+    console.log(`ship: ${ship[1].ship.name}`)
+    const shipLength = ship.length
+    const isHorizontal = ship.isHorizontal
+    
+    const firstDigit = Number(coordiante[0])  
+    const secondDigit = Number(coordiante[1])     
+    console.log(`firstDigit: ${firstDigit}, secondDigit: ${secondDigit}`)
+
+    const rowStart = firstDigit + 1
+    const colStart = secondDigit + 1
+    console.log(`rowStart: ${rowStart}, colStart: ${colStart}`)
+
+    const rowEnd = isHorizontal ? rowStart + shipLength : rowStart + 1
+    const colEnd = isHorizontal ? colStart + 1 : colStart + shipLength
+    console.log(`rowEnd: ${rowEnd}, colEnd: ${colEnd}`) 
+
+
+    return `${rowStart} / ${colStart} / ${rowEnd} / ${colEnd}`
+}
 const convertVerticalToGrid = (coordinate) => {
 
     const rowNum = parseInt(coordinate[0])
