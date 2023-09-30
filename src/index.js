@@ -1,3 +1,4 @@
+import { MA } from 'us-states'
 import { Game, Grid} from './script'
 
 const newGame = new Game()
@@ -87,7 +88,7 @@ function handleSquares() {
             const isHit = newGame.isHit(coords)
             console.log(`id: ${square.id} isHit: ${isHit}`)
             markSquare(square.id, isHit)
-                     convertToGrid(coords, ships[1])
+            
         })
         square.addEventListener('dragover', (e) => {
             e.preventDefault()
@@ -121,66 +122,41 @@ const markSquare = (squareId, isHit) => {
 }
 //for ships
 const convertToGrid = (coordiante, ship) => {
+    console.log(`coordinate length: ${coordiante.length}`)
+    const lastIndex = coordiante.length - 1
 
-    console.log(`ship: ${ship[1].ship.name}`)
     const shipLength = ship.length
     const isHorizontal = ship.isHorizontal
+    console.log(`shipLength: ${shipLength}, isHorizontal: ${isHorizontal}`)
+
+    const firstCoord = Math.floor(Number(coordiante[0]))
+    const lastCoord = Math.floor(coordiante[lastIndex])
+    console.log(`firstCoord: ${firstCoord}, lastCoord: ${lastCoord}`)
+
     
-    const firstDigit = Number(coordiante[0])  
-    const secondDigit = Number(coordiante[1])     
+    const firstDigit = isHorizontal ? Math.floor(firstCoord / 10) : Math.floor(lastCoord / 10) 
+    const secondDigit = isHorizontal ?  firstCoord % 10 : lastCoord % 10     
     console.log(`firstDigit: ${firstDigit}, secondDigit: ${secondDigit}`)
 
-    const rowStart = firstDigit + 1
+    const rowStart =firstDigit + 1
     const colStart = secondDigit + 1
     console.log(`rowStart: ${rowStart}, colStart: ${colStart}`)
 
-    const rowEnd = isHorizontal ? rowStart + shipLength : rowStart + 1
-    const colEnd = isHorizontal ? colStart + 1 : colStart + shipLength
+    const rowEnd = isHorizontal ? rowStart + shipLength - 1 : rowStart
+    const colEnd = isHorizontal ? colStart  + shipLength : colStart
     console.log(`rowEnd: ${rowEnd}, colEnd: ${colEnd}`) 
 
-
-    return `${rowStart} / ${colStart} / ${rowEnd} / ${colEnd}`
-}
-const convertVerticalToGrid = (coordinate) => {
-
-    const rowNum = parseInt(coordinate[0])
-    const colNum = parseInt(coordinate.slice(1))
-    console.log(`rowNum: ${rowNum}, colNum: ${colNum}`)
-
-    const firstDigit = Math.floor(colNum / 10) + 1
-    const secondDigit = colNum % 10 + 1
-    console.log(`firstDigit: ${firstDigit}, secondDigit: ${secondDigit}`)
-
-    const rowStart = firstDigit
-    const rowEnd = rowStart 
-    const colStart = secondDigit
-    const colEnd = colStart
+    console.log(`coordinate: ${coordiante}`)
     console.log(`${rowStart} / ${colStart} / ${rowEnd} / ${colEnd}`)
     return `${rowStart} / ${colStart} / ${rowEnd} / ${colEnd}`
 }
-const convertHorizontalToGrid = (coordinate) => {
 
-    const rowNum = parseInt(coordinate[0])
-    const colNum = parseInt(coordinate.slice(1))
-    console.log(`rowNum: ${rowNum}, colNum: ${colNum}`)
-
-    const firstDigit = Math.floor(colNum / 10) + 1
-    const secondDigit = colNum % 10
-    console.log(`firstDigit: ${firstDigit}, secondDigit: ${secondDigit}`)
-
-    const rowStart = firstDigit
-    const rowEnd = rowStart + 1
-    const colStart = secondDigit
-    const colEnd = colStart + 1
-    console.log(`${rowStart} / ${colStart} / ${rowEnd} / ${colEnd}`)
-    return `${rowStart} / ${colStart} / ${rowEnd} / ${colEnd}`
-}
 //for grid squares
 const convertCoordinatesToGrid = (coordinate) => {
 
-    let rowNum = parseInt(coordinate[0])
+    let rowNum = coordinate[0]
     rowNum++
-    let columnNum = (parseInt(coordinate.slice(1)))
+    let columnNum = coordinate[1]
     columnNum++
 
     const rowStart = rowNum
@@ -258,14 +234,14 @@ const renderShips = (isPlayer1) => {
         shipImages.alt = shipImages[i].alt
         shipImage.style.width = (shipData.length * 45) + 'px'
 
-        let gridAreaValue = null
+        let gridAreaValue = convertToGrid(shipCoord, shipData)
         console.log(`isHorizontal: ${isHorizontal}`)
         if (isHorizontal) {
             shipImage.classList.remove('rotate')
-            gridAreaValue = convertHorizontalToGrid(shipCoord)
+            // gridAreaValue = convertHorizontalToGrid(shipCoord)
         } else {
             shipImage.classList.add('rotate')           
-            gridAreaValue = convertVerticalToGrid(shipCoord)
+            // gridAreaValue = convertVerticalToGrid(shipCoord)
         }
         shipImage.style.gridArea = gridAreaValue
         

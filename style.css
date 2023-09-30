@@ -31,19 +31,19 @@
 }
 #enemy-destroyer.enemyShip.rotate,
 #destroyer.gridShip.rotate {
-    transform: translate(-45px) rotate(270deg);
+    transform: translateY(-45px) translate(-45px) rotate(270deg);
 }
 #enemy-submarine.enemyShip.rotate,
 #submarine.gridShip.rotate {
-    transform: translateY(10px) translate(-50px) rotate(270deg);
+    transform: translateY(-35px) translate(-50px) rotate(270deg);
 }
 #enemy-battleship.enemyShip.rotate,
 #battleship.gridShip.rotate {
-    transform: translateY(-12px) translate(-65px) rotate(90deg);
+    transform: translateY(-60px) translate(-65px) rotate(90deg);
 }
 #enemy-carrier.enemyShip.rotate,
 #carrier.gridShip.rotate {
-    transform: translateY(5px) translate(-85px) rotate(90deg);
+    transform: translateY(-90px) translate(-85px) rotate(90deg);
 }
 .gridSquare {
     width: 50px;
