@@ -25,6 +25,7 @@ class Game {
     } 
     togglePlayer() {
         [this.currentPlayer, this.otherPlayer] = [this.otherPlayer, this.currentPlayer]
+        return this.currentPlayer
     }
     placeShips(isPlayer1, shipIndex, coordiantes) {
         const player = isPlayer1 ? this.player1 : this.player2
@@ -39,18 +40,7 @@ class Game {
         }
         return location
     }
-    setAILocation(shipIndex, coordiantes) {
-        const ship = this.player2.ships[shipIndex].ship
-        const location = ship.shipLocation
-        const isHorizontal = ship.isHorizontal
-
-        for (let i = 0; i < ship.length; i++) {
-
-            location[i] = isHorizontal ? coordiantes + i : coordiantes + (i * 10)
-
-        }
-        return location
-    }
+    
     setLocation(player, shipIndex, coordinate) {
 
         const ship = player.ships[shipIndex].ship
@@ -69,68 +59,114 @@ class Game {
         console.log(`location: ${location}`)
         return location
     }
-    isDuplicate(player, location) {
-
-        const isOccupied = player.occupiedCoordinates.some(occupiedLocation => {
-            return occupiedLocation.some(occupiedCoordinate => location.includes(occupiedCoordinate))
-        })
-        if (!isOccupied) {
-            player.occupiedCoordinates.push(location)
-            console.log(`occupied: ${player.occupiedCoordinates}`)
-           return  false
-        } else {
-            console.log(`duplicate found`)
-            return true
-        }
-    }
+    
     getRandomCoord() {
 
         return Math.floor(Math.random() * 99)
     }
     setAIShips() {
-
         const ai = this.player2
         const aiShips = ai.ships
 
-        //empty the array 
-        ai.occupiedCoordinates.length = 0
-        let location = null
-               
-        for (let i = 0; i < aiShips.length; i++) {
-            // randomize isHorizontal   
+        
+        for ( let i = 0; i < aiShips.length; i++ ) {
             const randomBoolean = Math.random() < 0.5
             aiShips[i].ship.isHorizontal = randomBoolean
 
-            // random coordinates
-            const randomCoord = this.getRandomCoord()
-            const randomCoord2 = this.getRandomCoord()
-            
-            location = this.setAILocation(i, randomCoord)
-            
-            //check for invalid coordiantes
-            const isDuplicateFound = this.isDuplicate(ai, location)
-            let validCoords = this.checkValidity()
-            while (!validCoords) {
-                location = this.setAILocation(i, randomCoord2)
+            let location = null
+            let isOccupied = false
+            let isValid = false
+            let inRange = false
+
+            while ( !isValid || !inRange || isOccupied ) {
+                const randomCoord = this.getRandomCoord()
+               
+                location = this.setAILocation(i, randomCoord)
+                ai.occupiedCoordinates.length = 0
+                isOccupied = this.isDuplicate(ai, location)
+                isValid = this.checkValidity(location)
+                inRange = this.isInRange(false)
+                let test = this.isOccupied(false, location)
+                console.log(`test: ${test}`)
             }
 
+            console.log(`${aiShips[i].ship.name} at ${location}`)
         }
+
         console.log(`occupied: ${ai.occupiedCoordinates}`)
-        console.log(`location: ${location}`)     
+    }
+
+    setAILocation(shipIndex, coordiantes) {
+        const ship = this.player2.ships[shipIndex].ship
+        const location = ship.shipLocation
+        const isHorizontal = ship.isHorizontal
+
+        for (let i = 0; i < ship.length; i++) {
+
+            location[i] = isHorizontal ? coordiantes + i : coordiantes + (i * 10)
+
+        }
+     
         return location
     }
-    checkValidity() {
-        for (let j = 0; j < location.length; j++) {               
-            //if coordinates are invalid or already occupied try again
-             if (this.p1Board.isValid(location[j]) === false || isDuplicateFound ) {                 
-                 console.log(`retry: ${location[j]}`)
-                 console.log(`isDuplicateFound: ${isDuplicateFound}, ${location[j]}`)
-                 console.log(`isValid: ${this.p1Board.isValid(location[j])}, ${location[j]}`)
-                return false
-             }
-         }
-         return true
+    isOccupied(isPlayer1, location) {
+        
+        const ships = isPlayer1 ? this.player1.ships : this.player2.ships
+        for ( const ship of ships ) {
+            for (const coordinate of ship.ship.shipLocation) {
+                for (const coord of location) {
+                    console.log(`coord: ${coord}`)
+                }
+                if (location.includes(coordinate)) {
+                    console.log(`location: ${location}, coordinate: ${coordinate}`)
+                    return true
+                   }
+            }
+        }
+
+        return false    
     }
+    isDuplicate(player, location) {
+
+        const isOccupied = player.occupiedCoordinates.some(occupiedLocation => {
+            return occupiedLocation.some(occupiedCoordinate => location.includes(occupiedCoordinate))
+        })
+        
+        if (!isOccupied) {
+            player.occupiedCoordinates.push(location)
+        }
+
+        console.log(`isOccupied: ${isOccupied}`)
+        
+        return isOccupied
+    }
+
+    checkValidity(location) {
+       
+        for ( const coord of location ) {
+            if ( !this.p1Board.isValid(coord)) {
+                console.log(`Invalid: ${coord}`)
+                return false
+            }
+        }
+
+        return true
+    }
+    isInRange(isPlayer1) {
+      
+        const ships = isPlayer1 ? this.player1.ships : this.player2.ships
+       
+        for ( const ship of ships ) {            
+            for ( const coord of ship.ship.shipLocation ) {    
+                if ( coord < 0 || coord > 99 ) {
+                    return false
+                }               
+            }
+        }
+       
+        return true
+    }
+    
     linkCells(value) {
 
         const isLastCol = value % 10 === 9
@@ -208,7 +244,7 @@ class Grid {
         const row = Math.floor(coordinate / 10)
         const col = coordinate % 10
         console.log(`row: ${row}, col: ${col}`)
-        if (row >= 0 && row < 10 && col >= 0 && col < 10 ) {
+        if (row >= 0 && row <= 9 && col >= 0 && col <= 9 && col + 1 <= 9 ) {
             console.log(`valid: ${coordinate}`)
             return true
         }

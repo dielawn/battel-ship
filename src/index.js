@@ -65,10 +65,10 @@ function renderGrid(parent, parentTxt) {
 
 function handleSquares() {
 
-    const ships = newGame.player1.ships
-    for (let i = 0; i < ships.length; i++) {
-        console.log(ships[i].ship)
-    }
+    // const ships = newGame.player1.ships
+    // for (let i = 0; i < ships.length; i++) {
+    //     console.log(ships[i].ship)
+    // }
     
 
     const gridSquares = document.querySelectorAll('.gridSquare')
@@ -122,32 +122,24 @@ const markSquare = (squareId, isHit) => {
 }
 //for ships
 const convertToGrid = (coordiante, ship) => {
-    console.log(`coordinate length: ${coordiante.length}`)
+    
     const lastIndex = coordiante.length - 1
 
     const shipLength = ship.length
     const isHorizontal = ship.isHorizontal
-    console.log(`shipLength: ${shipLength}, isHorizontal: ${isHorizontal}`)
 
     const firstCoord = Math.floor(Number(coordiante[0]))
     const lastCoord = Math.floor(coordiante[lastIndex])
-    console.log(`firstCoord: ${firstCoord}, lastCoord: ${lastCoord}`)
-
     
     const firstDigit = isHorizontal ? Math.floor(firstCoord / 10) : Math.floor(lastCoord / 10) 
     const secondDigit = isHorizontal ?  firstCoord % 10 : lastCoord % 10     
-    console.log(`firstDigit: ${firstDigit}, secondDigit: ${secondDigit}`)
-
-    const rowStart =firstDigit + 1
+   
+    const rowStart = firstDigit + 1
     const colStart = secondDigit + 1
-    console.log(`rowStart: ${rowStart}, colStart: ${colStart}`)
 
     const rowEnd = isHorizontal ? rowStart + shipLength - 1 : rowStart
     const colEnd = isHorizontal ? colStart  + shipLength : colStart
-    console.log(`rowEnd: ${rowEnd}, colEnd: ${colEnd}`) 
 
-    console.log(`coordinate: ${coordiante}`)
-    console.log(`${rowStart} / ${colStart} / ${rowEnd} / ${colEnd}`)
     return `${rowStart} / ${colStart} / ${rowEnd} / ${colEnd}`
 }
 
@@ -235,7 +227,7 @@ const renderShips = (isPlayer1) => {
         shipImage.style.width = (shipData.length * 45) + 'px'
 
         let gridAreaValue = convertToGrid(shipCoord, shipData)
-        console.log(`isHorizontal: ${isHorizontal}`)
+        
         if (isHorizontal) {
             shipImage.classList.remove('rotate')
             // gridAreaValue = convertHorizontalToGrid(shipCoord)
@@ -289,7 +281,7 @@ function setupGame() {
     instructionsDiv.textContent = messages.startingInstruction
 
     const unplacedShips = document.querySelectorAll('.ship-icon')
-    console.log(`length: ${unplacedShips.length}`)
+    
     if (unplacedShips.length < 1) {
 
         //remove instructions

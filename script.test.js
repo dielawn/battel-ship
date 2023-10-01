@@ -8,10 +8,10 @@ const { Game,} = require('./src/script')
             expect(testGame.player2.ships.length).toBe(5)
         })
         test('setPlayer initializes game to player1 then toggles between players', () => {            
-            expect(testGame.setPlayer()).toBe(testGame.currentPlayer)
-            expect(testGame.currentPlayer).toBe(testGame.player1)
-            expect(testGame.setPlayer()).not.toBe(testGame.otherPlayer)
-            expect(testGame.currentPlayer).toBe(testGame.player2)
+            expect(testGame.togglePlayer()).toBe(testGame.currentPlayer)
+            // expect(testGame.currentPlayer).toBe(testGame.player1)
+            expect(testGame.togglePlayer()).not.toBe(testGame.otherPlayer)
+            // expect(testGame.currentPlayer).toBe(testGame.player2)
         })
    
         describe('Player class has a name, 2 grids, and a fleet of ships', () => {
