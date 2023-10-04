@@ -58,7 +58,7 @@ class Game {
     setAIShips() {
         const ai = this.player2
         const aiShips = ai.ships
-
+        ai.occupiedCoordinates.length = 0
         
         for ( let i = 0; i < aiShips.length; i++ ) {
             const randomBoolean = Math.random() < 0.5
@@ -71,22 +71,50 @@ class Game {
 
             while ( !isValid || !inRange || isOccupied ) {
                 const randomCoord = this.getRandomCoord()
-               
+                
                 location = this.setAILocation(i, randomCoord)
-                ai.occupiedCoordinates.length = 0
-                isOccupied = this.isDuplicate(ai, location)
+
+                this.removeRejected(false, location)
+        
+                isOccupied = this.isDuplicate(ai, location)           
                 isValid = this.checkValidity(location)
                 inRange = this.isInRange(false)
-                let test = this.isOccupied(false, location)
-                console.log(`test: ${test}`)
+
+                
             }
+
 
             console.log(`${aiShips[i].ship.name} at ${location}`)
         }
-
-        console.log(`occupied: ${ai.occupiedCoordinates}`)
+        let isShort = this.checkOccupiedLength(false)           
+        console.log(`isShort: ${isShort}`)
+    if (isShort) {
+        ai.occupiedCoordinates.length = 0
+        this.setAIShips()
     }
-
+        console.log(`occupied: ${ai.occupiedCoordinates.length}`)
+    }
+    removeRejected(isPlayer1, location) {
+        
+        const player = isPlayer1 ? this.player1 : this.player2
+        const lastIndex = player.occupiedCoordinates.reduceRight((acc, occupiedLocation, currentIndex) => {
+            if (!acc && occupiedLocation.some(occupiedCoordinate => location.includes(occupiedCoordinate))) {
+                return currentIndex
+            }
+            return acc
+        }, null)
+        if (lastIndex !== null) {
+            player.occupiedCoordinates.splice(lastIndex, 1)
+        }
+    }
+    checkOccupiedLength(isPlayer1) {
+       const occupiedLength =  isPlayer1 ? this.player1.occupiedCoordinates.length : this.player2.occupiedCoordinates.length
+       console.log(`occupiedLength: ${occupiedLength}`) 
+       if (occupiedLength === 5) {
+            return false
+        } 
+        return true
+    }
     setAILocation(shipIndex, coordiantes) {
         const ship = this.player2.ships[shipIndex].ship
         const location = ship.shipLocation
@@ -103,10 +131,24 @@ class Game {
     isOccupied(isPlayer1, location) {
         
         const ships = isPlayer1 ? this.player1.ships : this.player2.ships
+        const occupied = isPlayer1 ? this.player1.occupiedCoordinates : this.player2.occupiedCoordinates
         for ( const ship of ships ) {
-            console.log(`ship: ${ships}`)
+            console.log(`ship: ${ship.ship.name}, location: ${ship.ship.shipLocation}`)
             for (const coordinate of ship.ship.shipLocation) {
+                console.log(`coordinate: ${coordinate}, occupied: ${occupied}`)
+                const isOccupied = occupied.some(occupiedLocation => {
+                    return occupiedLocation.some(occupiedCoordinate => location.includes(occupiedCoordinate))
+                })
                 
+                if (!isOccupied) {
+                    console.log(`occupied before: ${occupied}`)
+                    occupied.push(location)
+                    console.log(`occupied after: ${occupied}`)
+                }
+        
+                console.log(`isOccupied: ${isOccupied} occupied: ${occupied}`)
+                
+                return isOccupied
             }
         }
 
@@ -119,10 +161,12 @@ class Game {
         })
         
         if (!isOccupied) {
+            console.log(`occupied before: ${player.occupiedCoordinates}`)
             player.occupiedCoordinates.push(location)
+            console.log(`occupied after: ${player.occupiedCoordinates}`)
         }
 
-        console.log(`isOccupied: ${isOccupied}`)
+        console.log(`isOccupied: ${isOccupied} occupied: ${player.occupiedCoordinates}`)
         
         return isOccupied
     }
