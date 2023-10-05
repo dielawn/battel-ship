@@ -242,7 +242,7 @@ const renderShips = (isPlayer1) => {
             isNotSet ? shipImage.classList.add('ship-icon') : shipImage.classList.add('gridShip')
             isNotSet ? dryDock.appendChild(shipImage) : friendlyWaters.appendChild(shipImage)       
         } else {
-            shipImage.classList.add('enemyShip')
+            shipImage.classList.add('enemyShip', 'hide')
             enemyWaters.appendChild(shipImage)
         }
     }
