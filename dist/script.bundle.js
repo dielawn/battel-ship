@@ -96,7 +96,6 @@ class Game {
 
         let isShort = this.checkOccupiedLength(false)           
         if (isShort) {
-            ai.occupiedCoordinates.length = 0
             this.setAIShips()
         }
 
@@ -158,12 +157,8 @@ class Game {
         })
         
         if (!isOccupied) {
-            console.log(`occupied before: ${player.occupiedCoordinates}`)
             player.occupiedCoordinates.push(location)
-            console.log(`occupied after: ${player.occupiedCoordinates}`)
         }
-
-        console.log(`isOccupied: ${isOccupied} occupied: ${player.occupiedCoordinates}`)
         
         return isOccupied
     }
@@ -172,7 +167,6 @@ class Game {
        
         for ( const coord of location ) {
             if ( !this.p1Board.isValid(coord)) {
-                console.log(`Invalid: ${coord}`)
                 return false
             }
         }
@@ -208,45 +202,42 @@ class Game {
             nextVertical: isBottomRow ? value + 10 : null
         }
     }     
+    isHit(coords, isPlayer1) {
 
-    // isHit(coords) {
+        const player = isPlayer1 ? this.player1 : this.player2
+        player.choosenCoordinates.push(coords)
 
-    //     const occupied = this.otherPlayer.occupiedCoordinates
-    //     const includesCoords = occupied.includes(coords)
-    
-    //     return includesCoords  
-    // }
-    isHit(coords) {
-        const occupied = this.otherPlayer.occupiedCoordinates
-        console.log(`${this.otherPlayer.name}`)
+        const ships = player.ships
+        console.log(`shipsLength: ${ships.length}`)
         
-        for (let i = 0; i < occupied.length; i++) {
-            for (let j = 0; j < occupied[i].length; j++) {
-                
-                if (coords === occupied[i][j]) {
-                    if (!occupied[i][j].isHit) {
-                        console.log(`coords: ${coords}, occupied: ${occupied[i][j]}`)
-                console.log(`coords: ${coords == occupied[i][j]}`)
-                        this.otherPlayer.ships[i].hit()
-                        occupied[i][j].isHit = true
-                        return true
-                    }
-                }
-            }
-        }
 
-        return false
+        // const isHit = ships.some((ship) => ship.shipLocation.includes(coords))
+        // console.log(isHit)
+
+        const isOccupied = player.occupiedCoordinates.some(occupiedLocation => {
+            return occupiedLocation.some(occupiedCoordinate => coords.includes(occupiedCoordinate))
+        })
+
+        if (isOccupied) {
+           console.log(`hit!`)
+
+           //find ship index
+        //    ships[index].ship.hit()
+        }
+        
+        return isOccupied
+        
     }
     isGameOver() {
         
         //if otherplayer .ships[i].isSunk game is over
         for (let i = 0; i < this.otherPlayer.ships.length; i++) {
             if (this.otherPlayer.ships[i].isSunk === true) {
-              return  this.gameOver = true
-
+            this.gameOver = true
             }
         }
-      return  this.gameOver = false
+        
+        return this.gameOver
     }
 }
 
@@ -270,12 +261,9 @@ class Grid {
     isValid(coordinate) {
         const row = Math.floor(coordinate / 10)
         const col = coordinate % 10
-        console.log(`row: ${row}, col: ${col}`)
         if (row >= 0 && row <= 9 && col >= 0 && col <= 9 && col + 1 <= 9 ) {
-            console.log(`valid: ${coordinate}`)
             return true
         }
-        console.log(`invalid: ${coordinate}`)
         return false
     }
     findCoords(index) {
@@ -294,7 +282,6 @@ class Ship {
         this.isSunk = false
     }
     hit() {
-        console.log()
         if(this.isSunk === true) {
             return
         }
@@ -336,7 +323,6 @@ class Player {
     switchOrientation(shipIndex) {
         const ship = this.ships[shipIndex].ship        
         ship.isHorizontal = !ship.isHorizontal
-        console.log(ship.name, ship.isHorizontal)
     }
 }
     

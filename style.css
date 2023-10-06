@@ -10,7 +10,7 @@
     justify-content: space-around;
     align-items: center;
     height: 100vh;
-    background-color: transparent;
+    background-color: gray;
 }
 
 .friendlyWaters,
@@ -19,6 +19,8 @@
     grid-template-columns: repeat(10, 50px);
     justify-content: center;
     align-content: center;
+    background-color: rgb(99, 158, 175);
+   
 }
 
 .rotate {
@@ -85,6 +87,7 @@
     height: 50px;
     justify-content: space-evenly;
     padding: 10px;
+    background-color: gray;
 }
 .alphaSquare {
     width: 50px;

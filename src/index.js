@@ -80,14 +80,15 @@ function handleSquares() {
       
         const coords = rowNum + colNumber
 
-        
-            
         square.addEventListener('click', ()  => {
             console.log(squareData)
             selectedSquare = squareData
-            const isHit = newGame.isHit(coords)
+            let isPlayer1 = newGame.currentPlayer == newGame.player1
+            console.log(`isPlayer1: ${isPlayer1}`)
+            const isHit = newGame.isHit(coords, isPlayer1) 
             console.log(`id: ${square.id} isHit: ${isHit}`)
             markSquare(square.id, isHit)
+            togglePlayer()
             
         })
         square.addEventListener('dragover', (e) => {
@@ -109,15 +110,25 @@ function handleSquares() {
         })
     })
 }
+const togglePlayer = () => {
+
+    const instructionsDiv = document.getElementById('instructions')
+    //message hit or miss
+//change DOM text
+instructionsDiv.textContent = messages.currentPlayerTurn
+    newGame.togglePlayer()
+    
+    
+    
+}
 const markSquare = (squareId, isHit) => {
 
     const selected = document.getElementById(squareId)
 
     const peg = document.createElement('div')
-    peg.style.backgroundColor = isHit ? 'red' : 'blue'
+    peg.style.backgroundColor = isHit ? 'red' : 'white'
     peg.classList.add('peg')
    
-
    selected.appendChild(peg)
 }
 //for ships
@@ -230,10 +241,8 @@ const renderShips = (isPlayer1) => {
         
         if (isHorizontal) {
             shipImage.classList.remove('rotate')
-            // gridAreaValue = convertHorizontalToGrid(shipCoord)
         } else {
             shipImage.classList.add('rotate')           
-            // gridAreaValue = convertVerticalToGrid(shipCoord)
         }
         shipImage.style.gridArea = gridAreaValue
         
@@ -242,12 +251,12 @@ const renderShips = (isPlayer1) => {
             isNotSet ? shipImage.classList.add('ship-icon') : shipImage.classList.add('gridShip')
             isNotSet ? dryDock.appendChild(shipImage) : friendlyWaters.appendChild(shipImage)       
         } else {
-            shipImage.classList.add('enemyShip', 'hide')
+            shipImage.classList.add('enemyShip')
             enemyWaters.appendChild(shipImage)
         }
     }
 }
-const removeElements = (elements) => {    
+ const removeElements = (elements) => {    
     for (const el of elements) 
         el.remove()
 }
@@ -282,6 +291,15 @@ function setupGame() {
 
     const unplacedShips = document.querySelectorAll('.ship-icon')
     
+    const toggleBtn = document.createElement('button')
+    toggleBtn.textContent = 'Toggle Hide'
+    instructionsDiv.appendChild(toggleBtn)
+
+    toggleBtn.addEventListener('click', () => {
+        const enemyShips = document.querySelectorAll('.enemyShip')
+        enemyShips.classList.toggle('.hide')
+    })
+
     if (unplacedShips.length < 1) {
 
         //remove instructions
@@ -295,12 +313,25 @@ function setupGame() {
             
             currentShip = null
             instructionsDiv.textContent = messages.currentPlayerTurn
-
+            addShipsToOccupied()
         })
+
+       
+
+
     }
 
 }
-
+const addShipsToOccupied = () => {
+    const occupied = newGame.player1.occupiedCoordinates
+    occupied.length = 0
+   const ships = newGame.player1.ships
+   for ( let i = 0; i < ships.length; i++ ) {
+    console.log(`shipsLocation: ${occupied}`)
+    occupied.push(ships[i].ship.shipLocation)
+   }
+   console.log(`p1 occupied: ${occupied}`)
+}
 const messages = {
 
     startingInstruction: `Drag & drop ships on grid. Double click to rotate.`,
@@ -343,10 +374,10 @@ document.addEventListener("DOMContentLoaded", function () {
     renderGrid(enemyWaters, 'hidden')
     renderGrid(friendlyWaters, 'revealed')
     handleSquares()
-    setupGame()
+    
     renderAllShips()
     addShipListeners()
-  
+    setupGame()
 
     // console.log(`current player ${newGame.currentPlayer.name}`)
     // newGame.togglePlayer()
