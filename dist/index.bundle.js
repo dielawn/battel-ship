@@ -204,7 +204,7 @@ class Game {
     }     
     isHit(coords, isPlayer1) {
 
-        const player = isPlayer1 ? this.player1 : this.player2
+        const player = isPlayer1 ? this.player2 : this.player1
         player.choosenCoordinates.push(coords)
 
         const ships = player.ships
@@ -336,83 +336,6 @@ module.exports = {
     Game,
 }
 
-/***/ }),
-
-/***/ "../../../node_modules/us-states/index.js":
-/*!************************************************!*\
-  !*** ../../../node_modules/us-states/index.js ***!
-  \************************************************/
-/***/ ((module) => {
-
-module.exports = {
-  AA: 'Armed Forces Americas (except Canada)',
-  AE: 'Armed Forces Africa',
-  AE: 'Armed Forces Canada',
-  AE: 'Armed Forces Europe',
-  AE: 'Armed Forces Middle East',
-  AK: 'Alaska',
-  AL: 'Alabama',
-  AP: 'Armed Forces Pacific',
-  AR: 'Arkansas',
-  AS: 'American Samoa',
-  AZ: 'Arizona',
-  CA: 'California',
-  CO: 'Colorado',
-  CT: 'Connecticut',
-  DC: 'District of Columbia',
-  DE: 'Delaware',
-  FL: 'Florida',
-  FM: 'Federated States of Micronesia',
-  GA: 'Georgia',
-  GU: 'Guam',
-  HI: 'Hawaii',
-  IA: 'Iowa',
-  ID: 'Idaho',
-  IL: 'Illinois',
-  IN: 'Indiana',
-  KS: 'Kansas',
-  KY: 'Kentucky',
-  LA: 'Louisiana',
-  MA: 'Massachusetts',
-  MD: 'Maryland',
-  ME: 'Maine',
-  MH: 'Marshall Islands',
-  MI: 'Michigan',
-  MN: 'Minnesota',
-  MO: 'Missouri',
-  MP: 'Northern Mariana Islands',
-  MS: 'Mississippi',
-  MT: 'Montana',
-  NC: 'North Carolina',
-  ND: 'North Dakota',
-  NE: 'Nebraska',
-  NH: 'New Hampshire',
-  NJ: 'New Jersey',
-  NM: 'New Mexico',
-  NV: 'Nevada',
-  NY: 'New York',
-  OH: 'Ohio',
-  OK: 'Oklahoma',
-  OR: 'Oregon',
-  PA: 'Pennsylvania',
-  PR: 'Puerto Rico',
-  PW: 'Palau',
-  RI: 'Rhode Island',
-  SC: 'South Carolina',
-  SD: 'South Dakota',
-  TN: 'Tennessee',
-  TX: 'Texas',
-  UT: 'Utah',
-  VA: 'Virginia',
-  VI: 'Virgin Islands',
-  VT: 'Vermont',
-  WA: 'Washington',
-  WI: 'Wisconsin',
-  WV: 'West Virginia',
-  WY: 'Wyoming'
-};
-
-
 /***/ })
 
 /******/ 	});
@@ -491,14 +414,12 @@ var __webpack_exports__ = {};
   !*** ./src/index.js ***!
   \**********************/
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var us_states__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! us-states */ "../../../node_modules/us-states/index.js");
-/* harmony import */ var us_states__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(us_states__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _script__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./script */ "./src/script.js");
-/* harmony import */ var _script__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_script__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _script__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./script */ "./src/script.js");
+/* harmony import */ var _script__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_script__WEBPACK_IMPORTED_MODULE_0__);
 
 
 
-const newGame = new _script__WEBPACK_IMPORTED_MODULE_1__.Game()
+const newGame = new _script__WEBPACK_IMPORTED_MODULE_0__.Game()
 newGame.startGame()
 
 const containerDiv = document.getElementById('container')
@@ -546,7 +467,7 @@ function renderGrid(parent, parentTxt) {
 
         const coords = newGame.p1Board.findCoords(i)    
         const gridSquare = document.createElement('div')
-        gridSquare.classList.add('gridSquare')
+        gridSquare.classList.add('gridSquare', parentTxt)
         gridSquare.id = `${coords}-${parentTxt}`     
         gridSquare.setAttribute('data-coords', coords)
         // console.log(`converted: ${convertCoordinatesToGrid(coords)}`)
@@ -577,16 +498,24 @@ function handleSquares() {
       
         const coords = rowNum + colNumber
 
+        const squareID = square.id
+
+       
+
         square.addEventListener('click', ()  => {
             console.log(squareData)
             selectedSquare = squareData
-            let isPlayer1 = newGame.currentPlayer == newGame.player1
+            console.log(`current: ${newGame.currentPlayer.name}, p1: ${newGame.player1.name}`)
+            let isPlayer1 = (newGame.currentPlayer.name == newGame.player1.name)
             console.log(`isPlayer1: ${isPlayer1}`)
             const isHit = newGame.isHit(coords, isPlayer1) 
             console.log(`id: ${square.id} isHit: ${isHit}`)
             markSquare(square.id, isHit)
             togglePlayer()
-            
+            console.log(`isPlayer1: ${isPlayer1}`)
+            console.log(`squareClass: ${squareID}`)
+            const isPlayer1Board = isRevealed(squareID)
+            console.log(`isRevealed: ${isPlayer1Board}`)
         })
         square.addEventListener('dragover', (e) => {
             e.preventDefault()
@@ -607,15 +536,21 @@ function handleSquares() {
         })
     })
 }
+const isRevealed = (squareId) => {
+    const status = squareId.slice(-9)
+    console.log(`status: ${status}`)
+    const isRevealed = status === '-revealed'
+   return isRevealed
+}
 const togglePlayer = () => {
 
     const instructionsDiv = document.getElementById('instructions')
     //message hit or miss
 //change DOM text
-instructionsDiv.textContent = messages.currentPlayerTurn
+console.log(`previousPlayer: ${newGame.currentPlayer.name}`)
     newGame.togglePlayer()
-    
-    
+    instructionsDiv.textContent = messages.currentPlayerTurn
+    console.log(`currentPlayer: ${newGame.currentPlayer.name}`)
     
 }
 const markSquare = (squareId, isHit) => {
@@ -809,6 +744,7 @@ function setupGame() {
         startBtn.addEventListener('click', () => {
             
             currentShip = null
+            console.log(`currentPlayer: ${newGame.currentPlayer.name}`)
             instructionsDiv.textContent = messages.currentPlayerTurn
             addShipsToOccupied()
         })
@@ -817,6 +753,11 @@ function setupGame() {
 
 
     }
+
+}
+const updateMessages = () => {
+
+    const unplacedShips = document.querySelectorAll('.ship-icon')
 
 }
 const addShipsToOccupied = () => {

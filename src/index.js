@@ -1,4 +1,4 @@
-import { MA } from 'us-states'
+
 import { Game, Grid} from './script'
 
 const newGame = new Game()
@@ -49,7 +49,7 @@ function renderGrid(parent, parentTxt) {
 
         const coords = newGame.p1Board.findCoords(i)    
         const gridSquare = document.createElement('div')
-        gridSquare.classList.add('gridSquare')
+        gridSquare.classList.add('gridSquare', parentTxt)
         gridSquare.id = `${coords}-${parentTxt}`     
         gridSquare.setAttribute('data-coords', coords)
         // console.log(`converted: ${convertCoordinatesToGrid(coords)}`)
@@ -80,16 +80,24 @@ function handleSquares() {
       
         const coords = rowNum + colNumber
 
+        const squareID = square.id
+
+       
+
         square.addEventListener('click', ()  => {
             console.log(squareData)
             selectedSquare = squareData
-            let isPlayer1 = newGame.currentPlayer == newGame.player1
+            console.log(`current: ${newGame.currentPlayer.name}, p1: ${newGame.player1.name}`)
+            let isPlayer1 = (newGame.currentPlayer.name == newGame.player1.name)
             console.log(`isPlayer1: ${isPlayer1}`)
             const isHit = newGame.isHit(coords, isPlayer1) 
             console.log(`id: ${square.id} isHit: ${isHit}`)
             markSquare(square.id, isHit)
             togglePlayer()
-            
+            console.log(`isPlayer1: ${isPlayer1}`)
+            console.log(`squareClass: ${squareID}`)
+            const isPlayer1Board = isRevealed(squareID)
+            console.log(`isRevealed: ${isPlayer1Board}`)
         })
         square.addEventListener('dragover', (e) => {
             e.preventDefault()
@@ -110,15 +118,21 @@ function handleSquares() {
         })
     })
 }
+const isRevealed = (squareId) => {
+    const status = squareId.slice(-9)
+    console.log(`status: ${status}`)
+    const isRevealed = status === '-revealed'
+   return isRevealed
+}
 const togglePlayer = () => {
 
     const instructionsDiv = document.getElementById('instructions')
     //message hit or miss
 //change DOM text
-instructionsDiv.textContent = messages.currentPlayerTurn
+console.log(`previousPlayer: ${newGame.currentPlayer.name}`)
     newGame.togglePlayer()
-    
-    
+    instructionsDiv.textContent = messages.currentPlayerTurn
+    console.log(`currentPlayer: ${newGame.currentPlayer.name}`)
     
 }
 const markSquare = (squareId, isHit) => {
@@ -312,6 +326,7 @@ function setupGame() {
         startBtn.addEventListener('click', () => {
             
             currentShip = null
+            console.log(`currentPlayer: ${newGame.currentPlayer.name}`)
             instructionsDiv.textContent = messages.currentPlayerTurn
             addShipsToOccupied()
         })
@@ -320,6 +335,11 @@ function setupGame() {
 
 
     }
+
+}
+const updateMessages = () => {
+
+    const unplacedShips = document.querySelectorAll('.ship-icon')
 
 }
 const addShipsToOccupied = () => {

@@ -195,7 +195,7 @@ class Game {
     }     
     isHit(coords, isPlayer1) {
 
-        const player = isPlayer1 ? this.player1 : this.player2
+        const player = isPlayer1 ? this.player2 : this.player1
         player.choosenCoordinates.push(coords)
 
         const ships = player.ships
