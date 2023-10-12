@@ -213,8 +213,12 @@ class Game {
 
         // const isHit = ships.some((ship) => ship.shipLocation.includes(coords))
         // console.log(isHit)
-
+        
         const isOccupied = player.occupiedCoordinates.some(occupiedLocation => {
+           
+            for (const num of player.occupiedCoordinates) {
+                console.log(`${player.name} occCoord: ${num}, coords: ${coords}`)
+            }
             return occupiedLocation.some(occupiedCoordinate => coords.includes(occupiedCoordinate))
         })
 

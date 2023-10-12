@@ -213,8 +213,12 @@ class Game {
 
         // const isHit = ships.some((ship) => ship.shipLocation.includes(coords))
         // console.log(isHit)
-
+        
         const isOccupied = player.occupiedCoordinates.some(occupiedLocation => {
+           
+            for (const num of player.occupiedCoordinates) {
+                console.log(`${player.name} occCoord: ${num}, coords: ${coords}`)
+            }
             return occupiedLocation.some(occupiedCoordinate => coords.includes(occupiedCoordinate))
         })
 
@@ -483,39 +487,22 @@ function renderGrid(parent, parentTxt) {
 
 function handleSquares() {
 
-    // const ships = newGame.player1.ships
-    // for (let i = 0; i < ships.length; i++) {
-    //     console.log(ships[i].ship)
-    // }
-    
-
     const gridSquares = document.querySelectorAll('.gridSquare')
 
     gridSquares.forEach(square => {
-        const squareData = square.dataset.coords
-        const colNumber =squareData[1]
-        const rowNum = squareData[0]
-      
-        const coords = rowNum + colNumber
 
-        const squareID = square.id
-
-       
+        const coords = square.dataset.coords
 
         square.addEventListener('click', ()  => {
-            console.log(squareData)
-            selectedSquare = squareData
-            console.log(`current: ${newGame.currentPlayer.name}, p1: ${newGame.player1.name}`)
-            let isPlayer1 = (newGame.currentPlayer.name == newGame.player1.name)
-            console.log(`isPlayer1: ${isPlayer1}`)
+
+            const isPlayer1 = (newGame.currentPlayer.name == newGame.player1.name)
+            console.log(`coords: ${typeof(coords)}`)
+            //check then mark a hit or miss
+            newGame.player1.fire(coords)
             const isHit = newGame.isHit(coords, isPlayer1) 
-            console.log(`id: ${square.id} isHit: ${isHit}`)
             markSquare(square.id, isHit)
             togglePlayer()
-            console.log(`isPlayer1: ${isPlayer1}`)
-            console.log(`squareClass: ${squareID}`)
-            const isPlayer1Board = isRevealed(squareID)
-            console.log(`isRevealed: ${isPlayer1Board}`)
+
         })
         square.addEventListener('dragover', (e) => {
             e.preventDefault()
@@ -545,13 +532,26 @@ const isRevealed = (squareId) => {
 const togglePlayer = () => {
 
     const instructionsDiv = document.getElementById('instructions')
-    //message hit or miss
-//change DOM text
-console.log(`previousPlayer: ${newGame.currentPlayer.name}`)
-    newGame.togglePlayer()
-    instructionsDiv.textContent = messages.currentPlayerTurn
-    console.log(`currentPlayer: ${newGame.currentPlayer.name}`)
     
+    newGame.togglePlayer()
+    
+    instructionsDiv.textContent = `${newGame.currentPlayer.name}'s Turn`
+    console.log(`currentPlayer: ${newGame.currentPlayer.name}`)
+
+    const isPlayer1  = newGame.currentPlayer.name == newGame.player1.name
+    console.log(`isPlayer1: ${isPlayer1}`)
+
+    if (!isPlayer1) {
+        const coords = newGame.getRandomCoord()
+        console.log(`coords: ${(coords)}`)
+        newGame.player2.fire(coords)
+        const isHit = newGame.isHit(coords.toString(), false) 
+        markSquare(`${coords}-revealed`, isHit)
+        togglePlayer()
+        
+    }
+
+    return
 }
 const markSquare = (squareId, isHit) => {
 
