@@ -11,8 +11,8 @@ class Game {
     constructor() {
         this.player1 = new Player('player1')
         this.player2 = new Player('player2')        
-        this.currentPlayer = this.player1
-        this.otherPlayer = this.player2
+        this.currentPlayer = this.player2
+        this.otherPlayer = this.player1
         this.p1Board = new Grid()
         this.gameOver = false
     }
@@ -27,27 +27,20 @@ class Game {
     togglePlayer() {
         [this.currentPlayer, this.otherPlayer] = [this.otherPlayer, this.currentPlayer]
         return this.currentPlayer
-    }       
-    aiShotLogic() {
-
-        const newCoord  = new AiCoordGenerator()
-        console.log(`UsedNumbers: ${newCoord.usedNumbers}`)
-        let randomNum = newCoord.getRandomUniqueNumber()
-
-       
-        return randomNum
-       
-    }
-    
+    }          
     isGameOver() {
 
         if (this.player1.isGameOver()) {
-            console.log(`player2 has won the game!`)
+            this.player1.message = `player2 has won the game!`
+            this.player2.message = `player2 has won the game!`
+            console.log(`${this.player1.message}`)
             this.gameOver = true
             return true
         }
         if (this.player2.isGameOver()) {
-            console.log(`player1 has won the game!`)
+            this.player1.message = `player1 has won the game!`
+            this.player2.message = `player1 has won the game!`
+            console.log(`${this.player2.message}`)
             this.gameOver = true
             return true
         } 
@@ -122,11 +115,13 @@ class Ship {
             return
         }
         this.hitPoints -= 1
+        let text = `Hit! `
         if (this.hitPoints <= 0) {
+            text += `You sunk my ${this.ship.name}! `
         this.isSunk = true
         console.log(`You sunk my ${this.ship.name}!`)
       }
-      return this.hitPoints
+      return text
     }    
 }
 
@@ -137,6 +132,7 @@ class Player {
         this.choosenCoordinates = []        
         this.ships = this.createShips()
         this.board = new Grid()
+        this.message = null
         
     }
     createShips() {
@@ -224,11 +220,12 @@ class Player {
                 return coords == location
             })
             if (isOccupied) {
-                ship.hit()
+                this.message = ship.hit()
                 
                 return true
             }
         }
+        this.message = `Miss!`
         return false
     }
     isGameOver() {       

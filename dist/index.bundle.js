@@ -11,8 +11,8 @@ class Game {
     constructor() {
         this.player1 = new Player('player1')
         this.player2 = new Player('player2')        
-        this.currentPlayer = this.player1
-        this.otherPlayer = this.player2
+        this.currentPlayer = this.player2
+        this.otherPlayer = this.player1
         this.p1Board = new Grid()
         this.gameOver = false
     }
@@ -27,27 +27,20 @@ class Game {
     togglePlayer() {
         [this.currentPlayer, this.otherPlayer] = [this.otherPlayer, this.currentPlayer]
         return this.currentPlayer
-    }       
-    aiShotLogic() {
-
-        const newCoord  = new AiCoordGenerator()
-        console.log(`UsedNumbers: ${newCoord.usedNumbers}`)
-        let randomNum = newCoord.getRandomUniqueNumber()
-
-       
-        return randomNum
-       
-    }
-    
+    }          
     isGameOver() {
 
         if (this.player1.isGameOver()) {
-            console.log(`player2 has won the game!`)
+            this.player1.message = `player2 has won the game!`
+            this.player2.message = `player2 has won the game!`
+            console.log(`${this.player1.message}`)
             this.gameOver = true
             return true
         }
         if (this.player2.isGameOver()) {
-            console.log(`player1 has won the game!`)
+            this.player1.message = `player1 has won the game!`
+            this.player2.message = `player1 has won the game!`
+            console.log(`${this.player2.message}`)
             this.gameOver = true
             return true
         } 
@@ -122,11 +115,13 @@ class Ship {
             return
         }
         this.hitPoints -= 1
+        let text = `Hit! `
         if (this.hitPoints <= 0) {
+            text += `You sunk my ${this.ship.name}! `
         this.isSunk = true
         console.log(`You sunk my ${this.ship.name}!`)
       }
-      return this.hitPoints
+      return text
     }    
 }
 
@@ -137,6 +132,7 @@ class Player {
         this.choosenCoordinates = []        
         this.ships = this.createShips()
         this.board = new Grid()
+        this.message = null
         
     }
     createShips() {
@@ -224,11 +220,12 @@ class Player {
                 return coords == location
             })
             if (isOccupied) {
-                ship.hit()
+                this.message = ship.hit()
                 
                 return true
             }
         }
+        this.message = `Miss!`
         return false
     }
     isGameOver() {       
@@ -384,6 +381,9 @@ __webpack_require__.r(__webpack_exports__);
 const newGame = new _script__WEBPACK_IMPORTED_MODULE_0__.Game()
 newGame.startGame()
 
+
+const aiCoordGenerator = new _script__WEBPACK_IMPORTED_MODULE_0__.AiCoordGenerator()
+
 const containerDiv = document.getElementById('container')
 const friendlyWaters = document.getElementById('friendlyWaters')
 const enemyWaters = document.getElementById('enemyWaters')
@@ -446,6 +446,7 @@ function renderGrid(parent, parentTxt) {
 function handleSquares() {
 
     const gridSquares = document.querySelectorAll('.gridSquare')
+    const instructionsDiv = document.getElementById('instructions')
 
     gridSquares.forEach(square => {
 
@@ -453,19 +454,20 @@ function handleSquares() {
 
         square.addEventListener('click', ()  => {
 
-            const isPlayer1 = (newGame.currentPlayer.name == newGame.player1.name)
+           
             console.log(`coords: ${typeof(coords)}`)
             //check then mark a hit or miss
             newGame.player1.fire(coords)
             const isHit = newGame.player2.isHit(coords) 
+            const isHitTxt = `${newGame.player2.message}! `
             
             markSquare(square.id, isHit)
-           if (!newGame.isGameOver()) {
-                
-
+           if (!newGame.isGameOver()) {                
+            instructionsDiv.innerHTML += `Player 1 fires at ${coords} ${isHitTxt} <br>`
                 togglePlayer()
            } else {
             handleEnemyShips()
+            instructionsDiv.innerHTML += `GAME OVER! ${newGame.player1.message}! `
             console.log(`GAME OVER!`)
            }
             
@@ -506,30 +508,44 @@ const handleEnemyShips = () => {
 
 const togglePlayer = () => {
 
-    const instructionsDiv = document.getElementById('instructions')
+   
     
     newGame.togglePlayer()
     
-    instructionsDiv.textContent = `${newGame.currentPlayer.name}'s Turn`
-    console.log(`currentPlayer: ${newGame.currentPlayer.name}`)
+    // captnLog.textContent += `${newGame.currentPlayer.name}'s Turn`
+    // console.log(`currentPlayer: ${newGame.currentPlayer.name}`)
 
     const isPlayer1  = newGame.currentPlayer.name == newGame.player1.name
     console.log(`isPlayer1: ${isPlayer1}`)
-
+    
     if (!isPlayer1) {
-        const newCoord = new _script__WEBPACK_IMPORTED_MODULE_0__.AiCoordGenerator()
-        const coords = newCoord.getRandomUniqueNumber()
-        const formatedCoords = coords < 10 ? `0${coords}` : coords.toString()
-        console.log(`coords: ${(formatedCoords)}`)
-        // if formatedCoords is not in chooseCoords continue or get a new coord 
-        newGame.player2.fire(formatedCoords)
-        const isHit = newGame.player1.isHit(formatedCoords) 
-        markSquare(`${formatedCoords}-revealed`, isHit)
-        togglePlayer()
-        
+        player2Turn()        
     }
 
     return
+}
+const player2Turn = () => {
+    const instructionsDiv = document.getElementById('instructions')
+    
+    const captnLog = document.createElement('p')
+    const coords = aiCoordGenerator.getRandomUniqueNumber()
+        
+    const formatedCoords = coords < 10 ? `0${coords}` : coords.toString()
+    console.log(`coords: ${(formatedCoords)}`)
+    // if formatedCoords is not in chooseCoords continue or get a new coord 
+    newGame.player2.fire(formatedCoords)
+    const isHit = newGame.player1.isHit(formatedCoords) 
+    markSquare(`${formatedCoords}-revealed`, isHit)
+    const hitMissTxt = isHit ? `Hit ${newGame.player1.message}` : `Miss ${newGame.player1.message}`
+    if (!newGame.isGameOver()) {                
+        captnLog.textContent += `${newGame.currentPlayer.name} fires at ${coords} ${newGame.player1.message}`
+        togglePlayer()
+   } else {
+    handleEnemyShips()
+    instructionsDiv.innerHTML += `GAME OVER! ${newGame.player1.message}! `
+    console.log(`GAME OVER! ${newGame.player1.message} `)
+   }
+   instructionsDiv.appendChild(captnLog)
 }
 const markSquare = (squareId, isHit) => {
 
@@ -697,19 +713,10 @@ const renderAllShips = () => {
 function setupGame() {
 
     const instructionsDiv = document.getElementById('instructions')
-    instructionsDiv.textContent = messages.startingInstruction
+    instructionsDiv.textContent = `Place ships then click 'Start Game' `
 
     const unplacedShips = document.querySelectorAll('.ship-icon')
     
-    const toggleBtn = document.createElement('button')
-    toggleBtn.textContent = 'Toggle Hide'
-    instructionsDiv.appendChild(toggleBtn)
-
-    toggleBtn.addEventListener('click', () => {
-        const enemyShips = document.querySelectorAll('.enemyShip')
-        enemyShips.classList.toggle('.hide')
-    })
-
     if (unplacedShips.length < 1) {
 
         //remove instructions
@@ -723,8 +730,9 @@ function setupGame() {
             
             currentShip = null
             console.log(`currentPlayer: ${newGame.currentPlayer.name}`)
-            instructionsDiv.textContent = messages.currentPlayerTurn
+            instructionsDiv.textContent = `${newGame.currentPlayer.name}'s Turn `
             addShipsToOccupied()
+            player2Turn()
         })
 
        
@@ -733,11 +741,7 @@ function setupGame() {
     }
 
 }
-const updateMessages = () => {
 
-    const unplacedShips = document.querySelectorAll('.ship-icon')
-
-}
 const addShipsToOccupied = () => {
     const occupied = newGame.player1.occupiedCoordinates
     occupied.length = 0
@@ -748,13 +752,7 @@ const addShipsToOccupied = () => {
    }
    console.log(`p1 occupied: ${occupied}`)
 }
-const messages = {
 
-    startingInstruction: `Drag & drop ships on grid. Double click to rotate.`,
-    currentPlayerTurn: `${newGame.currentPlayer.name}'s Turn`,
-
-
-}
 function addShipListeners() {
 
     const dryShipImg = document.querySelectorAll('.ship-icon')
@@ -796,11 +794,7 @@ document.addEventListener("DOMContentLoaded", function () {
     addShipListeners()
     setupGame()
     handleEnemyShips()
-    // console.log(`current player ${newGame.currentPlayer.name}`)
-    // newGame.togglePlayer()
-    // console.log(`current player ${newGame.currentPlayer.name}`)
-    // newGame.togglePlayer()
-    // console.log(`current player ${newGame.currentPlayer.name}`)
+    
 
 
  })

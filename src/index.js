@@ -4,6 +4,9 @@ import { Game, AiCoordGenerator, Grid} from './script'
 const newGame = new Game()
 newGame.startGame()
 
+
+const aiCoordGenerator = new AiCoordGenerator()
+
 const containerDiv = document.getElementById('container')
 const friendlyWaters = document.getElementById('friendlyWaters')
 const enemyWaters = document.getElementById('enemyWaters')
@@ -66,6 +69,7 @@ function renderGrid(parent, parentTxt) {
 function handleSquares() {
 
     const gridSquares = document.querySelectorAll('.gridSquare')
+    const instructionsDiv = document.getElementById('instructions')
 
     gridSquares.forEach(square => {
 
@@ -73,19 +77,20 @@ function handleSquares() {
 
         square.addEventListener('click', ()  => {
 
-            const isPlayer1 = (newGame.currentPlayer.name == newGame.player1.name)
+           
             console.log(`coords: ${typeof(coords)}`)
             //check then mark a hit or miss
             newGame.player1.fire(coords)
             const isHit = newGame.player2.isHit(coords) 
+            const isHitTxt = `${newGame.player2.message}! `
             
             markSquare(square.id, isHit)
-           if (!newGame.isGameOver()) {
-                
-
+           if (!newGame.isGameOver()) {                
+            instructionsDiv.innerHTML += `Player 1 fires at ${coords} ${isHitTxt} <br>`
                 togglePlayer()
            } else {
             handleEnemyShips()
+            instructionsDiv.innerHTML += `GAME OVER! ${newGame.player1.message}! `
             console.log(`GAME OVER!`)
            }
             
@@ -126,30 +131,44 @@ const handleEnemyShips = () => {
 
 const togglePlayer = () => {
 
-    const instructionsDiv = document.getElementById('instructions')
+   
     
     newGame.togglePlayer()
     
-    instructionsDiv.textContent = `${newGame.currentPlayer.name}'s Turn`
-    console.log(`currentPlayer: ${newGame.currentPlayer.name}`)
+    // captnLog.textContent += `${newGame.currentPlayer.name}'s Turn`
+    // console.log(`currentPlayer: ${newGame.currentPlayer.name}`)
 
     const isPlayer1  = newGame.currentPlayer.name == newGame.player1.name
     console.log(`isPlayer1: ${isPlayer1}`)
-
+    
     if (!isPlayer1) {
-        const newCoord = new AiCoordGenerator()
-        const coords = newCoord.getRandomUniqueNumber()
-        const formatedCoords = coords < 10 ? `0${coords}` : coords.toString()
-        console.log(`coords: ${(formatedCoords)}`)
-        // if formatedCoords is not in chooseCoords continue or get a new coord 
-        newGame.player2.fire(formatedCoords)
-        const isHit = newGame.player1.isHit(formatedCoords) 
-        markSquare(`${formatedCoords}-revealed`, isHit)
-        togglePlayer()
-        
+        player2Turn()        
     }
 
     return
+}
+const player2Turn = () => {
+    const instructionsDiv = document.getElementById('instructions')
+    
+    const captnLog = document.createElement('p')
+    const coords = aiCoordGenerator.getRandomUniqueNumber()
+        
+    const formatedCoords = coords < 10 ? `0${coords}` : coords.toString()
+    console.log(`coords: ${(formatedCoords)}`)
+    // if formatedCoords is not in chooseCoords continue or get a new coord 
+    newGame.player2.fire(formatedCoords)
+    const isHit = newGame.player1.isHit(formatedCoords) 
+    markSquare(`${formatedCoords}-revealed`, isHit)
+    const hitMissTxt = isHit ? `Hit ${newGame.player1.message}` : `Miss ${newGame.player1.message}`
+    if (!newGame.isGameOver()) {                
+        captnLog.textContent += `${newGame.currentPlayer.name} fires at ${coords} ${newGame.player1.message}`
+        togglePlayer()
+   } else {
+    handleEnemyShips()
+    instructionsDiv.innerHTML += `GAME OVER! ${newGame.player1.message}! `
+    console.log(`GAME OVER! ${newGame.player1.message} `)
+   }
+   instructionsDiv.appendChild(captnLog)
 }
 const markSquare = (squareId, isHit) => {
 
@@ -317,19 +336,10 @@ const renderAllShips = () => {
 function setupGame() {
 
     const instructionsDiv = document.getElementById('instructions')
-    instructionsDiv.textContent = messages.startingInstruction
+    instructionsDiv.textContent = `Place ships then click 'Start Game' `
 
     const unplacedShips = document.querySelectorAll('.ship-icon')
     
-    const toggleBtn = document.createElement('button')
-    toggleBtn.textContent = 'Toggle Hide'
-    instructionsDiv.appendChild(toggleBtn)
-
-    toggleBtn.addEventListener('click', () => {
-        const enemyShips = document.querySelectorAll('.enemyShip')
-        enemyShips.classList.toggle('.hide')
-    })
-
     if (unplacedShips.length < 1) {
 
         //remove instructions
@@ -343,8 +353,9 @@ function setupGame() {
             
             currentShip = null
             console.log(`currentPlayer: ${newGame.currentPlayer.name}`)
-            instructionsDiv.textContent = messages.currentPlayerTurn
+            instructionsDiv.textContent = `${newGame.currentPlayer.name}'s Turn `
             addShipsToOccupied()
+            player2Turn()
         })
 
        
@@ -353,11 +364,7 @@ function setupGame() {
     }
 
 }
-const updateMessages = () => {
 
-    const unplacedShips = document.querySelectorAll('.ship-icon')
-
-}
 const addShipsToOccupied = () => {
     const occupied = newGame.player1.occupiedCoordinates
     occupied.length = 0
@@ -368,13 +375,7 @@ const addShipsToOccupied = () => {
    }
    console.log(`p1 occupied: ${occupied}`)
 }
-const messages = {
 
-    startingInstruction: `Drag & drop ships on grid. Double click to rotate.`,
-    currentPlayerTurn: `${newGame.currentPlayer.name}'s Turn`,
-
-
-}
 function addShipListeners() {
 
     const dryShipImg = document.querySelectorAll('.ship-icon')
@@ -416,11 +417,7 @@ document.addEventListener("DOMContentLoaded", function () {
     addShipListeners()
     setupGame()
     handleEnemyShips()
-    // console.log(`current player ${newGame.currentPlayer.name}`)
-    // newGame.togglePlayer()
-    // console.log(`current player ${newGame.currentPlayer.name}`)
-    // newGame.togglePlayer()
-    // console.log(`current player ${newGame.currentPlayer.name}`)
+    
 
 
  })

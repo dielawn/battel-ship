@@ -116,6 +116,11 @@
 .hide {
     display: none;
 }
+.instructions {
+    max-height: 200px;
+    overflow: scroll;
+    width: 500px;
+}
 /* #battleship .rotate{
     transform: rotate(90deg);
 }
