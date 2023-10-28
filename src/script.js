@@ -21,7 +21,7 @@ class Game {
     }       
     aiShotLogic() {
 
-        const newCoord  = new aiCoordGenerator()
+        const newCoord  = new AiCoordGenerator()
         console.log(`UsedNumbers: ${newCoord.usedNumbers}`)
         let randomNum = newCoord.getRandomUniqueNumber()
 
@@ -46,7 +46,7 @@ class Game {
         return false 
     }
 }
-class aiCoordGenerator {
+class AiCoordGenerator {
     constructor() {
         this.usedNumbers = new Set()
     }
@@ -286,5 +286,5 @@ module.exports = {
     Player,
     Ship,
     Game,
-    aiCoordGenerator,
+    AiCoordGenerator,
 }

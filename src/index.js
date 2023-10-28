@@ -1,5 +1,5 @@
 
-import { Game, Grid} from './script'
+import { Game, AiCoordGenerator, Grid} from './script'
 
 const newGame = new Game()
 newGame.startGame()
@@ -81,8 +81,11 @@ function handleSquares() {
             
             markSquare(square.id, isHit)
            if (!newGame.isGameOver()) {
+                
+
                 togglePlayer()
            } else {
+            handleEnemyShips()
             console.log(`GAME OVER!`)
            }
             
@@ -107,12 +110,20 @@ function handleSquares() {
         })
     })
 }
-const isRevealed = (squareId) => {
-    const status = squareId.slice(-9)
-    console.log(`status: ${status}`)
-    const isRevealed = status === '-revealed'
-   return isRevealed
+
+const handleEnemyShips = () => {
+    const enemyShips = document.querySelectorAll('.enemyShip')
+    if (!newGame.isGameOver()) {
+        enemyShips.forEach((ship) => {
+            ship.classList.add('hide')
+        })
+    } else {
+        enemyShips.forEach((ship) => {
+            ship.classList.remove('hide')
+        })
+    }
 }
+
 const togglePlayer = () => {
 
     const instructionsDiv = document.getElementById('instructions')
@@ -126,7 +137,8 @@ const togglePlayer = () => {
     console.log(`isPlayer1: ${isPlayer1}`)
 
     if (!isPlayer1) {
-        let coords = newGame.aiShotLogic()
+        const newCoord = new AiCoordGenerator()
+        const coords = newCoord.getRandomUniqueNumber()
         const formatedCoords = coords < 10 ? `0${coords}` : coords.toString()
         console.log(`coords: ${(formatedCoords)}`)
         // if formatedCoords is not in chooseCoords continue or get a new coord 
@@ -400,9 +412,10 @@ document.addEventListener("DOMContentLoaded", function () {
     handleSquares()
     
     renderAllShips()
+    
     addShipListeners()
     setupGame()
-
+    handleEnemyShips()
     // console.log(`current player ${newGame.currentPlayer.name}`)
     // newGame.togglePlayer()
     // console.log(`current player ${newGame.currentPlayer.name}`)
