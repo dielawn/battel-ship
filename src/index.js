@@ -120,11 +120,13 @@ const togglePlayer = () => {
     console.log(`isPlayer1: ${isPlayer1}`)
 
     if (!isPlayer1) {
-        const coords = newGame.getRandomCoord()
-        console.log(`coords: ${(coords)}`)
-        newGame.player2.fire(coords)
-        const isHit = newGame.isHit(coords.toString(), false) 
-        markSquare(`${coords}-revealed`, isHit)
+        let coords = newGame.aiShotLogic()
+        const formatedCoords = coords < 10 ? `0${coords}` : coords.toString()
+        console.log(`coords: ${(formatedCoords)}`)
+        // if formatedCoords is not in chooseCoords continue or get a new coord 
+        newGame.player2.fire(formatedCoords)
+        const isHit = newGame.isHit(formatedCoords, false) 
+        markSquare(`${formatedCoords}-revealed`, isHit)
         togglePlayer()
         
     }

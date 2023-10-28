@@ -64,6 +64,16 @@ class Game {
 
         return Math.floor(Math.random() * 99)
     }
+    aiShotLogic() {
+
+        const newCoord  = new aiCoordGenerator()
+        console.log(`UsedNumbers: ${newCoord.usedNumbers}`)
+        let randomNum = newCoord.getRandomUniqueNumber()
+
+       
+        return randomNum
+       
+    }
     setAIShips() {
         const ai = this.player2
         const aiShips = ai.ships
@@ -202,35 +212,64 @@ class Game {
             nextVertical: isBottomRow ? value + 10 : null
         }
     }     
+    // isHit(coords, isPlayer1) {
+
+    //     const player = isPlayer1 ? this.player2 : this.player1
+    //     player.choosenCoordinates.push(coords)
+        
+    //     const isOccupied = player.occupiedCoordinates.some(occupiedLocation => {
+           
+    //         for (const num of player.occupiedCoordinates) {
+    //             console.log(`${player.name} occCoord: ${num}, coords: ${coords}`)
+    //         }
+    //         return occupiedLocation.some(occupiedCoordinate => coords.includes(occupiedCoordinate))
+    //     })
+
+    //     if (isOccupied) {
+    //        console.log(`hit!`)
+    //         //need ship index
+    //     }
+        
+    //     return isOccupied
+        
+    // }
+    // isChoosen(coords, isPlayer1) {
+
+    //     const player = isPlayer1 ? this.player2 : this.player1
+
+    //     const hasBeenChoosen = player.choosenCoordinates.some(choosenLocation => {
+    //         if (Array.isArray(choosenLocation)) {
+    //             console.log(`isArray`)
+    //             return choosenLocation.includes(coords)
+    //         } else {
+    //             console.log(`choosenLoc: ${choosenLocation}, ${(coords == choosenLocation)}`)
+    //             return coords == choosenLocation
+    //         }
+           
+    //     })
+    //     return hasBeenChoosen
+    // }
     isHit(coords, isPlayer1) {
 
         const player = isPlayer1 ? this.player2 : this.player1
-        player.choosenCoordinates.push(coords)
-
         const ships = player.ships
-        console.log(`shipsLength: ${ships.length}`)
         
-
-        // const isHit = ships.some((ship) => ship.shipLocation.includes(coords))
-        // console.log(isHit)
-        
-        const isOccupied = player.occupiedCoordinates.some(occupiedLocation => {
-           
-            for (const num of player.occupiedCoordinates) {
-                console.log(`${player.name} occCoord: ${num}, coords: ${coords}`)
+        for (const ship of ships) {
+            console.log(`ship location: ${ship.ship.shipLocation}`)
+            const hasBeenChoosen = ship.ship.shipLocation.some(location => {
+                if (Array.isArray(location)) {
+                    console.log(`isArray`)
+                    return location.includes(coords)
+                } else {
+                    console.log(`location: ${location}, == coords: ${coords}, ${coords == location}`)
+                    return coords == location
+                }
+            })
+            if (hasBeenChoosen) {
+                return true
             }
-            return occupiedLocation.some(occupiedCoordinate => coords.includes(occupiedCoordinate))
-        })
-
-        if (isOccupied) {
-           console.log(`hit!`)
-
-           //find ship index
-        //    ships[index].ship.hit()
         }
-        
-        return isOccupied
-        
+        return false
     }
     isGameOver() {
         
@@ -242,6 +281,27 @@ class Game {
         }
         
         return this.gameOver
+    }
+}
+class aiCoordGenerator {
+    constructor() {
+        this.usedNumbers = new Set()
+    }
+    reset() {
+        this.usedNumbers.clear()
+    }
+    getRandomUniqueNumber() {
+        const min = 0
+        const max = 99
+        let randomNum 
+
+        do {
+            randomNum = Math.floor(Math.random() * (max - min + 1)) + min
+        } while (this.usedNumbers.has(randomNum))
+
+        this.usedNumbers.add(randomNum)
+
+        return randomNum
     }
 }
 
@@ -338,6 +398,7 @@ module.exports = {
     Player,
     Ship,
     Game,
+    aiCoordGenerator,
 }
 
 /***/ })
@@ -542,11 +603,13 @@ const togglePlayer = () => {
     console.log(`isPlayer1: ${isPlayer1}`)
 
     if (!isPlayer1) {
-        const coords = newGame.getRandomCoord()
-        console.log(`coords: ${(coords)}`)
-        newGame.player2.fire(coords)
-        const isHit = newGame.isHit(coords.toString(), false) 
-        markSquare(`${coords}-revealed`, isHit)
+        let coords = newGame.aiShotLogic()
+        const formatedCoords = coords < 10 ? `0${coords}` : coords.toString()
+        console.log(`coords: ${(formatedCoords)}`)
+        // if formatedCoords is not in chooseCoords continue or get a new coord 
+        newGame.player2.fire(formatedCoords)
+        const isHit = newGame.isHit(formatedCoords, false) 
+        markSquare(`${formatedCoords}-revealed`, isHit)
         togglePlayer()
         
     }
