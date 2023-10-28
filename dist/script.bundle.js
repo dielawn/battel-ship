@@ -19,38 +19,15 @@ class Game {
     startGame() {
 
         // start new game
-        // this.setAIShips()
+        
         this.player1.autoPlaceShips()
         this.player2.autoPlaceShips()
-    
+        
     } 
     togglePlayer() {
         [this.currentPlayer, this.otherPlayer] = [this.otherPlayer, this.currentPlayer]
         return this.currentPlayer
-    }    
-    setLocation(player, shipIndex, coordinate) {
-
-        const ship = player.ships[shipIndex].ship
-        const location = ship.shipLocation    
-        const length = ship.length   
-        const midIndex = Math.ceil(length / 2) - 1
-
-       for (let i = 0; i < length; i++) {        
-        if (ship.isHorizontal) {
-            location[i] = (coordinate - midIndex) + i
-            
-        } else { //vertical
-            location[i] = (coordinate - (midIndex * 10)) + (i * 10)
-        }        
-       }
-        console.log(`location: ${location}`)
-        return location
-    }
-    
-    getRandomCoord() {
-
-        return Math.floor(Math.random() * 99)
-    }
+    }       
     aiShotLogic() {
 
         const newCoord  = new aiCoordGenerator()
@@ -61,123 +38,21 @@ class Game {
         return randomNum
        
     }
-    setAIShips() {
-        const ai = this.player2
-        const aiShips = ai.ships
-        ai.occupiedCoordinates.length = 0
-        
-        for ( let i = 0; i < aiShips.length; i++ ) {
-            const randomBoolean = Math.random() < 0.5
-            aiShips[i].ship.isHorizontal = randomBoolean
-
-            let location = null
-            let isOccupied = false
-            let isValid = false
-            let inRange = false
-
-            while ( !isValid || !inRange || isOccupied ) {
-                const randomCoord = this.getRandomCoord()
-                
-                location = this.setAILocation(i, randomCoord)
-
-                this.removeRejected(false, location)
-        
-                isOccupied = this.isDuplicate(ai, location)           
-                isValid = this.checkValidity(location)
-                inRange = this.isInRange(false)
-
-            }
-
-            console.log(`${aiShips[i].ship.name} at ${location}`)
-        }
-
-        let isShort = this.checkOccupiedLength(false)           
-        if (isShort) {
-            this.setAIShips()
-        }
-
-        console.log(`occupied: ${ai.occupiedCoordinates.length}`)
-    }
-    removeRejected(isPlayer1, location) {
-        
-        const player = isPlayer1 ? this.player1 : this.player2
-        const lastIndex = player.occupiedCoordinates.reduceRight((acc, occupiedLocation, currentIndex) => {
-            if (!acc && occupiedLocation.some(occupiedCoordinate => location.includes(occupiedCoordinate))) {
-                return currentIndex
-            }
-            return acc
-        }, null)
-        if (lastIndex !== null) {
-            player.occupiedCoordinates.splice(lastIndex, 1)
-        }
-    }
-    checkOccupiedLength(isPlayer1) {
-       const occupiedLength =  isPlayer1 ? this.player1.occupiedCoordinates.length : this.player2.occupiedCoordinates.length
-       console.log(`occupiedLength: ${occupiedLength}`) 
-       if (occupiedLength === 5) {
-            return false
-        } 
-        return true
-    }
-    setAILocation(shipIndex, coordiantes) {
-        const ship = this.player2.ships[shipIndex].ship
-        const location = ship.shipLocation
-        const isHorizontal = ship.isHorizontal
-
-        for (let i = 0; i < ship.length; i++) {
-
-            location[i] = isHorizontal ? coordiantes + i : coordiantes + (i * 10)
-
-        }
-     
-        return location
-    }
-    isDuplicate(player, location) {
-
-        const isOccupied = player.occupiedCoordinates.some(occupiedLocation => {
-            return occupiedLocation.some(occupiedCoordinate => location.includes(occupiedCoordinate))
-        })
-        
-        if (!isOccupied) {
-            player.occupiedCoordinates.push(location)
-        }
-        
-        return isOccupied
-    }
-    checkValidity(location) {
-       
-        for ( const coord of location ) {
-            if ( !this.p1Board.isValid(coord)) {
-                return false
-            }
-        }
-
-        return true
-    }
-    isInRange(isPlayer1) {
-      
-        const ships = isPlayer1 ? this.player1.ships : this.player2.ships
-       
-        for ( const ship of ships ) {            
-            for ( const coord of ship.ship.shipLocation ) {    
-                if ( coord < 0 || coord > 99 ) {
-                    return false
-                }               
-            }
-        }
-       
-        return true
-    }
+    
     isGameOver() {
-        
-        //if otherplayer .ships[i].isSunk game is over
-        for (let i = 0; i < this.otherPlayer.ships.length; i++) {
-            if (this.otherPlayer.ships[i].isSunk === true) {
+
+        if (this.player1.isGameOver()) {
+            console.log(`player2 has won the game!`)
             this.gameOver = true
-            }
+            return true
         }
-        
-        return this.gameOver
+        if (this.player2.isGameOver()) {
+            console.log(`player1 has won the game!`)
+            this.gameOver = true
+            return true
+        } 
+
+        return false 
     }
 }
 class aiCoordGenerator {
@@ -282,8 +157,20 @@ class Player {
         const ship = this.ships[shipIndex].ship        
         ship.isHorizontal = !ship.isHorizontal
     }
+    setManualLocation(shipIndex, coordinate) {
+        const ship = this.ships[shipIndex].ship
+        const location = ship.shipLocation
+        const length = ship.length
+        const midIndex = Math.ceil(length / 2) - 1
+
+        for (let i = 0; i < length; i++) {
+            let isHorizontal = ship.isHorizontal
+            location[i] = isHorizontal ? (coordinate - midIndex) + i : (coordinate = (midIndex * 10)) + (i * 10) 
+        }
+        return location
+    }
     setLocation(shipIndex, coordinates) {
-        console.log(`shipIndex: ${shipIndex}`)
+
         const ship = this.ships[shipIndex].ship
         const location = ship.shipLocation
         const isHorizontal = ship.isHorizontal
@@ -325,6 +212,34 @@ class Player {
         }
 
     }
+    
+    fire(coords) {
+        this.choosenCoordinates.push(coords)
+        return coords
+    } 
+    isHit(coords) {
+        
+        for (const ship of this.ships) {
+            const isOccupied = ship.ship.shipLocation.some(location => {
+                return coords == location
+            })
+            if (isOccupied) {
+                ship.hit()
+                
+                return true
+            }
+        }
+        return false
+    }
+    isGameOver() {       
+        for (const ship of this.ships) {
+            if (!ship.isSunk) {
+                return false
+            } 
+        }
+        return true
+    }
+    //validating auto placed ships
     isInRange() {
         const ships = this.ships
         for (const ship of ships) {
@@ -369,22 +284,6 @@ class Player {
     }
     checkOccupiedLength(){
         return this.occupiedCoordinates.length !== 5
-    }
-    fire(coords) {
-        this.choosenCoordinates.push(coords)
-        return coords
-    } 
-    isHit(coords) {
-        
-        for (const ship of this.ships) {
-            const isOccupied = ship.ship.shipLocation.some(location => {
-                return coords == location
-            })
-            if (isOccupied) {
-                return true
-            }
-        }
-        return false
     }
 }
     

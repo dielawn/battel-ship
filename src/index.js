@@ -80,7 +80,12 @@ function handleSquares() {
             const isHit = newGame.player2.isHit(coords) 
             
             markSquare(square.id, isHit)
-            togglePlayer()
+           if (!newGame.isGameOver()) {
+                togglePlayer()
+           } else {
+            console.log(`GAME OVER!`)
+           }
+            
 
         })
         square.addEventListener('dragover', (e) => {
@@ -93,7 +98,7 @@ function handleSquares() {
             if (!newGame.p1Board.isValid(coords))return
            
             const currentShipIndex = getIndexFromName(currentShip)
-            const location = newGame.setLocation(newGame.player1, currentShipIndex, coords)
+            const location = newGame.player1.setManualLocation(currentShipIndex, coords)
             
             console.log(location)
             renderAllShips()  
