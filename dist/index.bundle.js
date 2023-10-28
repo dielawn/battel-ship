@@ -13,34 +13,21 @@ class Game {
         this.player2 = new Player('player2')        
         this.currentPlayer = this.player1
         this.otherPlayer = this.player2
-        this.p1Board = new Grid()        
-        this.p2Board = new Grid()
+        this.p1Board = new Grid()
         this.gameOver = false
     }
     startGame() {
 
         // start new game
-        this.setAIShips()
+        // this.setAIShips()
+        this.player1.autoPlaceShips()
+        this.player2.autoPlaceShips()
     
     } 
     togglePlayer() {
         [this.currentPlayer, this.otherPlayer] = [this.otherPlayer, this.currentPlayer]
         return this.currentPlayer
-    }
-    placeShips(isPlayer1, shipIndex, coordiantes) {
-        const player = isPlayer1 ? this.player1 : this.player2
-        const ship = player.ships[shipIndex].ship
-        const location = ship.shipLocation
-        const isHorizontal = ship.isHorizontal
-
-        for (let i = 0; i < ship.length; i++) {
-
-            location[i] = isHorizontal ? coordiantes + i : coordiantes + (i * 10)
-    
-        }
-        return location
-    }
-    
+    }    
     setLocation(player, shipIndex, coordinate) {
 
         const ship = player.ships[shipIndex].ship
@@ -145,21 +132,6 @@ class Game {
      
         return location
     }
-    isOccupied(isPlayer1, location) {
-        
-        const occupied = isPlayer1 ? this.player1.occupiedCoordinates : this.player2.occupiedCoordinates
-
-                console.log(`coordinate: ${coordinate}, occupied: ${occupied}`)
-                const isOccupied = occupied.some(occupiedLocation => {
-                    return occupiedLocation.some(occupiedCoordinate => location.includes(occupiedCoordinate))
-                })
-                
-                if (!isOccupied) {
-                    occupied.push(location)
-                }
-        
-                return isOccupied  
-    }
     isDuplicate(player, location) {
 
         const isOccupied = player.occupiedCoordinates.some(occupiedLocation => {
@@ -172,7 +144,6 @@ class Game {
         
         return isOccupied
     }
-
     checkValidity(location) {
        
         for ( const coord of location ) {
@@ -196,80 +167,6 @@ class Game {
         }
        
         return true
-    }
-    
-    linkCells(value) {
-
-        const isLastCol = value % 10 === 9
-        const isFirstCol = value % 10 === 0
-        const isTopRow = value >= 0
-        const isBottomRow = value <= 99
-        return {
-            cell: value,
-            prevHorizontal: isFirstCol ? null : value - 1,
-            nextHorizontal: isLastCol ? null : value + 1,
-            prevVertical: isTopRow ? value - 10 : null,
-            nextVertical: isBottomRow ? value + 10 : null
-        }
-    }     
-    // isHit(coords, isPlayer1) {
-
-    //     const player = isPlayer1 ? this.player2 : this.player1
-    //     player.choosenCoordinates.push(coords)
-        
-    //     const isOccupied = player.occupiedCoordinates.some(occupiedLocation => {
-           
-    //         for (const num of player.occupiedCoordinates) {
-    //             console.log(`${player.name} occCoord: ${num}, coords: ${coords}`)
-    //         }
-    //         return occupiedLocation.some(occupiedCoordinate => coords.includes(occupiedCoordinate))
-    //     })
-
-    //     if (isOccupied) {
-    //        console.log(`hit!`)
-    //         //need ship index
-    //     }
-        
-    //     return isOccupied
-        
-    // }
-    // isChoosen(coords, isPlayer1) {
-
-    //     const player = isPlayer1 ? this.player2 : this.player1
-
-    //     const hasBeenChoosen = player.choosenCoordinates.some(choosenLocation => {
-    //         if (Array.isArray(choosenLocation)) {
-    //             console.log(`isArray`)
-    //             return choosenLocation.includes(coords)
-    //         } else {
-    //             console.log(`choosenLoc: ${choosenLocation}, ${(coords == choosenLocation)}`)
-    //             return coords == choosenLocation
-    //         }
-           
-    //     })
-    //     return hasBeenChoosen
-    // }
-    isHit(coords, isPlayer1) {
-
-        const player = isPlayer1 ? this.player2 : this.player1
-        const ships = player.ships
-        
-        for (const ship of ships) {
-            console.log(`ship location: ${ship.ship.shipLocation}`)
-            const hasBeenChoosen = ship.ship.shipLocation.some(location => {
-                if (Array.isArray(location)) {
-                    console.log(`isArray`)
-                    return location.includes(coords)
-                } else {
-                    console.log(`location: ${location}, == coords: ${coords}, ${coords == location}`)
-                    return coords == location
-                }
-            })
-            if (hasBeenChoosen) {
-                return true
-            }
-        }
-        return false
     }
     isGameOver() {
         
@@ -364,6 +261,7 @@ class Player {
         this.occupiedCoordinates = []
         this.choosenCoordinates = []        
         this.ships = this.createShips()
+        this.board = new Grid()
         
     }
     createShips() {
@@ -380,13 +278,113 @@ class Player {
         }
         return playerShips
     }
+    switchOrientation(shipIndex) {
+        const ship = this.ships[shipIndex].ship        
+        ship.isHorizontal = !ship.isHorizontal
+    }
+    setLocation(shipIndex, coordinates) {
+        console.log(`shipIndex: ${shipIndex}`)
+        const ship = this.ships[shipIndex].ship
+        const location = ship.shipLocation
+        const isHorizontal = ship.isHorizontal
+
+        for ( let i = 0; i < ship.length; i++ ) {
+            location[i] = isHorizontal ? coordinates + i : coordinates + (i * 10)      
+         }
+         return location
+    }
+    autoPlaceShips() {
+
+        this.occupiedCoordinates.length = 0
+
+        for (let i = 0; i < this.ships.length; i++) {
+            const randomBoolean = Math.random() < 0.5
+            this.ships[i].ship.isHorizontal = randomBoolean
+
+            let location = null
+            let isOccupied = false
+            let isValid = false
+            let inRange = false
+
+            while ( !isValid || !inRange || isOccupied ) {
+
+                const randomCoord = Math.floor(Math.random() * 99)
+                location = this.setLocation(i, randomCoord)
+
+                this.removeRejected(location)
+
+                isOccupied = this.isOccupied(location)
+                isValid = this.checkValidity(location)
+                inRange = this.isInRange()
+
+            }
+        }
+        let isShort = this.checkOccupiedLength()
+        if (isShort) {
+            this.autoPlaceShips()
+        }
+
+    }
+    isInRange() {
+        const ships = this.ships
+        for (const ship of ships) {
+            for (const coord of ship.ship.shipLocation) {
+                if (coord < 0 || coord > 99) {
+                    return false
+                }
+            }
+        }
+        return true
+    }
+    checkValidity(location) {
+        for (const coord of location) {
+            if ( !this.board.isValid(coord)) {
+                return false
+            }
+        }
+        return true
+    }
+    isOccupied(location) {
+        const isOccupied = this.occupiedCoordinates.some(occupiedLocation => {
+            return occupiedLocation.some(occupiedCoordinate => location.includes(occupiedCoordinate))
+        })
+
+        if ( !isOccupied ) {
+            this.occupiedCoordinates.push(location)
+        }
+
+        return isOccupied
+    }
+    removeRejected(location) {
+        //checks coordinatesare occupied removes coordinates from occupied array        
+        const lastIndex = this.occupiedCoordinates.reduceRight((acc, occupiedLocation, currentIndex) => {
+            if ( !acc && occupiedLocation.some(occupiedCoordinate => location.includes(occupiedCoordinate))) {
+                return currentIndex
+            }
+            return acc
+        }, null)
+        if ( lastIndex !== null ) {
+            this.occupiedCoordinates.splice(lastIndex, 1)
+        }
+    }
+    checkOccupiedLength(){
+        return this.occupiedCoordinates.length !== 5
+    }
     fire(coords) {
         this.choosenCoordinates.push(coords)
         return coords
     } 
-    switchOrientation(shipIndex) {
-        const ship = this.ships[shipIndex].ship        
-        ship.isHorizontal = !ship.isHorizontal
+    isHit(coords) {
+        
+        for (const ship of this.ships) {
+            const isOccupied = ship.ship.shipLocation.some(location => {
+                return coords == location
+            })
+            if (isOccupied) {
+                return true
+            }
+        }
+        return false
     }
 }
     
@@ -560,7 +558,8 @@ function handleSquares() {
             console.log(`coords: ${typeof(coords)}`)
             //check then mark a hit or miss
             newGame.player1.fire(coords)
-            const isHit = newGame.isHit(coords, isPlayer1) 
+            const isHit = newGame.player2.isHit(coords) 
+            
             markSquare(square.id, isHit)
             togglePlayer()
 
@@ -608,7 +607,7 @@ const togglePlayer = () => {
         console.log(`coords: ${(formatedCoords)}`)
         // if formatedCoords is not in chooseCoords continue or get a new coord 
         newGame.player2.fire(formatedCoords)
-        const isHit = newGame.isHit(formatedCoords, false) 
+        const isHit = newGame.player1.isHit(formatedCoords) 
         markSquare(`${formatedCoords}-revealed`, isHit)
         togglePlayer()
         

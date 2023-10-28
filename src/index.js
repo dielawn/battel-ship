@@ -77,7 +77,8 @@ function handleSquares() {
             console.log(`coords: ${typeof(coords)}`)
             //check then mark a hit or miss
             newGame.player1.fire(coords)
-            const isHit = newGame.isHit(coords, isPlayer1) 
+            const isHit = newGame.player2.isHit(coords) 
+            
             markSquare(square.id, isHit)
             togglePlayer()
 
@@ -125,7 +126,7 @@ const togglePlayer = () => {
         console.log(`coords: ${(formatedCoords)}`)
         // if formatedCoords is not in chooseCoords continue or get a new coord 
         newGame.player2.fire(formatedCoords)
-        const isHit = newGame.isHit(formatedCoords, false) 
+        const isHit = newGame.player1.isHit(formatedCoords) 
         markSquare(`${formatedCoords}-revealed`, isHit)
         togglePlayer()
         
