@@ -1,108 +1,31 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./src/script.js":
+/***/ "./src/grid.js":
+/*!*********************!*\
+  !*** ./src/grid.js ***!
+  \*********************/
+/***/ (() => {
+
+
+
+/***/ }),
+
+/***/ "./src/player.js":
 /*!***********************!*\
-  !*** ./src/script.js ***!
+  !*** ./src/player.js ***!
   \***********************/
-/***/ ((module) => {
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _grid__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./grid */ "./src/grid.js");
+/* harmony import */ var _grid__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_grid__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _ship__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ship */ "./src/ship.js");
+/* harmony import */ var _ship__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_ship__WEBPACK_IMPORTED_MODULE_1__);
+/* module decorator */ module = __webpack_require__.hmd(module);
 
 
-class Game {
-
-    constructor() {
-        this.player1 = new Player('player1')
-        this.player2 = new Player('player2')        
-        this.currentPlayer = this.player2
-        this.otherPlayer = this.player1       
-        this.gameOver = true
-    }
-    startGame() {      
-
-        this.gameOver = false
-        this.player1.autoPlaceShips()
-        this.player2.autoPlaceShips()        
-    } 
-    togglePlayer() {
-
-        [this.currentPlayer, this.otherPlayer] = [this.otherPlayer, this.currentPlayer]
-        return this.currentPlayer
-    }          
-    isGameOver() {
-
-        if (this.player1.isGameOver()) {
-            this.player1.message = `Player 2 has won the game`
-            this.gameOver = true
-
-            return true
-        }
-        if (this.player2.isGameOver()) {
-            this.player1.message = `Player 1 has won the game`
-            this.gameOver = true
-
-            return true
-        } 
-
-        return false 
-    }
-}
-
-
-class Grid {
-
-    constructor() {
-        this.yAxis = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-        this.xAxis = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-        this.grid = this.createGrid()
-    }
-    createGrid() {
-        const grid = []
-
-        for (let i = 0; i < this.yAxis.length; i++) {
-            for (let j = 0; j < this.xAxis.length; j++) {
-                grid.push(`${this.yAxis[i]}${this.xAxis[j]}`)
-            }
-        }
-        
-        return grid
-    }
-    isValid(coordinate) {
-        const row = Math.floor(coordinate / 10)
-        const col = coordinate % 10
-        if (row >= 0 && row <= 9 && col >= 0 && col <= 9 && col + 1 <= 9 ) {
-            return true
-        }
-        return false
-    }
-    findCoords(index) {
-        if (index >= 0 && index < this.grid.length) {
-            return this.grid[index]
-        } else {
-            return 'Invalid index'
-        }
-    }
-} 
-
-class Ship {
-
-    constructor(shipType) {
-        this.ship = shipType
-        this.hitPoints = this.ship.length       
-        this.isSunk = false
-    }
-    hit() {
-        if(this.isSunk === true) {
-            return
-        }
-        this.hitPoints -= 1
-        let text = `Hit! `
-        if (this.hitPoints <= 0) {
-            text += `You sunk my ${this.ship.name}! `
-        this.isSunk = true
-      }
-      return text
-    }    
-}
 
 class Player {
 
@@ -110,7 +33,7 @@ class Player {
         this.name = name        
         this.occupiedCoordinates = []     
         this.ships = this.createShips()
-        this.board = new Grid()
+        this.board = new _grid__WEBPACK_IMPORTED_MODULE_0__.Grid()
         this.message = null
         
     }
@@ -125,7 +48,7 @@ class Player {
         ]
         const playerShips = []
         for(const ship of ships) {
-            playerShips.push(new Ship(ship))
+            playerShips.push(new _ship__WEBPACK_IMPORTED_MODULE_1__.Ship(ship))
         }
 
         return playerShips
@@ -265,16 +188,19 @@ class Player {
         return this.occupiedCoordinates.length !== 5
     }
 }
-    
-
-
-
 module.exports = {
-    Grid,
     Player,
-    Ship,
-    Game,
 }
+
+/***/ }),
+
+/***/ "./src/ship.js":
+/*!*********************!*\
+  !*** ./src/ship.js ***!
+  \*********************/
+/***/ (() => {
+
+
 
 /***/ })
 
@@ -292,25 +218,84 @@ module.exports = {
 /******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = __webpack_module_cache__[moduleId] = {
-/******/ 			// no module.id needed
-/******/ 			// no module.loaded needed
+/******/ 			id: moduleId,
+/******/ 			loaded: false,
 /******/ 			exports: {}
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
 /******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
 /******/ 	
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
+/******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/harmony module decorator */
+/******/ 	(() => {
+/******/ 		__webpack_require__.hmd = (module) => {
+/******/ 			module = Object.create(module);
+/******/ 			if (!module.children) module.children = [];
+/******/ 			Object.defineProperty(module, 'exports', {
+/******/ 				enumerable: true,
+/******/ 				set: () => {
+/******/ 					throw new Error('ES Modules may not assign module.exports or exports.*, Use ESM export syntax, instead: ' + module.id);
+/******/ 				}
+/******/ 			});
+/******/ 			return module;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
 /******/ 	
 /************************************************************************/
 /******/ 	
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __webpack_require__("./src/script.js");
+/******/ 	var __webpack_exports__ = __webpack_require__("./src/player.js");
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=script.bundle.js.map
+//# sourceMappingURL=player.bundle.js.map

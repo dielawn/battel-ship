@@ -1,99 +1,5 @@
-
-class Game {
-
-    constructor() {
-        this.player1 = new Player('player1')
-        this.player2 = new Player('player2')        
-        this.currentPlayer = this.player2
-        this.otherPlayer = this.player1       
-        this.gameOver = true
-    }
-    startGame() {      
-
-        this.gameOver = false
-        this.player1.autoPlaceShips()
-        this.player2.autoPlaceShips()        
-    } 
-    togglePlayer() {
-
-        [this.currentPlayer, this.otherPlayer] = [this.otherPlayer, this.currentPlayer]
-        return this.currentPlayer
-    }          
-    isGameOver() {
-
-        if (this.player1.isGameOver()) {
-            this.player1.message = `Player 2 has won the game`
-            this.gameOver = true
-
-            return true
-        }
-        if (this.player2.isGameOver()) {
-            this.player1.message = `Player 1 has won the game`
-            this.gameOver = true
-
-            return true
-        } 
-
-        return false 
-    }
-}
-
-
-class Grid {
-
-    constructor() {
-        this.yAxis = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-        this.xAxis = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-        this.grid = this.createGrid()
-    }
-    createGrid() {
-        const grid = []
-
-        for (let i = 0; i < this.yAxis.length; i++) {
-            for (let j = 0; j < this.xAxis.length; j++) {
-                grid.push(`${this.yAxis[i]}${this.xAxis[j]}`)
-            }
-        }
-        
-        return grid
-    }
-    isValid(coordinate) {
-        const row = Math.floor(coordinate / 10)
-        const col = coordinate % 10
-        if (row >= 0 && row <= 9 && col >= 0 && col <= 9 && col + 1 <= 9 ) {
-            return true
-        }
-        return false
-    }
-    findCoords(index) {
-        if (index >= 0 && index < this.grid.length) {
-            return this.grid[index]
-        } else {
-            return 'Invalid index'
-        }
-    }
-} 
-
-class Ship {
-
-    constructor(shipType) {
-        this.ship = shipType
-        this.hitPoints = this.ship.length       
-        this.isSunk = false
-    }
-    hit() {
-        if(this.isSunk === true) {
-            return
-        }
-        this.hitPoints -= 1
-        let text = `Hit! `
-        if (this.hitPoints <= 0) {
-            text += `You sunk my ${this.ship.name}! `
-        this.isSunk = true
-      }
-      return text
-    }    
-}
+import {Grid} from './grid'
+import {Ship} from './ship'
 
 class Player {
 
@@ -256,13 +162,6 @@ class Player {
         return this.occupiedCoordinates.length !== 5
     }
 }
-    
-
-
-
 module.exports = {
-    Grid,
     Player,
-    Ship,
-    Game,
 }

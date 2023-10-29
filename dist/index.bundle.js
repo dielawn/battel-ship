@@ -1,54 +1,14 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./src/script.js":
-/*!***********************!*\
-  !*** ./src/script.js ***!
-  \***********************/
+/***/ "./src/coordGen.js":
+/*!*************************!*\
+  !*** ./src/coordGen.js ***!
+  \*************************/
 /***/ ((module) => {
 
-class Game {
-    constructor() {
-        this.player1 = new Player('player1')
-        this.player2 = new Player('player2')        
-        this.currentPlayer = this.player2
-        this.otherPlayer = this.player1
-        this.p1Board = new Grid()
-        this.gameOver = false
-    }
-    startGame() {
-
-        // start new game
-        
-        this.player1.autoPlaceShips()
-        this.player2.autoPlaceShips()
-        
-    } 
-    togglePlayer() {
-        [this.currentPlayer, this.otherPlayer] = [this.otherPlayer, this.currentPlayer]
-        return this.currentPlayer
-    }          
-    isGameOver() {
-
-        if (this.player1.isGameOver()) {
-            this.player1.message = `player2 has won the game!`
-            this.player2.message = `player2 has won the game!`
-            console.log(`${this.player1.message}`)
-            this.gameOver = true
-            return true
-        }
-        if (this.player2.isGameOver()) {
-            this.player1.message = `player1 has won the game!`
-            this.player2.message = `player1 has won the game!`
-            console.log(`${this.player2.message}`)
-            this.gameOver = true
-            return true
-        } 
-
-        return false 
-    }
-}
 class AiCoordGenerator {
+
     constructor() {
         this.usedNumbers = new Set()
     }
@@ -70,7 +30,61 @@ class AiCoordGenerator {
     }
 }
 
+module.exports = {
+    AiCoordGenerator
+}
+
+/***/ }),
+
+/***/ "./src/script.js":
+/*!***********************!*\
+  !*** ./src/script.js ***!
+  \***********************/
+/***/ ((module) => {
+
+
+class Game {
+
+    constructor() {
+        this.player1 = new Player('player1')
+        this.player2 = new Player('player2')        
+        this.currentPlayer = this.player2
+        this.otherPlayer = this.player1       
+        this.gameOver = true
+    }
+    startGame() {      
+
+        this.gameOver = false
+        this.player1.autoPlaceShips()
+        this.player2.autoPlaceShips()        
+    } 
+    togglePlayer() {
+
+        [this.currentPlayer, this.otherPlayer] = [this.otherPlayer, this.currentPlayer]
+        return this.currentPlayer
+    }          
+    isGameOver() {
+
+        if (this.player1.isGameOver()) {
+            this.player1.message = `Player 2 has won the game`
+            this.gameOver = true
+
+            return true
+        }
+        if (this.player2.isGameOver()) {
+            this.player1.message = `Player 1 has won the game`
+            this.gameOver = true
+
+            return true
+        } 
+
+        return false 
+    }
+}
+
+
 class Grid {
+
     constructor() {
         this.yAxis = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         this.xAxis = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -105,6 +119,7 @@ class Grid {
 } 
 
 class Ship {
+
     constructor(shipType) {
         this.ship = shipType
         this.hitPoints = this.ship.length       
@@ -119,23 +134,23 @@ class Ship {
         if (this.hitPoints <= 0) {
             text += `You sunk my ${this.ship.name}! `
         this.isSunk = true
-        console.log(`You sunk my ${this.ship.name}!`)
       }
       return text
     }    
 }
 
 class Player {
+
     constructor(name, ) {
         this.name = name        
-        this.occupiedCoordinates = []
-        this.choosenCoordinates = []        
+        this.occupiedCoordinates = []     
         this.ships = this.createShips()
         this.board = new Grid()
         this.message = null
         
     }
     createShips() {
+
         const ships = [
             { name: 'Carrier', length: 5, shipLocation: [0,0,0,0,0], isHorizontal: true },     //ship 0
             { name: 'Battleship', length: 4, shipLocation: [0,0,0,0], isHorizontal: true },    //ship 1
@@ -147,13 +162,16 @@ class Player {
         for(const ship of ships) {
             playerShips.push(new Ship(ship))
         }
+
         return playerShips
     }
     switchOrientation(shipIndex) {
+
         const ship = this.ships[shipIndex].ship        
         ship.isHorizontal = !ship.isHorizontal
     }
     setManualLocation(shipIndex, coordinate) {
+
         const ship = this.ships[shipIndex].ship
         const location = ship.shipLocation
         const length = ship.length
@@ -161,8 +179,9 @@ class Player {
 
         for (let i = 0; i < length; i++) {
             let isHorizontal = ship.isHorizontal
-            location[i] = isHorizontal ? (coordinate - midIndex) + i : (coordinate = (midIndex * 10)) + (i * 10) 
+            location[i] = isHorizontal ? (coordinate - midIndex) + i : (coordinate - (midIndex * 10)) + (i * 10) 
         }
+
         return location
     }
     setLocation(shipIndex, coordinates) {
@@ -174,6 +193,7 @@ class Player {
         for ( let i = 0; i < ship.length; i++ ) {
             location[i] = isHorizontal ? coordinates + i : coordinates + (i * 10)      
          }
+
          return location
     }
     autoPlaceShips() {
@@ -181,6 +201,7 @@ class Player {
         this.occupiedCoordinates.length = 0
 
         for (let i = 0; i < this.ships.length; i++) {
+
             const randomBoolean = Math.random() < 0.5
             this.ships[i].ship.isHorizontal = randomBoolean
 
@@ -199,23 +220,19 @@ class Player {
                 isOccupied = this.isOccupied(location)
                 isValid = this.checkValidity(location)
                 inRange = this.isInRange()
-
             }
         }
+
         let isShort = this.checkOccupiedLength()
+
         if (isShort) {
             this.autoPlaceShips()
         }
-
-    }
-    
-    fire(coords) {
-        this.choosenCoordinates.push(coords)
-        return coords
-    } 
+    }    
     isHit(coords) {
         
         for (const ship of this.ships) {
+            
             const isOccupied = ship.ship.shipLocation.some(location => {
                 return coords == location
             })
@@ -225,7 +242,7 @@ class Player {
                 return true
             }
         }
-        this.message = `Miss!`
+        this.message = `Miss`
         return false
     }
     isGameOver() {       
@@ -268,7 +285,7 @@ class Player {
         return isOccupied
     }
     removeRejected(location) {
-        //checks coordinatesare occupied removes coordinates from occupied array        
+        //checks if coordinates are occupied removes coordinates from occupied array        
         const lastIndex = this.occupiedCoordinates.reduceRight((acc, occupiedLocation, currentIndex) => {
             if ( !acc && occupiedLocation.some(occupiedCoordinate => location.includes(occupiedCoordinate))) {
                 return currentIndex
@@ -292,7 +309,6 @@ module.exports = {
     Player,
     Ship,
     Game,
-    AiCoordGenerator,
 }
 
 /***/ })
@@ -375,6 +391,9 @@ var __webpack_exports__ = {};
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _script__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./script */ "./src/script.js");
 /* harmony import */ var _script__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_script__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _coordGen__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./coordGen */ "./src/coordGen.js");
+/* harmony import */ var _coordGen__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_coordGen__WEBPACK_IMPORTED_MODULE_1__);
+
 
 
 
@@ -382,18 +401,16 @@ const newGame = new _script__WEBPACK_IMPORTED_MODULE_0__.Game()
 newGame.startGame()
 
 
-const aiCoordGenerator = new _script__WEBPACK_IMPORTED_MODULE_0__.AiCoordGenerator()
+const aiCoordGenerator = new _coordGen__WEBPACK_IMPORTED_MODULE_1__.AiCoordGenerator()
 
 const containerDiv = document.getElementById('container')
 const friendlyWaters = document.getElementById('friendlyWaters')
 const enemyWaters = document.getElementById('enemyWaters')
 
 let currentShip = null
-let selectedSquare = null
 
 function labelGrid(alphaParent, numParent, parentTxt) {
 
-    const playerGrid = newGame.p1Board
     const alphaCoords = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
     const numCoords = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
 
@@ -404,8 +421,8 @@ function labelGrid(alphaParent, numParent, parentTxt) {
         alphaSquare.classList.add('alphaSquare')
         alphaSquare.innerHTML = alphaCoords[i]
         alphaParent.appendChild(alphaSquare)
-
     }
+
     for (let i = 0; i < 10; i++ ) {
 
         const numSquare = document.createElement('div')
@@ -413,9 +430,7 @@ function labelGrid(alphaParent, numParent, parentTxt) {
         numSquare.classList.add('numSquare')
         numSquare.innerHTML = numCoords[i]
         numParent.appendChild(numSquare)
-
     }
-
 }
 
 function renderGrid(parent, parentTxt) {
@@ -427,15 +442,15 @@ function renderGrid(parent, parentTxt) {
    
     for (let i = 0; i < 100; i++) {
 
-        const coords = newGame.p1Board.findCoords(i)    
+        const coords = newGame.player1.board.findCoords(i)    
         const gridSquare = document.createElement('div')
+
         gridSquare.classList.add('gridSquare', parentTxt)
         gridSquare.id = `${coords}-${parentTxt}`     
-        gridSquare.setAttribute('data-coords', coords)
-        // console.log(`converted: ${convertCoordinatesToGrid(coords)}`)
+        gridSquare.setAttribute('data-coords', coords)        
         gridSquare.style.gridArea =  convertCoordinatesToGrid(coords)  
-        parent.appendChild(gridSquare)
 
+        parent.appendChild(gridSquare)
     }
 
     parent.appendChild(alphaDiv)
@@ -448,30 +463,23 @@ function handleSquares() {
     const gridSquares = document.querySelectorAll('.gridSquare')
     const instructionsDiv = document.getElementById('instructions')
 
+
     gridSquares.forEach(square => {
 
         const coords = square.dataset.coords
 
         square.addEventListener('click', ()  => {
 
-           
-            console.log(`coords: ${typeof(coords)}`)
-            //check then mark a hit or miss
-            newGame.player1.fire(coords)
-            const isHit = newGame.player2.isHit(coords) 
-            const isHitTxt = `${newGame.player2.message}! `
-            
+            const isHit = newGame.player2.isHit(coords)             
             markSquare(square.id, isHit)
-           if (!newGame.isGameOver()) {                
-            instructionsDiv.innerHTML += `Player 1 fires at ${coords} ${isHitTxt} <br>`
+            if (!newGame.isGameOver()) {                
+                handleLogs(coords)
                 togglePlayer()
-           } else {
+            } else {
             handleEnemyShips()
             instructionsDiv.innerHTML += `GAME OVER! ${newGame.player1.message}! `
-            console.log(`GAME OVER!`)
-           }
             
-
+           }
         })
         square.addEventListener('dragover', (e) => {
             e.preventDefault()
@@ -480,21 +488,40 @@ function handleSquares() {
         square.addEventListener('drop', (e) => {
             e.preventDefault()
 
-            if (!newGame.p1Board.isValid(coords))return
+            if (!newGame.player1.board.isValid(coords)) {
+                return
+            }
            
             const currentShipIndex = getIndexFromName(currentShip)
-            const location = newGame.player1.setManualLocation(currentShipIndex, coords)
-            
-            console.log(location)
-            renderAllShips()  
+            newGame.player1.setManualLocation(currentShipIndex, coords)     
+            renderAllShips()              
             setupGame() 
 
         })
     })
 }
+const handleLogs = (coords) => {
 
+    const captnLog = document.getElementById('captnLog')
+    const enemyLog = document.getElementById('enemyLog')
+
+    const isPlayer1 = newGame.currentPlayer == newGame.player1
+    const isHitTxt = isPlayer1 ? `${newGame.player1.message}! ` : `${newGame.player2.message}! `
+    
+    if (isPlayer1) {
+        captnLog.innerHTML += `Player 1 fires at ${coords} ${isHitTxt} <br>`
+    } else {
+        enemyLog.innerHTML += `Player 2 fires at ${coords} ${isHitTxt} <br>`
+    }
+        
+    containerDiv.appendChild(captnLog)
+    containerDiv.appendChild(enemyLog)
+
+}
 const handleEnemyShips = () => {
+
     const enemyShips = document.querySelectorAll('.enemyShip')
+
     if (!newGame.isGameOver()) {
         enemyShips.forEach((ship) => {
             ship.classList.add('hide')
@@ -507,17 +534,10 @@ const handleEnemyShips = () => {
 }
 
 const togglePlayer = () => {
-
-   
     
     newGame.togglePlayer()
-    
-    // captnLog.textContent += `${newGame.currentPlayer.name}'s Turn`
-    // console.log(`currentPlayer: ${newGame.currentPlayer.name}`)
 
-    const isPlayer1  = newGame.currentPlayer.name == newGame.player1.name
-    console.log(`isPlayer1: ${isPlayer1}`)
-    
+    const isPlayer1  = newGame.currentPlayer.name == newGame.player1.name    
     if (!isPlayer1) {
         player2Turn()        
     }
@@ -525,33 +545,30 @@ const togglePlayer = () => {
     return
 }
 const player2Turn = () => {
-    const instructionsDiv = document.getElementById('instructions')
-    
+
+    const instructionsDiv = document.getElementById('instructions')    
     const captnLog = document.createElement('p')
-    const coords = aiCoordGenerator.getRandomUniqueNumber()
-        
+
+    const coords = aiCoordGenerator.getRandomUniqueNumber()        
     const formatedCoords = coords < 10 ? `0${coords}` : coords.toString()
-    console.log(`coords: ${(formatedCoords)}`)
-    // if formatedCoords is not in chooseCoords continue or get a new coord 
-    newGame.player2.fire(formatedCoords)
+
     const isHit = newGame.player1.isHit(formatedCoords) 
     markSquare(`${formatedCoords}-revealed`, isHit)
-    const hitMissTxt = isHit ? `Hit ${newGame.player1.message}` : `Miss ${newGame.player1.message}`
+    
     if (!newGame.isGameOver()) {                
-        captnLog.textContent += `${newGame.currentPlayer.name} fires at ${coords} ${newGame.player1.message}`
+        handleLogs(formatedCoords)
         togglePlayer()
    } else {
     handleEnemyShips()
     instructionsDiv.innerHTML += `GAME OVER! ${newGame.player1.message}! `
-    console.log(`GAME OVER! ${newGame.player1.message} `)
    }
    instructionsDiv.appendChild(captnLog)
 }
 const markSquare = (squareId, isHit) => {
 
     const selected = document.getElementById(squareId)
-
     const peg = document.createElement('div')
+
     peg.style.backgroundColor = isHit ? 'red' : 'white'
     peg.classList.add('peg')
    
@@ -579,7 +596,6 @@ const convertToGrid = (coordiante, ship) => {
 
     return `${rowStart} / ${colStart} / ${rowEnd} / ${colEnd}`
 }
-
 //for grid squares
 const convertCoordinatesToGrid = (coordinate) => {
 
@@ -595,25 +611,23 @@ const convertCoordinatesToGrid = (coordinate) => {
     // console.log( `${rowStart} / ${columnStart} / ${rowEnd} / ${columnEnd}`)
     return `${rowStart} / ${columnStart} / ${rowEnd} / ${columnEnd}`
 }
-
 const capFirstLetter = (inputString) => {
+
     const [firstLetter, ...rest] = inputString
     return `${firstLetter.toUpperCase()}${rest.join('')}`
 }
-
 function getIndexFromName(shipName) {
 
-    console.log(shipName)
     if (shipName === null) return
 
     let upperCaseName = capFirstLetter(shipName)
     const ships = newGame.player1.ships
+
     for (let i = 0; i < ships.length; i++) {
        if (ships[i].ship.name === upperCaseName) {
         return i
        }
-    }
-   
+    }   
 }
 const renderShips = (isPlayer1) => {
 
@@ -651,8 +665,7 @@ const renderShips = (isPlayer1) => {
 
     for (let i = 0; i < shipImages.length; i++) {
 
-        const shipData = isPlayer1 
-        ? newGame.player1.ships[i].ship : newGame.player2.ships[i].ship
+        const shipData = isPlayer1 ? newGame.player1.ships[i].ship : newGame.player2.ships[i].ship
 
         const shipCoord = shipData.shipLocation
         const isHorizontal = shipData.isHorizontal
@@ -662,14 +675,14 @@ const renderShips = (isPlayer1) => {
         shipImage.src = shipImages[i].src
         shipImages.alt = shipImages[i].alt
         shipImage.style.width = (shipData.length * 45) + 'px'
-
-        let gridAreaValue = convertToGrid(shipCoord, shipData)
         
         if (isHorizontal) {
             shipImage.classList.remove('rotate')
         } else {
             shipImage.classList.add('rotate')           
         }
+
+        const gridAreaValue = convertToGrid(shipCoord, shipData)
         shipImage.style.gridArea = gridAreaValue
         
         if (isPlayer1) {
@@ -708,6 +721,7 @@ const renderAllShips = () => {
     renderShips(false)
 
     addShipListeners()
+    handleEnemyShips()
 }
 
 function setupGame() {
@@ -726,31 +740,25 @@ function setupGame() {
         startBtn.textContent = `Start Game`
         instructionsDiv.appendChild(startBtn)
 
-        startBtn.addEventListener('click', () => {
+        startBtn.addEventListener('click', () => {            
             
-            currentShip = null
-            console.log(`currentPlayer: ${newGame.currentPlayer.name}`)
-            instructionsDiv.textContent = `${newGame.currentPlayer.name}'s Turn `
+            currentShip = null            
             addShipsToOccupied()
             player2Turn()
+            startBtn.remove()
         })
-
-       
-
-
     }
-
 }
 
 const addShipsToOccupied = () => {
+
     const occupied = newGame.player1.occupiedCoordinates
     occupied.length = 0
-   const ships = newGame.player1.ships
-   for ( let i = 0; i < ships.length; i++ ) {
-    console.log(`shipsLocation: ${occupied}`)
-    occupied.push(ships[i].ship.shipLocation)
+    const ships = newGame.player1.ships
+
+    for ( let i = 0; i < ships.length; i++ ) {
+        occupied.push(ships[i].ship.shipLocation)
    }
-   console.log(`p1 occupied: ${occupied}`)
 }
 
 function addShipListeners() {
@@ -774,29 +782,19 @@ function addShipListeners() {
             let isHorizontal = player1.ships[shipIndex].ship.isHorizontal            
             isHorizontal = !isHorizontal
             renderAllShips()
-      
-            console.log(`isHorizontal: ${player1.ships[shipIndex].ship.isHorizontal}`)
+            
         })
-    
     }
-    
 }
-
 
 document.addEventListener("DOMContentLoaded", function () {
     
     renderGrid(enemyWaters, 'hidden')
     renderGrid(friendlyWaters, 'revealed')
     handleSquares()
-    
     renderAllShips()
-    
     addShipListeners()
     setupGame()
-    handleEnemyShips()
-    
-
-
  })
 
 

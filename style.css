@@ -118,8 +118,23 @@
 }
 .instructions {
     max-height: 200px;
+    font-size: x-large;
+}
+.enemyLog {
+    position: absolute;
+    right: 150px;
+    top: 675px;
     overflow: scroll;
     width: 500px;
+    height: 400px;
+}
+.captnLog {
+    position: absolute;
+    right: 150px;
+    top: 75px;
+    overflow: scroll;
+    width: 500px;
+    height: 400px;
 }
 /* #battleship .rotate{
     transform: rotate(90deg);
